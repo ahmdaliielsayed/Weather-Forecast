@@ -7,4 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="cloud_burst">#232955</color>
+    <color name="seagull">#7EBAE6</color>
+    <color name="astronaut">#2F366F</color>
+    <color name="mine_shaft">#323232</color>
+    <color name="mauve">#E6B3FC</color>
+    <color name="purple_heart">#612EBC</color>
 </resources>
