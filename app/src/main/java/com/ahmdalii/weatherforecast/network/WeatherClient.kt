@@ -13,6 +13,6 @@ class WeatherClient private constructor(): RemoteSource {
     }
 
     override suspend fun getCurrentWeatherOverNetwork(latitude: Float, longitude: Float, language: String, measurementUnit: String): Response<WeatherModel> {
-        return RetrofitHelper.getInstance().create(WeatherService::class.java).getCurrentWeather(latitude, longitude, language, measurementUnit)
+        return BaseRetrofitHelper.getInstance().create(WeatherService::class.java).getCurrentWeather(latitude, longitude, language, measurementUnit)
     }
 }

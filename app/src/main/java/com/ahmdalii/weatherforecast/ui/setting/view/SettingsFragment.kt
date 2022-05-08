@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.ahmdalii.weatherforecast.HomeActivity
+import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.databinding.FragmentSettingsBinding
 import com.ahmdalii.weatherforecast.ui.setting.viewmodel.SettingsViewModel
 
@@ -23,7 +25,7 @@ class SettingsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         settingsViewModel =
             ViewModelProvider(this).get(SettingsViewModel::class.java)
 
@@ -35,5 +37,10 @@ class SettingsFragment : Fragment() {
             textView.text = it
         })
         return root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

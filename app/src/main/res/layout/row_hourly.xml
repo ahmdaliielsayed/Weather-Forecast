@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="80dp"
+    android:layout_height="160dp"
+    android:layout_margin="8dp"
+    android:backgroundTint="@color/dove_gray"
+    app:cardCornerRadius="100dp"
+    app:cardElevation="10dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/txtViewHourlyTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="01:00 AM"
+            android:textAlignment="center"
+            android:textColor="@color/alto"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imgViewHourlyWeatherIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/cloudy"
+            app:layout_constraintEnd_toEndOf="@+id/txtViewHourlyTime"
+            app:layout_constraintStart_toStartOf="@+id/txtViewHourlyTime"
+            app:layout_constraintTop_toBottomOf="@+id/txtViewHourlyTime" />
+
+        <TextView
+            android:id="@+id/txtViewHourlyTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="27"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/imgViewHourlyWeatherIcon"
+            app:layout_constraintStart_toStartOf="@+id/imgViewHourlyWeatherIcon"
+            app:layout_constraintTop_toBottomOf="@+id/imgViewHourlyWeatherIcon" />
+
+        <TextView
+            android:id="@+id/txtViewHourlyTempDiscrimination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="°c"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/txtViewHourlyTemp"
+            app:layout_constraintTop_toTopOf="@+id/txtViewHourlyTemp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

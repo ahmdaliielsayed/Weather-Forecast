@@ -24,4 +24,10 @@
     <string name="warning">Warning</string>
     <string name="open_gps">Please, Open GPS or Enable Network to fetch your location!</string>
     <string name="cancelled">cancelled!</string>
+    <string name="temp_kelvin">°k</string>
+    <string name="temp_celsius">°c</string>
+    <string name="temp_fahrenheit">°f</string>
+    <string name="m_p_s">metre/sec</string>
+    <string name="m_p_h">miles/hour</string>
+    <string name="metres">metres</string>
 </resources>

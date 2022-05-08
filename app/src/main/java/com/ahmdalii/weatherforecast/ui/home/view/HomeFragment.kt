@@ -1,39 +1,44 @@
 package com.ahmdalii.weatherforecast.ui.home.view
 
 import android.Manifest
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.ActivityResultLauncher
+import android.widget.Button
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.app.ActivityCompat
 import androidx.core.location.LocationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.databinding.FragmentHomeBinding
+import com.ahmdalii.weatherforecast.model.Weather
 import com.ahmdalii.weatherforecast.network.WeatherClient
 import com.ahmdalii.weatherforecast.ui.home.repo.HomeRepo
 import com.ahmdalii.weatherforecast.ui.home.viewmodel.HomeViewModel
 import com.ahmdalii.weatherforecast.ui.home.viewmodel.HomeViewModelFactory
 import com.ahmdalii.weatherforecast.utils.AppConstants
-import java.util.*
+import com.ahmdalii.weatherforecast.utils.AppConstants.IMG_URL
+import com.ahmdalii.weatherforecast.utils.AppConstants.WAIT_FIRST_TIME
+import com.ahmdalii.weatherforecast.utils.AppConstants.getDateTime
+import com.bumptech.glide.Glide
 
 class HomeFragment : Fragment() {
 
@@ -44,6 +49,12 @@ class HomeFragment : Fragment() {
     private lateinit var myView: View
     private lateinit var dialog: Dialog
     private var isAllPermissionsGranted: Boolean = false
+    private var firstTime: Boolean = true
+
+    private lateinit var homeHourlyAdapter: HomeHourlyAdapter
+    private lateinit var linearHomeHourlyLayoutManager: LinearLayoutManager
+    private lateinit var homeDailyAdapter: HomeDailyAdapter
+    private lateinit var linearHomeDailyLayoutManager: LinearLayoutManager
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -56,7 +67,6 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 //        val root: View = binding.root
-
         return binding.root
     }
 
@@ -65,7 +75,12 @@ class HomeFragment : Fragment() {
 
         this.myView = view
         gettingViewModelReady()
-        configureDialog()
+        initHourlyRecyclerView()
+        initDailyRecyclerView()
+        if (firstTime) {
+            configureDialog()
+            firstTime = false
+        }
     }
 
     private fun gettingViewModelReady() {
@@ -75,15 +90,104 @@ class HomeFragment : Fragment() {
             )
         )
         viewModel = ViewModelProvider(this, homeViewModelFactory)[HomeViewModel::class.java]
-//        viewModel.getCurrentWeatherOverNetwork(myView.context)
-
-        val textView: TextView = binding.textHome
-        viewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
+        viewModel.errorMsgResponse.observe(viewLifecycleOwner, Observer {
+            Toast.makeText(myView.context, it, Toast.LENGTH_LONG).show()
         })
         viewModel.weatherModelResponse.observe(viewLifecycleOwner, Observer {
-            Log.d("asdfg:", it.toString())
+            binding.progressBar.visibility = View.GONE
+            setCurrentLocation()
+            setCurrentTempAndWindSpeedDiscrimination()
+            binding.txtViewCurrentTemp.text = if (it.current.temp.toInt() % 100 >= 50) {
+                "${it.current.temp.toInt().plus(1)}"
+            } else {
+                "${it.current.temp.toInt()}"
+            }
+            setCurrentWeatherDescription(it.current.weather)
+            setCurrentWeatherIcon(it.current.weather[0].icon)
+            binding.txtViewCurrentDateTime.text = getDateTime(it.current.dt, "EEE, MMM d, yyyy hh:mm a")
+            homeHourlyAdapter.setDataToAdapter(it.hourly)
+            homeDailyAdapter.setDataToAdapter(it.daily)
+            binding.txtViewPressure.text = it.current.pressure.toString().plus(" hPa")
+            binding.txtViewHumidity.text = it.current.humidity.toString().plus(" %")
+            binding.txtViewWindSpeed.text = it.current.windSpeed.toString().plus(" ")
+            binding.txtViewClouds.text = it.current.clouds.toString().plus(" %")
+            binding.txtViewUVI.text = it.current.uvi.toString()
+            binding.txtViewVisibility.text = it.current.visibility.toString().plus(" ").plus(getString(R.string.metres))
+            binding.txtViewFeelsLikeTemp.text = if (it.current.feelsLike.toInt() % 100 >= 50) {
+                "${it.current.feelsLike.toInt().plus(1)}"
+            } else {
+                "${it.current.feelsLike.toInt()}"
+            }
         })
+    }
+
+    private fun initHourlyRecyclerView() {
+        homeHourlyAdapter = HomeHourlyAdapter(myView.context, emptyList(), viewModel, viewLifecycleOwner)
+        linearHomeHourlyLayoutManager = LinearLayoutManager(myView.context, RecyclerView.HORIZONTAL, false)
+        binding.recyclerViewHourly.apply {
+            adapter = homeHourlyAdapter
+            layoutManager = linearHomeHourlyLayoutManager
+        }
+    }
+
+    private fun initDailyRecyclerView() {
+        homeDailyAdapter = HomeDailyAdapter(myView.context, emptyList(), viewModel, viewLifecycleOwner)
+        linearHomeDailyLayoutManager = LinearLayoutManager(myView.context, RecyclerView.VERTICAL, false)
+        binding.recyclerViewDaily.apply {
+            adapter = homeDailyAdapter
+            layoutManager = linearHomeDailyLayoutManager
+        }
+    }
+
+    private fun setCurrentWeatherDescription(weatherList: List<Weather>) {
+        var weatherDescription = ""
+        for (weatherObject in weatherList) {
+            weatherDescription += weatherObject.description + "\n"
+        }
+        binding.txtViewCurrentWeatherDescription.text = weatherDescription
+    }
+
+    private fun setCurrentLocation() {
+        viewModel.getCurrentLocation(myView.context)
+        viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
+            binding.txtViewGovernorate.text = it[0]
+            binding.txtViewLocality.text = it[1]
+        })
+    }
+
+    private fun setCurrentTempAndWindSpeedDiscrimination() {
+        viewModel.getCurrentTempMeasurementUnit(myView.context)
+        viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner, Observer {
+            when {
+                it.isNullOrBlank() -> {
+                    binding.txtViewCurrentTempDiscrimination.text = getString(R.string.temp_kelvin)
+                    binding.txtViewFeelsLikeDiscrimination.text = getString(R.string.temp_kelvin)
+                    binding.txtViewWindSpeedDiscrimination.text = getString(R.string.m_p_s)
+                }
+                it.equals("metric") -> {
+                    binding.txtViewCurrentTempDiscrimination.text = getString(R.string.temp_celsius)
+                    binding.txtViewFeelsLikeDiscrimination.text = getString(R.string.temp_celsius)
+                    binding.txtViewWindSpeedDiscrimination.text = getString(R.string.m_p_s)
+                }
+                it.equals("imperial") -> {
+                    binding.txtViewCurrentTempDiscrimination.text = getString(R.string.temp_fahrenheit)
+                    binding.txtViewFeelsLikeDiscrimination.text = getString(R.string.temp_fahrenheit)
+                    binding.txtViewWindSpeedDiscrimination.text = getString(R.string.m_p_h)
+                }
+            }
+        })
+    }
+
+    private fun setCurrentWeatherIcon(iconURL: String) {
+        Glide
+            .with(myView.context)
+            .load("$IMG_URL${iconURL}@4x.png")
+            .into(binding.imgViewCurrentWeatherIcon)
+
+        Glide
+            .with(myView.context)
+            .load("$IMG_URL${iconURL}@4x.png")
+            .into(binding.imgViewFeelsLikeIcon)
     }
 
     override fun onDestroyView() {
@@ -186,7 +290,10 @@ class HomeFragment : Fragment() {
         }
 
     private fun dismissDialogAndGetWeather() {
-        viewModel.getCurrentWeatherOverNetwork(myView.context)
+        Handler(Looper.getMainLooper()).postDelayed({
+            viewModel.getCurrentWeatherOverNetwork(myView.context)
+        }, WAIT_FIRST_TIME)
+        binding.progressBar.visibility = View.VISIBLE
         dialog.dismiss()
     }
 }

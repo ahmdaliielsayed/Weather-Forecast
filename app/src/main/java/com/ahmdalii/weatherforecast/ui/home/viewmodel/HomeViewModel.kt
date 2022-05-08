@@ -14,21 +14,22 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
-    }
-    val text: LiveData<String> = _text
-
     private var _weatherModelResponse = MutableLiveData<WeatherModel>()
     val weatherModelResponse: LiveData<WeatherModel> = _weatherModelResponse
 
     private var _errorMsgResponse = MutableLiveData<String>()
     val errorMsgResponse: LiveData<String> = _errorMsgResponse
 
+    private var _currentLocation = MutableLiveData<List<String>>()
+    val currentLocation: LiveData<List<String>> = _currentLocation
+
+    private var _currentTempMeasurementUnit = MutableLiveData<String>()
+    val currentTempMeasurementUnit: LiveData<String> = _currentTempMeasurementUnit
+
     private val coroutineExceptionHandler = CoroutineExceptionHandler{ _, t ->
         run {
             t.printStackTrace()
-            Log.d("asdfg:", t.message.toString())
+            Log.d("asdfg:coroutine", t.message.toString())
             _errorMsgResponse.postValue(t.message)
         }
     }
@@ -49,10 +50,29 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             val currentWeatherResponse = _repo.getCurrentWeatherOverNetwork(context)
             if (currentWeatherResponse.isSuccessful) {
+                Log.d("asdfg:", "currentWeatherResponse.isSuccessful")
                 _weatherModelResponse.postValue(currentWeatherResponse.body())
             } else {
+                Log.d("asdfg:", currentWeatherResponse.message())
                 _errorMsgResponse.postValue(currentWeatherResponse.message())
             }
+        }
+    }
+
+    fun getCurrentLocation(context: Context) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            val currentLocationList = _repo.getCurrentLocation(context)
+            if (currentLocationList.isNullOrEmpty()) {
+                _errorMsgResponse.postValue("${currentLocationList.size} \nerror viewModel getCurrentLocation")
+            } else {
+                _currentLocation.postValue(currentLocationList)
+            }
+        }
+    }
+
+    fun getCurrentTempMeasurementUnit(context: Context) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            _currentTempMeasurementUnit.postValue(_repo.getCurrentTempMeasurementUnit(context))
         }
     }
 }

@@ -14,6 +14,7 @@ import com.ahmdalii.weatherforecast.network.RemoteSource
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_ADMIN_AREA
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LATITUDE
+import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LOCALITY
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LONGITUDE
 import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT
 import com.ahmdalii.weatherforecast.utils.AppConstants.NOTIFICATION
@@ -24,7 +25,7 @@ import retrofit2.Response
 import java.io.IOException
 import java.util.*
 
-class HomeRepo private constructor(var remoteSource: RemoteSource): HomeRepoInterface{
+class HomeRepo private constructor(private var remoteSource: RemoteSource): HomeRepoInterface{
 
     companion object{
         private var instance: HomeRepoInterface? = null
@@ -76,11 +77,9 @@ class HomeRepo private constructor(var remoteSource: RemoteSource): HomeRepoInte
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
                 for (location in locationResult.locations) {
-                    //Update UI with location data
                     if (location != null) {
                         saveLocationData(context, location)
                         getPlaceName(context, location.latitude, location.longitude)
-                        Log.d("asdfg:esraa", "${location.latitude}, ${location.longitude}")
                         stopLocationUpdates()
                     }
                 }
@@ -89,7 +88,14 @@ class HomeRepo private constructor(var remoteSource: RemoteSource): HomeRepoInte
     }
 
     private fun getPlaceName(context: Context, latitude: Double, longitude: Double) {
-        val gcd = Geocoder(context, Locale.ENGLISH)
+        val gcd: Geocoder = when (AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, "")) {
+            "English" -> {
+                Geocoder(context, Locale.ENGLISH)
+            }
+            else -> {
+                Geocoder(context, Locale.getDefault())
+            }
+        }
         val addresses: List<Address>
         try {
             addresses = gcd.getFromLocation(latitude, longitude, 1)
@@ -112,6 +118,7 @@ class HomeRepo private constructor(var remoteSource: RemoteSource): HomeRepoInte
 
     private fun saveCurrentPlaceName(context: Context, addresses: List<Address>) {
         AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_ADMIN_AREA, addresses[0].adminArea)
+        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_LOCALITY, addresses[0].locality)
     }
 
     private fun stopLocationUpdates() {
@@ -141,6 +148,22 @@ class HomeRepo private constructor(var remoteSource: RemoteSource): HomeRepoInte
             AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, langAttribute)
         val measurementUnit =
             AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(MEASUREMENT_UNIT, "")
+        Log.d("asdfg:repoLat", "$latitude")
+        Log.d("asdfg:repoLon", "$longitude")
+        Log.d("asdfg:repoLan", langAttribute)
+        Log.d("asdfg:repoLang", language)
+        Log.d("asdfg:repoUnit", measurementUnit)
         return remoteSource.getCurrentWeatherOverNetwork(latitude, longitude, language, measurementUnit)
+    }
+
+    override fun getCurrentLocation(context: Context): List<String> {
+        return listOf(
+            AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(LOCATION_ADMIN_AREA, ""),
+            AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(LOCATION_LOCALITY, "")
+        )
+    }
+
+    override fun getCurrentTempMeasurementUnit(context: Context): String {
+        return AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(MEASUREMENT_UNIT, "")
     }
 }

@@ -63,6 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
                 android:buttonTint="@color/mauve"
+                android:checked="true"
                 android:text="@string/gps"
                 android:textColor="@android:color/white" />
 
@@ -81,6 +82,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:checked="true"
             android:minHeight="48dp"
             android:text="@string/notifications"
             android:textColor="@android:color/white"

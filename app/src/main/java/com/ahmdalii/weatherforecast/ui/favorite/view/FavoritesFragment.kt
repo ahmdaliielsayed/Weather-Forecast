@@ -24,7 +24,7 @@ class FavoritesFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         favoritesViewModel =
             ViewModelProvider(this).get(FavoritesViewModel::class.java)
 

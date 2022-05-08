@@ -10,4 +10,6 @@ interface HomeRepoInterface {
     fun isNotificationChecked(context: Context, isChecked: Boolean)
 
     suspend fun getCurrentWeatherOverNetwork(context: Context): Response<WeatherModel>
+    fun getCurrentLocation(context: Context): List<String>
+    fun getCurrentTempMeasurementUnit(context: Context): String
 }
