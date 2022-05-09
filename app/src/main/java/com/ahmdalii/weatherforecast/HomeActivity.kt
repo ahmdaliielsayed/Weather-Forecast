@@ -27,7 +27,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupToolbar()
-        handleFab()
+//        handleFab()
         configureNavView()
 //        gettingViewModelReady()
     }
@@ -43,12 +43,12 @@ class HomeActivity : AppCompatActivity() {
         setSupportActionBar(binding.appBarHome.toolbar)
     }
 
-    private fun handleFab() {
+    /*private fun handleFab() {
         binding.appBarHome.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
-    }
+    }*/
 
     private fun configureNavView() {
         val drawerLayout: DrawerLayout = binding.drawerLayout

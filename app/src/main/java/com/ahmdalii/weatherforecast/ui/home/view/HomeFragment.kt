@@ -38,7 +38,9 @@ import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.IMG_URL
 import com.ahmdalii.weatherforecast.utils.AppConstants.WAIT_FIRST_TIME
 import com.ahmdalii.weatherforecast.utils.AppConstants.getDateTime
+import com.ahmdalii.weatherforecast.utils.ConnectionLiveData
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 
 class HomeFragment : Fragment() {
 
@@ -49,7 +51,7 @@ class HomeFragment : Fragment() {
     private lateinit var myView: View
     private lateinit var dialog: Dialog
     private var isAllPermissionsGranted: Boolean = false
-    private var firstTime: Boolean = true
+    private var firstConnectionListener: Boolean = false
 
     private lateinit var homeHourlyAdapter: HomeHourlyAdapter
     private lateinit var linearHomeHourlyLayoutManager: LinearLayoutManager
@@ -77,10 +79,30 @@ class HomeFragment : Fragment() {
         gettingViewModelReady()
         initHourlyRecyclerView()
         initDailyRecyclerView()
-        if (firstTime) {
+        listenerOnNetwork()
+        configureDialog()
+        /*if (viewModel.isFirstTimeComplete(myView.context)) {
+            getWeatherDataOverNetwork()
+        } else {
             configureDialog()
-            firstTime = false
-        }
+        }*/
+    }
+
+    private fun listenerOnNetwork() {
+        ConnectionLiveData(myView.context).observe(this, {
+            if (it) {
+                if (firstConnectionListener) {
+                    // get data from network
+                    Log.d("asdfga:", "connectedAAAAAAAA")
+                } else {
+                    firstConnectionListener = true
+                }
+            } else {
+                Log.d("asdfga:", "loooooooostAAAAAA")
+                Snackbar.make(myView, "Network Connection Lost!\nYou need to re-connect network to fetch live data.", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show()
+            }
+        })
     }
 
     private fun gettingViewModelReady() {
@@ -290,10 +312,18 @@ class HomeFragment : Fragment() {
         }
 
     private fun dismissDialogAndGetWeather() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            viewModel.getCurrentWeatherOverNetwork(myView.context)
-        }, WAIT_FIRST_TIME)
-        binding.progressBar.visibility = View.VISIBLE
+        getWeatherDataOverNetwork()
         dialog.dismiss()
+        viewModel.firstTimeComplete(myView.context)
+    }
+
+    private fun getWeatherDataOverNetwork() {
+        viewModel.observeOnSharedPref(myView.context)
+        binding.progressBar.visibility = View.VISIBLE
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.unRegisterOnSharedPreferenceChangeListener()
     }
 }

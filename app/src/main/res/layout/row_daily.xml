@@ -3,10 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:backgroundTint="@color/dove_gray"
+    android:layout_gravity="start"
     android:layout_margin="8dp"
-    app:cardElevation="10dp"
-    app:cardCornerRadius="20dp">
+    android:backgroundTint="@color/dove_gray"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -24,7 +25,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/imgViewDayIcon"
-            app:layout_constraintEnd_toStartOf="@+id/imgViewDayIcon"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/imgViewDayIcon" />
 
@@ -33,14 +34,10 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="88dp"
             android:layout_marginBottom="16dp"
             android:src="@drawable/cloudy"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/txtViewDate"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline2"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -83,6 +80,13 @@
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/txtViewDailyTempMinMax"
             app:layout_constraintTop_toTopOf="@+id/txtViewDailyTempMinMax" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="134dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

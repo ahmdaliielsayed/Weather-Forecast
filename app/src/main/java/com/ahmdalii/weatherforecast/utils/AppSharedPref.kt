@@ -17,6 +17,10 @@ class AppSharedPref private constructor(context: Context, fileName: String) {
         }
     }
 
+    fun getAppSharedPref(): SharedPreferences {
+        return sharedPreferences
+    }
+
     fun setValue(key: String, value: Any) {
         when (value) {
             is Int -> {

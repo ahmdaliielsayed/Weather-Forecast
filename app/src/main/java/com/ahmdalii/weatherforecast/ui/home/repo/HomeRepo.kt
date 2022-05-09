@@ -24,6 +24,10 @@ import com.google.android.gms.location.*
 import retrofit2.Response
 import java.io.IOException
 import java.util.*
+import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import com.ahmdalii.weatherforecast.utils.AppConstants.FIRST_TIME_COMPLETED
+
 
 class HomeRepo private constructor(private var remoteSource: RemoteSource): HomeRepoInterface{
 
@@ -165,5 +169,21 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource): Home
 
     override fun getCurrentTempMeasurementUnit(context: Context): String {
         return AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(MEASUREMENT_UNIT, "")
+    }
+
+    override fun getAppSharedPref(context: Context): SharedPreferences {
+        return AppSharedPref.getInstance(context, SETTING_FILE).getAppSharedPref()
+    }
+
+    override fun isLocationSet(context: Context): Boolean {
+        return AppSharedPref.getInstance(context, SETTING_FILE).getFloatValue(LOCATION_LONGITUDE) != 0f
+    }
+
+    override fun firstTimeCompleted(context: Context) {
+        AppSharedPref.getInstance(context, SETTING_FILE).setValue(FIRST_TIME_COMPLETED, true)
+    }
+
+    override fun isFirstTimeCompleted(context: Context): Boolean {
+        return AppSharedPref.getInstance(context, SETTING_FILE).getBooleanValue(FIRST_TIME_COMPLETED, false)
     }
 }
