@@ -2,6 +2,7 @@ package com.ahmdalii.weatherforecast.ui.home.repo
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.lifecycle.LiveData
 import com.ahmdalii.weatherforecast.model.WeatherModel
 import retrofit2.Response
 
@@ -19,4 +20,9 @@ interface HomeRepoInterface {
 
     fun firstTimeCompleted(context: Context)
     fun isFirstTimeCompleted(context: Context): Boolean
+
+    fun getCurrentTimeZone(context: Context): String
+
+    fun insertWeatherModel(weatherModel: WeatherModel)
+    val allStoredWeatherModel: LiveData<WeatherModel>
 }

@@ -26,15 +26,18 @@ import java.io.IOException
 import java.util.*
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import androidx.lifecycle.LiveData
+import com.ahmdalii.weatherforecast.db.LocalSource
+import com.ahmdalii.weatherforecast.utils.AppConstants.CURRENT_TIMEZONE
 import com.ahmdalii.weatherforecast.utils.AppConstants.FIRST_TIME_COMPLETED
 
 
-class HomeRepo private constructor(private var remoteSource: RemoteSource): HomeRepoInterface{
+class HomeRepo private constructor(private var remoteSource: RemoteSource, private var localSource: LocalSource): HomeRepoInterface{
 
     companion object{
         private var instance: HomeRepoInterface? = null
-        fun getInstance(remoteSource: RemoteSource): HomeRepoInterface {
-            return instance ?: HomeRepo(remoteSource)
+        fun getInstance(remoteSource: RemoteSource, localSource: LocalSource): HomeRepoInterface {
+            return instance ?: HomeRepo(remoteSource, localSource)
         }
     }
 
@@ -157,7 +160,18 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource): Home
         Log.d("asdfg:repoLan", langAttribute)
         Log.d("asdfg:repoLang", language)
         Log.d("asdfg:repoUnit", measurementUnit)
-        return remoteSource.getCurrentWeatherOverNetwork(latitude, longitude, language, measurementUnit)
+        val currentWeatherOverNetwork = remoteSource.getCurrentWeatherOverNetwork(
+            latitude,
+            longitude,
+            language,
+            measurementUnit
+        )
+        saveCurrentTimeZone(context, currentWeatherOverNetwork.body()!!.getTimezone())
+        return currentWeatherOverNetwork
+    }
+
+    private fun saveCurrentTimeZone(context: Context, timeZone: String) {
+        AppSharedPref.getInstance(context, SETTING_FILE).setValue(CURRENT_TIMEZONE, timeZone)
     }
 
     override fun getCurrentLocation(context: Context): List<String> {
@@ -186,4 +200,20 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource): Home
     override fun isFirstTimeCompleted(context: Context): Boolean {
         return AppSharedPref.getInstance(context, SETTING_FILE).getBooleanValue(FIRST_TIME_COMPLETED, false)
     }
+
+    override fun getCurrentTimeZone(context: Context): String {
+        return AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(CURRENT_TIMEZONE, "")
+    }
+
+    override fun insertWeatherModel(weatherModel: WeatherModel) {
+        localSource.insertWeatherModel(weatherModel)
+        if (weatherModel.getAlerts().isNotEmpty()) {
+            for (alert in weatherModel.getAlerts()) {
+                localSource.insertAlert(alert)
+            }
+        }
+    }
+
+    override val allStoredWeatherModel: LiveData<WeatherModel>
+        get() = localSource.allStoredWeatherModel
 }

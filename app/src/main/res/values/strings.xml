@@ -30,4 +30,5 @@
     <string name="m_p_s">metre/sec</string>
     <string name="m_p_h">miles/hour</string>
     <string name="metres">metres</string>
+    <string name="connection_lost">Network Connection Lost! \nPlease, re-connect again to fetch live data.</string>
 </resources>

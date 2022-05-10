@@ -7,12 +7,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ahmdalii.weatherforecast.model.Alert
 import com.ahmdalii.weatherforecast.model.WeatherModel
 import com.ahmdalii.weatherforecast.ui.home.repo.HomeRepoInterface
-import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LONGITUDE
-import com.ahmdalii.weatherforecast.utils.AppConstants.SETTING_FILE
-import com.ahmdalii.weatherforecast.utils.AppSharedPref
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,12 +56,19 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             val currentWeatherResponse = _repo.getCurrentWeatherOverNetwork(context)
             if (currentWeatherResponse.isSuccessful) {
+                saveCurrentWeatherModelToRoom(currentWeatherResponse.body()!!)
                 Log.d("asdfg:", "currentWeatherResponse.isSuccessful")
                 _weatherModelResponse.postValue(currentWeatherResponse.body())
             } else {
                 Log.d("asdfg:", currentWeatherResponse.message())
                 _errorMsgResponse.postValue(currentWeatherResponse.message())
             }
+        }
+    }
+
+    private fun saveCurrentWeatherModelToRoom(weatherModel: WeatherModel) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            _repo.insertWeatherModel(weatherModel)
         }
     }
 
@@ -110,5 +115,9 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
     }
     fun isFirstTimeComplete(context: Context): Boolean {
         return _repo.isFirstTimeCompleted(context)
+    }
+
+    fun getAllStoredMovies(): LiveData<WeatherModel> {
+        return _repo.allStoredWeatherModel
     }
 }

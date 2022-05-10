@@ -29,7 +29,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.databinding.FragmentHomeBinding
+import com.ahmdalii.weatherforecast.db.ConcreteLocalSource
 import com.ahmdalii.weatherforecast.model.Weather
+import com.ahmdalii.weatherforecast.model.WeatherModel
 import com.ahmdalii.weatherforecast.network.WeatherClient
 import com.ahmdalii.weatherforecast.ui.home.repo.HomeRepo
 import com.ahmdalii.weatherforecast.ui.home.viewmodel.HomeViewModel
@@ -80,12 +82,12 @@ class HomeFragment : Fragment() {
         initHourlyRecyclerView()
         initDailyRecyclerView()
         listenerOnNetwork()
-        configureDialog()
-        /*if (viewModel.isFirstTimeComplete(myView.context)) {
-            getWeatherDataOverNetwork()
+//        configureDialog()
+        if (viewModel.isFirstTimeComplete(myView.context)) {
+            listenerOnNetwork()
         } else {
             configureDialog()
-        }*/
+        }
     }
 
     private fun listenerOnNetwork() {
@@ -93,13 +95,15 @@ class HomeFragment : Fragment() {
             if (it) {
                 if (firstConnectionListener) {
                     // get data from network
-                    Log.d("asdfga:", "connectedAAAAAAAA")
+                    getWeatherDataOverNetwork()
                 } else {
                     firstConnectionListener = true
                 }
             } else {
-                Log.d("asdfga:", "loooooooostAAAAAA")
-                Snackbar.make(myView, "Network Connection Lost!\nYou need to re-connect network to fetch live data.", Snackbar.LENGTH_LONG)
+                viewModel.getAllStoredMovies().observe(this, { weatherModel ->
+                    renderDataOnScreen(weatherModel)
+                })
+                Snackbar.make(myView, getString(R.string.connection_lost), Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
             }
         })
@@ -108,7 +112,7 @@ class HomeFragment : Fragment() {
     private fun gettingViewModelReady() {
         homeViewModelFactory = HomeViewModelFactory(
             HomeRepo.getInstance(
-                WeatherClient.getInstance()
+                WeatherClient.getInstance(), ConcreteLocalSource(myView.context)
             )
         )
         viewModel = ViewModelProvider(this, homeViewModelFactory)[HomeViewModel::class.java]
@@ -117,30 +121,34 @@ class HomeFragment : Fragment() {
         })
         viewModel.weatherModelResponse.observe(viewLifecycleOwner, Observer {
             binding.progressBar.visibility = View.GONE
-            setCurrentLocation()
-            setCurrentTempAndWindSpeedDiscrimination()
-            binding.txtViewCurrentTemp.text = if (it.current.temp.toInt() % 100 >= 50) {
-                "${it.current.temp.toInt().plus(1)}"
-            } else {
-                "${it.current.temp.toInt()}"
-            }
-            setCurrentWeatherDescription(it.current.weather)
-            setCurrentWeatherIcon(it.current.weather[0].icon)
-            binding.txtViewCurrentDateTime.text = getDateTime(it.current.dt, "EEE, MMM d, yyyy hh:mm a")
-            homeHourlyAdapter.setDataToAdapter(it.hourly)
-            homeDailyAdapter.setDataToAdapter(it.daily)
-            binding.txtViewPressure.text = it.current.pressure.toString().plus(" hPa")
-            binding.txtViewHumidity.text = it.current.humidity.toString().plus(" %")
-            binding.txtViewWindSpeed.text = it.current.windSpeed.toString().plus(" ")
-            binding.txtViewClouds.text = it.current.clouds.toString().plus(" %")
-            binding.txtViewUVI.text = it.current.uvi.toString()
-            binding.txtViewVisibility.text = it.current.visibility.toString().plus(" ").plus(getString(R.string.metres))
-            binding.txtViewFeelsLikeTemp.text = if (it.current.feelsLike.toInt() % 100 >= 50) {
-                "${it.current.feelsLike.toInt().plus(1)}"
-            } else {
-                "${it.current.feelsLike.toInt()}"
-            }
+            renderDataOnScreen(it)
         })
+    }
+
+    private fun renderDataOnScreen(it: WeatherModel) {
+        setCurrentLocation()
+        setCurrentTempAndWindSpeedDiscrimination()
+        binding.txtViewCurrentTemp.text = if (it.getCurrent().temp.toInt() % 100 >= 50) {
+            "${it.getCurrent().temp.toInt().plus(1)}"
+        } else {
+            "${it.getCurrent().temp.toInt()}"
+        }
+        setCurrentWeatherDescription(it.getCurrent().weather)
+        setCurrentWeatherIcon(it.getCurrent().weather[0].icon)
+        binding.txtViewCurrentDateTime.text = getDateTime(it.getCurrent().dt, "EEE, MMM d, yyyy hh:mm a")
+        homeHourlyAdapter.setDataToAdapter(it.getHourly())
+        homeDailyAdapter.setDataToAdapter(it.getDaily())
+        binding.txtViewPressure.text = it.getCurrent().pressure.toString().plus(" hPa")
+        binding.txtViewHumidity.text = it.getCurrent().humidity.toString().plus(" %")
+        binding.txtViewWindSpeed.text = it.getCurrent().windSpeed.toString().plus(" ")
+        binding.txtViewClouds.text = it.getCurrent().clouds.toString().plus(" %")
+        binding.txtViewUVI.text = it.getCurrent().uvi.toString()
+        binding.txtViewVisibility.text = it.getCurrent().visibility.toString().plus(" ").plus(getString(R.string.metres))
+        binding.txtViewFeelsLikeTemp.text = if (it.getCurrent().feelsLike.toInt() % 100 >= 50) {
+            "${it.getCurrent().feelsLike.toInt().plus(1)}"
+        } else {
+            "${it.getCurrent().feelsLike.toInt()}"
+        }
     }
 
     private fun initHourlyRecyclerView() {
