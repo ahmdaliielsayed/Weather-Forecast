@@ -43,12 +43,12 @@
             android:text="@string/location"
             android:textColor="@android:color/white"
             android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="@+id/radioGroup"
+            app:layout_constraintBottom_toBottomOf="@+id/radioGroupLocation"
             app:layout_constraintStart_toStartOf="@+id/txtViewInitialSetup"
-            app:layout_constraintTop_toTopOf="@+id/radioGroup" />
+            app:layout_constraintTop_toTopOf="@+id/radioGroupLocation" />
 
         <RadioGroup
-            android:id="@+id/radioGroup"
+            android:id="@+id/radioGroupLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -88,9 +88,9 @@
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:theme="@style/MySwitchCompat"
-            app:layout_constraintEnd_toEndOf="@+id/radioGroup"
+            app:layout_constraintEnd_toEndOf="@+id/radioGroupLocation"
             app:layout_constraintStart_toStartOf="@+id/txtViewInitialLocation"
-            app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+            app:layout_constraintTop_toBottomOf="@+id/radioGroupLocation" />
 
         <Button
             android:id="@+id/btnOk"

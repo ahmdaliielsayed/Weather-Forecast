@@ -8,8 +8,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.location.LocationManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -38,7 +36,6 @@ import com.ahmdalii.weatherforecast.ui.home.viewmodel.HomeViewModel
 import com.ahmdalii.weatherforecast.ui.home.viewmodel.HomeViewModelFactory
 import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.IMG_URL
-import com.ahmdalii.weatherforecast.utils.AppConstants.WAIT_FIRST_TIME
 import com.ahmdalii.weatherforecast.utils.AppConstants.getDateTime
 import com.ahmdalii.weatherforecast.utils.ConnectionLiveData
 import com.bumptech.glide.Glide
@@ -230,7 +227,7 @@ class HomeFragment : Fragment() {
 
         dialog.setContentView(R.layout.initial_setup_dialog)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        val radioGroup = dialog.findViewById<RadioGroup>(R.id.radioGroup)
+        val radioGroup = dialog.findViewById<RadioGroup>(R.id.radioGroupLocation)
         val notificationSwitch = dialog.findViewById<SwitchCompat>(R.id.notificationSwitch)
         val btnOk = dialog.findViewById<Button>(R.id.btnOk)
 

@@ -5,11 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.ahmdalii.weatherforecast.HomeActivity
-import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.databinding.FragmentSettingsBinding
 import com.ahmdalii.weatherforecast.ui.setting.viewmodel.SettingsViewModel
 
@@ -27,16 +23,15 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         settingsViewModel =
-            ViewModelProvider(this).get(SettingsViewModel::class.java)
+            ViewModelProvider(this)[SettingsViewModel::class.java]
 
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
-        val textView: TextView = binding.settingFragment
+        /*val textView: TextView = binding.settingFragment
         settingsViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
-        })
-        return root
+        })*/
+        return binding.root
     }
 
     override fun onDestroyView() {
