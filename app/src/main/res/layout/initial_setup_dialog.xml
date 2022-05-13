@@ -60,7 +60,7 @@
             <RadioButton
                 android:id="@+id/radioBtnGPS"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginEnd="10dp"
                 android:buttonTint="@color/mauve"
                 android:checked="true"
@@ -70,7 +70,7 @@
             <RadioButton
                 android:id="@+id/radioBtnMap"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:buttonTint="@color/mauve"
                 android:text="@string/map"
                 android:textColor="@android:color/white" />

@@ -31,4 +31,9 @@
     <string name="m_p_h">miles/hour</string>
     <string name="metres">metres</string>
     <string name="connection_lost">Network Connection Lost! \nPlease, re-connect again to fetch live data.</string>
+    <string name="first_time_fetch">You must connect to the Network in the first time to use the application!</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="changed_successfully">success!</string>
+    <string name="denied_map_request">You can\'t make map request!</string>
+    <string name="empty_string">Empty! \nPlease, write a place to search for!</string>
 </resources>

@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ahmdalii.weatherforecast.model.Alert
+import com.ahmdalii.weatherforecast.model.Hourly
 import com.ahmdalii.weatherforecast.model.WeatherModel
 import com.ahmdalii.weatherforecast.ui.home.repo.HomeRepoInterface
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LONGITUDE
@@ -35,7 +35,6 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
     private val coroutineExceptionHandler = CoroutineExceptionHandler{ _, t ->
         run {
             t.printStackTrace()
-            Log.d("asdfg:coroutine", t.message.toString())
             _errorMsgResponse.postValue(t.message)
         }
     }
@@ -56,11 +55,16 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             val currentWeatherResponse = _repo.getCurrentWeatherOverNetwork(context)
             if (currentWeatherResponse.isSuccessful) {
+                val hourlyList = mutableListOf<Hourly>()
+                for (item in currentWeatherResponse.body()!!.getHourly()) {
+                    if (hourlyList.size != 24) {
+                        hourlyList.add(item)
+                    }
+                }
+                currentWeatherResponse.body()!!.setHourly(hourlyList)
                 saveCurrentWeatherModelToRoom(currentWeatherResponse.body()!!)
-                Log.d("asdfg:", "currentWeatherResponse.isSuccessful")
                 _weatherModelResponse.postValue(currentWeatherResponse.body())
             } else {
-                Log.d("asdfg:", currentWeatherResponse.message())
                 _errorMsgResponse.postValue(currentWeatherResponse.message())
             }
         }
@@ -94,8 +98,8 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
         if (_repo.isLocationSet(context)) {
             getCurrentWeatherOverNetwork(context)
         } else{
-            val listener =
-                SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+            listener =
+                SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
                     if (key == LOCATION_LONGITUDE) {
                         if (_repo.isLocationSet(context)) {
                             getCurrentWeatherOverNetwork(context)
@@ -117,7 +121,11 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
         return _repo.isFirstTimeCompleted(context)
     }
 
-    fun getAllStoredMovies(): LiveData<WeatherModel> {
-        return _repo.allStoredWeatherModel
+    fun getAllStoredWeatherModel(context: Context): LiveData<WeatherModel> {
+        return _repo.selectAllStoredWeatherModel(context)
+    }
+
+    fun saveLocationMethod(context: Context, locationMethod: String) {
+        _repo.setLocationMethod(context, locationMethod)
     }
 }

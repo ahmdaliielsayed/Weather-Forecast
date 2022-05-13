@@ -6,7 +6,7 @@ import com.ahmdalii.weatherforecast.model.WeatherModel
 
 interface LocalSource {
 
-    val allStoredWeatherModel: LiveData<WeatherModel>
+    fun selectAllStoredWeatherModel(currentTimeZone: String): LiveData<WeatherModel>
     val allStoredAlertList: LiveData<List<Alert>>
     fun insertWeatherModel(weatherModel: WeatherModel)
     fun insertAlert(alert: Alert)

@@ -4,6 +4,8 @@ plugins {
 
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs.kotlin'
+
+    id 'com.google.secrets_gradle_plugin' version '0.4'
 }
 
 android {
@@ -95,6 +97,8 @@ dependencies {
 
     // location
     implementation 'com.google.android.gms:play-services-location:19.0.1'
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+    implementation 'com.google.android.libraries.places:places:2.6.0'
 
     def lottie_version = "5.0.3" // 3.7.2
     implementation "com.airbnb.android:lottie:$lottie_version"

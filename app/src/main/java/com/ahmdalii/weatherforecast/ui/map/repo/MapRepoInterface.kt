@@ -1,22 +1,29 @@
-package com.ahmdalii.weatherforecast.ui.home.repo
+package com.ahmdalii.weatherforecast.ui.map.repo
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.location.Address
+import android.location.Location
 import androidx.lifecycle.LiveData
 import com.ahmdalii.weatherforecast.model.WeatherModel
 import retrofit2.Response
 
-interface HomeRepoInterface {
+interface MapRepoInterface {
 
-    fun saveUpdateLocation(context: Context)
+    fun getDeviceLocation(context: Context)
+
+    fun getAppSharedPref(context: Context): SharedPreferences
+    fun isLocationSet(context: Context, key: String): Boolean
+    fun getLocationLatitude(context: Context): Float
+    fun getLocationLongitude(context: Context): Float
+    fun getCurrentDeviceLocation(context: Context): Location
+    fun getCurrentAddress(context: Context, searchForPlace: String): Address
+
+    /*fun saveUpdateLocation(context: Context)
     fun isNotificationChecked(context: Context, isChecked: Boolean)
 
     suspend fun getCurrentWeatherOverNetwork(context: Context): Response<WeatherModel>
-    fun getCurrentLocation(context: Context): List<String>
     fun getCurrentTempMeasurementUnit(context: Context): String
-
-    fun getAppSharedPref(context: Context): SharedPreferences
-    fun isLocationSet(context: Context): Boolean
 
     fun firstTimeCompleted(context: Context)
     fun isFirstTimeCompleted(context: Context): Boolean
@@ -26,5 +33,5 @@ interface HomeRepoInterface {
     fun insertWeatherModel(weatherModel: WeatherModel)
     fun selectAllStoredWeatherModel(context: Context): LiveData<WeatherModel>
 
-    fun setLocationMethod(context: Context, locationMethod: String)
+    fun setLocationMethod(context: Context, locationMethod: String)*/
 }

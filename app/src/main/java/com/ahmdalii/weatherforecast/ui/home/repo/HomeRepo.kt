@@ -30,6 +30,8 @@ import androidx.lifecycle.LiveData
 import com.ahmdalii.weatherforecast.db.LocalSource
 import com.ahmdalii.weatherforecast.utils.AppConstants.CURRENT_TIMEZONE
 import com.ahmdalii.weatherforecast.utils.AppConstants.FIRST_TIME_COMPLETED
+import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD
+import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_STANDARD
 
 
 class HomeRepo private constructor(private var remoteSource: RemoteSource, private var localSource: LocalSource): HomeRepoInterface{
@@ -153,8 +155,7 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource, priva
         }
         val language =
             AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, langAttribute)
-        val measurementUnit =
-            AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(MEASUREMENT_UNIT, "")
+        val measurementUnit = getCurrentTempMeasurementUnit(context)
         Log.d("asdfg:repoLat", "$latitude")
         Log.d("asdfg:repoLon", "$longitude")
         Log.d("asdfg:repoLan", langAttribute)
@@ -182,7 +183,7 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource, priva
     }
 
     override fun getCurrentTempMeasurementUnit(context: Context): String {
-        return AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(MEASUREMENT_UNIT, "")
+        return AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(MEASUREMENT_UNIT, MEASUREMENT_UNIT_STANDARD)
     }
 
     override fun getAppSharedPref(context: Context): SharedPreferences {
@@ -214,6 +215,11 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource, priva
         }
     }
 
-    override val allStoredWeatherModel: LiveData<WeatherModel>
-        get() = localSource.allStoredWeatherModel
+    override fun selectAllStoredWeatherModel(context: Context): LiveData<WeatherModel> {
+        return localSource.selectAllStoredWeatherModel(getCurrentTimeZone(context))
+    }
+
+    override fun setLocationMethod(context: Context, locationMethod: String) {
+        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_METHOD, locationMethod)
+    }
 }

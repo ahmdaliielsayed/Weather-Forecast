@@ -36,6 +36,8 @@ import com.ahmdalii.weatherforecast.ui.home.viewmodel.HomeViewModel
 import com.ahmdalii.weatherforecast.ui.home.viewmodel.HomeViewModelFactory
 import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.IMG_URL
+import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD_GPS
+import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD_MAP
 import com.ahmdalii.weatherforecast.utils.AppConstants.getDateTime
 import com.ahmdalii.weatherforecast.utils.ConnectionLiveData
 import com.bumptech.glide.Glide
@@ -51,6 +53,7 @@ class HomeFragment : Fragment() {
     private lateinit var dialog: Dialog
     private var isAllPermissionsGranted: Boolean = false
     private var firstConnectionListener: Boolean = false
+    private var isNetworkConnected: Boolean = false
 
     private lateinit var homeHourlyAdapter: HomeHourlyAdapter
     private lateinit var linearHomeHourlyLayoutManager: LinearLayoutManager
@@ -79,7 +82,6 @@ class HomeFragment : Fragment() {
         initHourlyRecyclerView()
         initDailyRecyclerView()
         listenerOnNetwork()
-//        configureDialog()
         if (viewModel.isFirstTimeComplete(myView.context)) {
             listenerOnNetwork()
         } else {
@@ -96,12 +98,16 @@ class HomeFragment : Fragment() {
                 } else {
                     firstConnectionListener = true
                 }
+                isNetworkConnected = true
             } else {
-                viewModel.getAllStoredMovies().observe(this, { weatherModel ->
-                    renderDataOnScreen(weatherModel)
+                viewModel.getAllStoredWeatherModel(myView.context).observe(this, { weatherModel ->
+                    if (weatherModel != null) {
+                        renderDataOnScreen(weatherModel)
+                        Snackbar.make(myView, getString(R.string.connection_lost), Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show()
+                    }
                 })
-                Snackbar.make(myView, getString(R.string.connection_lost), Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+                isNetworkConnected = false
             }
         })
     }
@@ -237,11 +243,12 @@ class HomeFragment : Fragment() {
                 R.id.radioBtnGPS -> {
                     // check permission
                     Log.d("asdfg:A", radioBtn.text.toString())
-                    saveUpdateLocation()
+                    saveUpdateGPSLocation()
                 }
                 R.id.radioBtnMap -> {
                     // play with map
                     Log.d("asdfg:B", radioBtn.text.toString())
+                    viewModel.saveLocationMethod(myView.context, LOCATION_METHOD_MAP)
                 }
             }
         }
@@ -251,23 +258,35 @@ class HomeFragment : Fragment() {
             val radioBtn = dialog.findViewById<RadioButton>(checkedRadioButtonId)
 
             if (radioBtn == null || radioBtn.text.equals(getString(R.string.gps))) {
-                saveUpdateLocation()
+                saveLocationMethod(myView.context, LOCATION_METHOD_GPS)
+                saveUpdateGPSLocation()
             } else {
                 // get from map
+                saveLocationMethod(myView.context, LOCATION_METHOD_MAP)
                 Log.d("asdfg:F", radioBtn.text.toString())
             }
 
             viewModel.isNotificationChecked(myView.context, notificationSwitch.isChecked)
 
-            if (isAllPermissionsGranted) {
-                dismissDialogAndGetWeather()
+            if (isNetworkConnected) {
+                if (isAllPermissionsGranted) {
+                    dismissDialogAndGetWeather()
+                } else if (radioBtn.text.equals(getString(R.string.map))) {
+                    dismissDialogAndSetFirstTimeComplete()
+                }
+            } else {
+                Toast.makeText(myView.context, R.string.first_time_fetch, Toast.LENGTH_LONG).show()
             }
         }
         dialog.setCancelable(false)
         dialog.show()
     }
 
-    private fun saveUpdateLocation() {
+    private fun saveLocationMethod(context: Context, locationMethod: String) {
+        viewModel.saveLocationMethod(context, locationMethod)
+    }
+
+    private fun saveUpdateGPSLocation() {
         if (ActivityCompat.checkSelfPermission(
                 myView.context,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -299,7 +318,11 @@ class HomeFragment : Fragment() {
                     // Permission is granted. Continue the action or workflow in your app.
                     Log.d("asdfg:", "${it.key} granted")
                     isAllPermissionsGranted = true
-                    dismissDialogAndGetWeather()
+                    if (isNetworkConnected) {
+                        dismissDialogAndGetWeather()
+                    } else {
+                        Toast.makeText(myView.context, R.string.first_time_fetch, Toast.LENGTH_LONG).show()
+                    }
                 } else {
                     isAllPermissionsGranted = false
                     AppConstants.showAlert(
@@ -311,13 +334,17 @@ class HomeFragment : Fragment() {
                 }
 
                 if (isAllPermissionsGranted) {
-                    saveUpdateLocation()
+                    saveUpdateGPSLocation()
                 }
             }
         }
 
     private fun dismissDialogAndGetWeather() {
         getWeatherDataOverNetwork()
+        dismissDialogAndSetFirstTimeComplete()
+    }
+
+    private fun dismissDialogAndSetFirstTimeComplete() {
         dialog.dismiss()
         viewModel.firstTimeComplete(myView.context)
     }

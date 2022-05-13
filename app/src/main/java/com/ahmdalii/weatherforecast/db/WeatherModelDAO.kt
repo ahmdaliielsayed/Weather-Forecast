@@ -8,8 +8,8 @@ import com.ahmdalii.weatherforecast.model.WeatherModel
 @Dao
 interface WeatherModelDAO {
 
-    @get:Query("SELECT * FROM WeatherModel")
-    val weatherModel: LiveData<WeatherModel>
+    @Query("SELECT * FROM WeatherModel WHERE timezone = :currentTimeZone")
+    fun selectWeatherModel(currentTimeZone: String): LiveData<WeatherModel>
 
     @get:Query("SELECT * FROM Alert")
     val alertList: LiveData<List<Alert>>
