@@ -14,6 +14,7 @@ interface HomeRepoInterface {
     suspend fun getCurrentWeatherOverNetwork(context: Context): Response<WeatherModel>
     fun getCurrentLocation(context: Context): List<String>
     fun getCurrentTempMeasurementUnit(context: Context): String
+    fun getWindSpeedMeasurementUnit(context: Context): String
 
     fun getAppSharedPref(context: Context): SharedPreferences
     fun isLocationSet(context: Context): Boolean

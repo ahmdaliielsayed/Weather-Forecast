@@ -2,7 +2,6 @@ package com.ahmdalii.weatherforecast.ui.home.viewmodel
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,6 +28,9 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
     private var _currentTempMeasurementUnit = MutableLiveData<String>()
     val currentTempMeasurementUnit: LiveData<String> = _currentTempMeasurementUnit
 
+    private var _windSpeedMeasurementUnit = MutableLiveData<String>()
+    val windSpeedMeasurementUnit: LiveData<String> = _windSpeedMeasurementUnit
+
     private lateinit var preferences: SharedPreferences
     private lateinit var listener: SharedPreferences.OnSharedPreferenceChangeListener
 
@@ -52,16 +54,17 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
     }
 
     private fun getCurrentWeatherOverNetwork(context: Context) {
+//        _repo.saveUpdateLocation(context)
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             val currentWeatherResponse = _repo.getCurrentWeatherOverNetwork(context)
             if (currentWeatherResponse.isSuccessful) {
                 val hourlyList = mutableListOf<Hourly>()
-                for (item in currentWeatherResponse.body()!!.getHourly()) {
+                for (item in currentWeatherResponse.body()?.hourly!!) {
                     if (hourlyList.size != 24) {
                         hourlyList.add(item)
                     }
                 }
-                currentWeatherResponse.body()!!.setHourly(hourlyList)
+                currentWeatherResponse.body()!!.hourly = hourlyList
                 saveCurrentWeatherModelToRoom(currentWeatherResponse.body()!!)
                 _weatherModelResponse.postValue(currentWeatherResponse.body())
             } else {
@@ -93,6 +96,12 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
         }
     }
 
+    fun getWindSpeedMeasurementUnit(context: Context) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            _windSpeedMeasurementUnit.postValue(_repo.getWindSpeedMeasurementUnit(context))
+        }
+    }
+
     fun observeOnSharedPref(context: Context){
         preferences = _repo.getAppSharedPref(context)
         if (_repo.isLocationSet(context)) {
@@ -114,10 +123,10 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
         preferences.unregisterOnSharedPreferenceChangeListener(listener)
     }
 
-    fun firstTimeComplete(context: Context) {
+    fun firstTimeCompleted(context: Context) {
         _repo.firstTimeCompleted(context)
     }
-    fun isFirstTimeComplete(context: Context): Boolean {
+    fun isFirstTimeCompleted(context: Context): Boolean {
         return _repo.isFirstTimeCompleted(context)
     }
 

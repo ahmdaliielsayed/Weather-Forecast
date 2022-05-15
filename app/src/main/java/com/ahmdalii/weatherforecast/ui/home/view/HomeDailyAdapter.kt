@@ -54,12 +54,12 @@ class HomeDailyAdapter(
             }
         })
         val minMaxTemp = StringBuilder()
-        if (dailyListWeather[position].temp.max % 100 >= 50) {
+        if (dailyListWeather[position].temp.max.rem(100) >= 50) {
             minMaxTemp.append(dailyListWeather[position].temp.max.toInt().plus(1)).append(" / ")
         } else {
             minMaxTemp.append(dailyListWeather[position].temp.max.toInt()).append(" / ")
         }
-        if (dailyListWeather[position].temp.min % 100 >= 50) {
+        if (dailyListWeather[position].temp.min.rem(100) >= 50) {
             minMaxTemp.append(dailyListWeather[position].temp.min.toInt().plus(1))
         } else {
             minMaxTemp.append(dailyListWeather[position].temp.min.toInt())

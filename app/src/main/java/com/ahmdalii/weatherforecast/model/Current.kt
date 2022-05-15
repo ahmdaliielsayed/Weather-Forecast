@@ -20,5 +20,5 @@ data class Current(
     @SerializedName("wind_deg")
     val windDeg: Int,
     @SerializedName("wind_speed")
-    val windSpeed: Double
+    var windSpeed: Double
 )

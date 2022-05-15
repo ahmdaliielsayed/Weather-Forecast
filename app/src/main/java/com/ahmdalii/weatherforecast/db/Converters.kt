@@ -9,12 +9,12 @@ import java.lang.reflect.Type
 class Converters {
 
     @TypeConverter
-    fun convertToAlertList(value: String): List<Alert> {
+    fun convertToAlertList(value: String): List<Alert>? {
         val type: Type = object : TypeToken<List<Alert>>() {}.type
         return Gson().fromJson(value, type)
     }
     @TypeConverter
-    fun convertAlertListToString(list: List<Alert>): String = Gson().toJson(list)
+    fun convertAlertListToString(list: List<Alert>?): String = Gson().toJson(list)
 
     @TypeConverter
     fun convertToAlertTagList(value: String): List<String> {
@@ -73,10 +73,10 @@ class Converters {
     fun convertHourlyListToString(list: List<Hourly>): String = Gson().toJson(list)
 
     @TypeConverter
-    fun convertToMinutelyList(value: String): List<Minutely> {
+    fun convertToMinutelyList(value: String): List<Minutely>? {
         val type: Type = object : TypeToken<List<Minutely>>() {}.type
         return Gson().fromJson(value, type)
     }
     @TypeConverter
-    fun convertMinutelyListToString(list: List<Minutely>): String = Gson().toJson(list)
+    fun convertMinutelyListToString(list: List<Minutely>?): String = Gson().toJson(list)
 }

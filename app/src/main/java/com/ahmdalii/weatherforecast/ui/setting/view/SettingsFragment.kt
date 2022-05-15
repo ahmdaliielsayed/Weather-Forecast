@@ -99,15 +99,9 @@ class SettingsFragment : Fragment() {
             when (checkedId) {
                 R.id.radioBtnMPS -> {
                     viewModel.setWindSpeedUnit(myView.context, WIND_SPEED_UNIT_M_P_S)
-                    if (binding.radioBtnFahrenheit.isChecked) {
-                        binding.radioBtnCelsius.performClick()
-                    }
                 }
                 R.id.radioBtnMPH -> {
                     viewModel.setWindSpeedUnit(myView.context, WIND_SPEED_UNIT_M_P_H)
-                    if (!binding.radioBtnFahrenheit.isChecked) {
-                        binding.radioBtnFahrenheit.performClick()
-                    }
                 }
             }
         }
@@ -116,18 +110,12 @@ class SettingsFragment : Fragment() {
             when (checkedId) {
                 R.id.radioBtnCelsius -> {
                     viewModel.setCurrentTempMeasurementUnit(myView.context, MEASUREMENT_UNIT_METRIC)
-                    if (!binding.radioBtnMPS.isChecked)
-                        binding.radioBtnMPS.performClick()
                 }
                 R.id.radioBtnKelvin -> {
                     viewModel.setCurrentTempMeasurementUnit(myView.context, MEASUREMENT_UNIT_STANDARD)
-                    if (!binding.radioBtnMPS.isChecked)
-                        binding.radioBtnMPS.performClick()
                 }
                 R.id.radioBtnFahrenheit -> {
                     viewModel.setCurrentTempMeasurementUnit(myView.context, MEASUREMENT_UNIT_IMPERIAL)
-                    if (!binding.radioBtnMPH.isChecked)
-                        binding.radioBtnMPH.performClick()
                 }
             }
         }
@@ -241,17 +229,12 @@ class SettingsFragment : Fragment() {
             when (it) {
                 MEASUREMENT_UNIT_METRIC -> {
                     binding.radioBtnCelsius.isChecked = true
-                    viewModel.setWindSpeedUnit(myView.context, WIND_SPEED_UNIT_M_P_S)
                 }
                 MEASUREMENT_UNIT_STANDARD -> {
                     binding.radioBtnKelvin.isChecked = true
-                    viewModel.setWindSpeedUnit(myView.context, WIND_SPEED_UNIT_M_P_S)
                 }
                 else -> {
                     binding.radioBtnFahrenheit.isChecked = true
-                    if (!binding.radioBtnMPH.isChecked) {
-                        viewModel.setWindSpeedUnit(myView.context, WIND_SPEED_UNIT_M_P_H)
-                    }
                 }
             }
         })

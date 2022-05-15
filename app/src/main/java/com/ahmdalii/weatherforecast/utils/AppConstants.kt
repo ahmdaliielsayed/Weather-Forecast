@@ -1,8 +1,17 @@
 package com.ahmdalii.weatherforecast.utils
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
+import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkInfo
+import android.os.Build
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.location.LocationManagerCompat
 import com.ahmdalii.weatherforecast.BuildConfig
 import com.ahmdalii.weatherforecast.R
 import java.text.SimpleDateFormat
@@ -11,6 +20,7 @@ import java.util.*
 object AppConstants {
 
     const val SPLASH_TIME_OUT: Long = 5000
+    const val WIND_SPEED_FACTOR = 2.23693629
 
     const val SETTING_FILE: String = "setting file"
     const val LOCATION_LONGITUDE: String = "location longitude"
@@ -21,9 +31,10 @@ object AppConstants {
     const val LOCATION_ADMIN_AREA: String = "location admin area"
     const val LOCATION_LOCALITY: String = "location locality"
     const val APPLICATION_LANGUAGE: String = "application language"
-    const val APPLICATION_LANGUAGE_AR: String = "application language arabic"
-    const val APPLICATION_LANGUAGE_EN: String = "application language english"
+    const val APPLICATION_LANGUAGE_AR: String = "ar"
+    const val APPLICATION_LANGUAGE_EN: String = "en"
     const val MEASUREMENT_UNIT: String = "measurement unit"
+
     /*
     * default: kelvin ==> metre/sec
     * metric: Celsius ==> metre/sec
@@ -60,5 +71,36 @@ object AppConstants {
         val format = SimpleDateFormat(pattern)
         format.timeZone = TimeZone.getTimeZone("GMT+2")
         return format.format(Date(dt * 1000L))
+    }
+
+    fun isInternetAvailable(context: Context): Boolean {
+        val result: Boolean
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkCapabilities = connectivityManager.activeNetwork ?: return false
+        val actNw =
+            connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
+        result = when {
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            else -> false
+        }
+
+        return result
+    }
+
+    fun checkLocationPermissions(context: Context): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun isLocationEnabled(context: Context): Boolean {
+        return LocationManagerCompat.isLocationEnabled(context.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
     }
 }

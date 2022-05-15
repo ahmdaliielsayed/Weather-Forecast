@@ -52,7 +52,7 @@ class HomeHourlyAdapter(
                 }
             }
         })
-        if (hourlyListWeather[position].temp % 100 >= 50) {
+        if (hourlyListWeather[position].temp.rem(100) >= 50) {
             holder.txtViewHourlyTemp?.text = "${hourlyListWeather[position].temp.toInt().plus(1)}"
         } else {
             holder.txtViewHourlyTemp?.text = "${hourlyListWeather[position].temp.toInt()}"

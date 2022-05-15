@@ -3,10 +3,8 @@ package com.ahmdalii.weatherforecast.ui.home.view
 import android.Manifest
 import android.app.Dialog
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,10 +16,7 @@ import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SwitchCompat
-import androidx.core.app.ActivityCompat
-import androidx.core.location.LocationManagerCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -38,10 +33,15 @@ import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.IMG_URL
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD_GPS
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD_MAP
+import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_S
+import com.ahmdalii.weatherforecast.utils.AppConstants.checkLocationPermissions
 import com.ahmdalii.weatherforecast.utils.AppConstants.getDateTime
+import com.ahmdalii.weatherforecast.utils.AppConstants.isInternetAvailable
+import com.ahmdalii.weatherforecast.utils.AppConstants.isLocationEnabled
 import com.ahmdalii.weatherforecast.utils.ConnectionLiveData
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
+import kotlin.math.roundToInt
 
 class HomeFragment : Fragment() {
 
@@ -52,8 +52,9 @@ class HomeFragment : Fragment() {
     private lateinit var myView: View
     private lateinit var dialog: Dialog
     private var isAllPermissionsGranted: Boolean = false
-    private var firstConnectionListener: Boolean = false
-    private var isNetworkConnected: Boolean = false
+
+    private lateinit var radioBtn: RadioButton
+    private lateinit var notificationSwitch: SwitchCompat
 
     private lateinit var homeHourlyAdapter: HomeHourlyAdapter
     private lateinit var linearHomeHourlyLayoutManager: LinearLayoutManager
@@ -70,7 +71,6 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-//        val root: View = binding.root
         return binding.root
     }
 
@@ -82,32 +82,25 @@ class HomeFragment : Fragment() {
         initHourlyRecyclerView()
         initDailyRecyclerView()
         listenerOnNetwork()
-        if (viewModel.isFirstTimeComplete(myView.context)) {
-            listenerOnNetwork()
-        } else {
+        if (!viewModel.isFirstTimeCompleted(myView.context)) {
             configureDialog()
         }
     }
 
     private fun listenerOnNetwork() {
         ConnectionLiveData(myView.context).observe(this, {
-            if (it) {
-                if (firstConnectionListener) {
-                    // get data from network
+            if (viewModel.isFirstTimeCompleted(myView.context)) {
+                if (it) {
                     getWeatherDataOverNetwork()
                 } else {
-                    firstConnectionListener = true
+                    viewModel.getAllStoredWeatherModel(myView.context).observe(this, { weatherModel ->
+                        if (weatherModel != null) {
+                            renderDataOnScreen(weatherModel)
+                            Snackbar.make(myView, getString(R.string.connection_lost), Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show()
+                        }
+                    })
                 }
-                isNetworkConnected = true
-            } else {
-                viewModel.getAllStoredWeatherModel(myView.context).observe(this, { weatherModel ->
-                    if (weatherModel != null) {
-                        renderDataOnScreen(weatherModel)
-                        Snackbar.make(myView, getString(R.string.connection_lost), Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show()
-                    }
-                })
-                isNetworkConnected = false
             }
         })
     }
@@ -119,10 +112,11 @@ class HomeFragment : Fragment() {
             )
         )
         viewModel = ViewModelProvider(this, homeViewModelFactory)[HomeViewModel::class.java]
-        viewModel.errorMsgResponse.observe(viewLifecycleOwner, Observer {
+
+        viewModel.errorMsgResponse.observe(viewLifecycleOwner, {
             Toast.makeText(myView.context, it, Toast.LENGTH_LONG).show()
         })
-        viewModel.weatherModelResponse.observe(viewLifecycleOwner, Observer {
+        viewModel.weatherModelResponse.observe(viewLifecycleOwner, {
             binding.progressBar.visibility = View.GONE
             renderDataOnScreen(it)
         })
@@ -130,27 +124,28 @@ class HomeFragment : Fragment() {
 
     private fun renderDataOnScreen(it: WeatherModel) {
         setCurrentLocation()
-        setCurrentTempAndWindSpeedDiscrimination()
-        binding.txtViewCurrentTemp.text = if (it.getCurrent().temp.toInt() % 100 >= 50) {
-            "${it.getCurrent().temp.toInt().plus(1)}"
+        setCurrentTempDiscrimination()
+        setWindSpeedDiscrimination()
+        binding.txtViewCurrentTemp.text = if (it.current.temp.rem(100) >= 50) {
+            "${it.current.temp.toInt().plus(1)}"
         } else {
-            "${it.getCurrent().temp.toInt()}"
+            "${it.current.temp.toInt()}"
         }
-        setCurrentWeatherDescription(it.getCurrent().weather)
-        setCurrentWeatherIcon(it.getCurrent().weather[0].icon)
-        binding.txtViewCurrentDateTime.text = getDateTime(it.getCurrent().dt, "EEE, MMM d, yyyy hh:mm a")
-        homeHourlyAdapter.setDataToAdapter(it.getHourly())
-        homeDailyAdapter.setDataToAdapter(it.getDaily())
-        binding.txtViewPressure.text = it.getCurrent().pressure.toString().plus(" hPa")
-        binding.txtViewHumidity.text = it.getCurrent().humidity.toString().plus(" %")
-        binding.txtViewWindSpeed.text = it.getCurrent().windSpeed.toString().plus(" ")
-        binding.txtViewClouds.text = it.getCurrent().clouds.toString().plus(" %")
-        binding.txtViewUVI.text = it.getCurrent().uvi.toString()
-        binding.txtViewVisibility.text = it.getCurrent().visibility.toString().plus(" ").plus(getString(R.string.metres))
-        binding.txtViewFeelsLikeTemp.text = if (it.getCurrent().feelsLike.toInt() % 100 >= 50) {
-            "${it.getCurrent().feelsLike.toInt().plus(1)}"
+        setCurrentWeatherDescription(it.current.weather)
+        setCurrentWeatherIcon(it.current.weather[0].icon)
+        binding.txtViewCurrentDateTime.text = getDateTime(it.current.dt, "EEE, MMM d, yyyy hh:mm a")
+        homeHourlyAdapter.setDataToAdapter(it.hourly!!)
+        homeDailyAdapter.setDataToAdapter(it.daily!!)
+        binding.txtViewPressure.text = it.current.pressure.toString().plus(" hPa")
+        binding.txtViewHumidity.text = it.current.humidity.toString().plus(" %")
+        binding.txtViewWindSpeed.text = ((it.current.windSpeed * 100.0).roundToInt() / 100.0).toString().plus(" ")
+        binding.txtViewClouds.text = it.current.clouds.toString().plus(" %")
+        binding.txtViewUVI.text = it.current.uvi.toString()
+        binding.txtViewVisibility.text = it.current.visibility.toString().plus(" ").plus(getString(R.string.metres))
+        binding.txtViewFeelsLikeTemp.text = if (it.current.feelsLike.rem(100) >= 50) {
+            "${it.current.feelsLike.toInt().plus(1)}"
         } else {
-            "${it.getCurrent().feelsLike.toInt()}"
+            "${it.current.feelsLike.toInt()}"
         }
     }
 
@@ -182,29 +177,40 @@ class HomeFragment : Fragment() {
 
     private fun setCurrentLocation() {
         viewModel.getCurrentLocation(myView.context)
-        viewModel.currentLocation.observe(viewLifecycleOwner, Observer {
+        viewModel.currentLocation.observe(viewLifecycleOwner, {
             binding.txtViewGovernorate.text = it[0]
             binding.txtViewLocality.text = it[1]
         })
     }
 
-    private fun setCurrentTempAndWindSpeedDiscrimination() {
+    private fun setCurrentTempDiscrimination() {
         viewModel.getCurrentTempMeasurementUnit(myView.context)
-        viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner, Observer {
+        viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner, {
             when {
                 it.isNullOrBlank() -> {
                     binding.txtViewCurrentTempDiscrimination.text = getString(R.string.temp_kelvin)
                     binding.txtViewFeelsLikeDiscrimination.text = getString(R.string.temp_kelvin)
-                    binding.txtViewWindSpeedDiscrimination.text = getString(R.string.m_p_s)
                 }
                 it.equals("metric") -> {
                     binding.txtViewCurrentTempDiscrimination.text = getString(R.string.temp_celsius)
                     binding.txtViewFeelsLikeDiscrimination.text = getString(R.string.temp_celsius)
-                    binding.txtViewWindSpeedDiscrimination.text = getString(R.string.m_p_s)
                 }
                 it.equals("imperial") -> {
                     binding.txtViewCurrentTempDiscrimination.text = getString(R.string.temp_fahrenheit)
                     binding.txtViewFeelsLikeDiscrimination.text = getString(R.string.temp_fahrenheit)
+                }
+            }
+        })
+    }
+
+    private fun setWindSpeedDiscrimination() {
+        viewModel.getWindSpeedMeasurementUnit(myView.context)
+        viewModel.windSpeedMeasurementUnit.observe(viewLifecycleOwner, {
+            when {
+                it.isNullOrBlank() || it.equals(WIND_SPEED_UNIT_M_P_S) -> {
+                    binding.txtViewWindSpeedDiscrimination.text = getString(R.string.m_p_s)
+                }
+                else -> {
                     binding.txtViewWindSpeedDiscrimination.text = getString(R.string.m_p_h)
                 }
             }
@@ -234,52 +240,58 @@ class HomeFragment : Fragment() {
         dialog.setContentView(R.layout.initial_setup_dialog)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val radioGroup = dialog.findViewById<RadioGroup>(R.id.radioGroupLocation)
-        val notificationSwitch = dialog.findViewById<SwitchCompat>(R.id.notificationSwitch)
+        notificationSwitch = dialog.findViewById(R.id.notificationSwitch)
         val btnOk = dialog.findViewById<Button>(R.id.btnOk)
 
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+        /*radioGroup.setOnCheckedChangeListener { _, checkedId ->
             val radioBtn = dialog.findViewById<RadioButton>(checkedId)
             when (checkedId) {
                 R.id.radioBtnGPS -> {
                     // check permission
                     Log.d("asdfg:A", radioBtn.text.toString())
-                    saveUpdateGPSLocation()
                 }
                 R.id.radioBtnMap -> {
-                    // play with map
+                    // open map
                     Log.d("asdfg:B", radioBtn.text.toString())
-                    viewModel.saveLocationMethod(myView.context, LOCATION_METHOD_MAP)
                 }
             }
-        }
+        }*/
 
         btnOk.setOnClickListener {
             val checkedRadioButtonId = radioGroup.checkedRadioButtonId
-            val radioBtn = dialog.findViewById<RadioButton>(checkedRadioButtonId)
+            radioBtn = dialog.findViewById(checkedRadioButtonId)
 
-            if (radioBtn == null || radioBtn.text.equals(getString(R.string.gps))) {
-                saveLocationMethod(myView.context, LOCATION_METHOD_GPS)
-                saveUpdateGPSLocation()
-            } else {
-                // get from map
-                saveLocationMethod(myView.context, LOCATION_METHOD_MAP)
-                Log.d("asdfg:F", radioBtn.text.toString())
-            }
-
-            viewModel.isNotificationChecked(myView.context, notificationSwitch.isChecked)
-
-            if (isNetworkConnected) {
-                if (isAllPermissionsGranted) {
-                    dismissDialogAndGetWeather()
-                } else if (radioBtn.text.equals(getString(R.string.map))) {
-                    dismissDialogAndSetFirstTimeComplete()
-                }
-            } else {
-                Toast.makeText(myView.context, R.string.first_time_fetch, Toast.LENGTH_LONG).show()
-            }
+            checkPermissionsToDismissDialog()
         }
         dialog.setCancelable(false)
         dialog.show()
+    }
+
+    private fun checkPermissionsToDismissDialog() {
+        if (checkLocationPermissions(myView.context)) {
+            if (radioBtn.text.equals(getString(R.string.gps))) {
+                saveLocationMethod(myView.context, LOCATION_METHOD_GPS)
+
+                if (isLocationEnabled(myView.context)) {
+                    saveUpdateGPSLocation()
+                } else {
+                    Toast.makeText(myView.context, R.string.open_gps, Toast.LENGTH_LONG).show()
+                }
+            } else {
+                saveLocationMethod(myView.context, LOCATION_METHOD_MAP)
+            }
+
+            viewModel.isNotificationChecked(myView.context, notificationSwitch.isChecked)
+            if (isInternetAvailable(myView.context)) {
+                viewModel.firstTimeCompleted(myView.context)
+                getWeatherDataOverNetwork()
+                dialog.dismiss()
+            } else {
+                Toast.makeText(myView.context, R.string.first_time_fetch, Toast.LENGTH_LONG).show()
+            }
+        } else {
+            requestLocationPermissions()
+        }
     }
 
     private fun saveLocationMethod(context: Context, locationMethod: String) {
@@ -287,28 +299,16 @@ class HomeFragment : Fragment() {
     }
 
     private fun saveUpdateGPSLocation() {
-        if (ActivityCompat.checkSelfPermission(
-                myView.context,
+        viewModel.saveUpdateLocation(myView.context)
+    }
+
+    private fun requestLocationPermissions() {
+        requestLocationPermissions.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                myView.context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            isAllPermissionsGranted = true
-            if (LocationManagerCompat.isLocationEnabled(myView.context.getSystemService(Context.LOCATION_SERVICE) as LocationManager)) {
-                viewModel.saveUpdateLocation(myView.context)
-            } else {
-                Toast.makeText(myView.context, R.string.open_gps, Toast.LENGTH_LONG).show()
-            }
-        } else {
-            requestLocationPermissions.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
             )
-        }
+        )
     }
 
     private val requestLocationPermissions =
@@ -318,9 +318,7 @@ class HomeFragment : Fragment() {
                     // Permission is granted. Continue the action or workflow in your app.
                     Log.d("asdfg:", "${it.key} granted")
                     isAllPermissionsGranted = true
-                    if (isNetworkConnected) {
-                        dismissDialogAndGetWeather()
-                    } else {
+                    if (!isInternetAvailable(myView.context)) {
                         Toast.makeText(myView.context, R.string.first_time_fetch, Toast.LENGTH_LONG).show()
                     }
                 } else {
@@ -332,26 +330,14 @@ class HomeFragment : Fragment() {
                         R.drawable.ic_warning
                     )
                 }
-
-                if (isAllPermissionsGranted) {
-                    saveUpdateGPSLocation()
-                }
             }
+
+            checkPermissionsToDismissDialog()
         }
 
-    private fun dismissDialogAndGetWeather() {
-        getWeatherDataOverNetwork()
-        dismissDialogAndSetFirstTimeComplete()
-    }
-
-    private fun dismissDialogAndSetFirstTimeComplete() {
-        dialog.dismiss()
-        viewModel.firstTimeComplete(myView.context)
-    }
-
     private fun getWeatherDataOverNetwork() {
-        viewModel.observeOnSharedPref(myView.context)
         binding.progressBar.visibility = View.VISIBLE
+        viewModel.observeOnSharedPref(myView.context)
     }
 
     override fun onDestroy() {

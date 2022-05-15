@@ -10,7 +10,9 @@ import android.location.Location
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE
+import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE_EN
 import com.ahmdalii.weatherforecast.utils.AppConstants.CURRENT_DEVICE_LOCATION
 import com.ahmdalii.weatherforecast.utils.AppConstants.DEVICE_LATITUDE
 import com.ahmdalii.weatherforecast.utils.AppConstants.DEVICE_LONGITUDE
@@ -94,7 +96,7 @@ class MapRepo private constructor(/*private var remoteSource: RemoteSource, priv
 
     private fun getPlaceName(context: Context, latitude: Double, longitude: Double) {
         val gcd: Geocoder = when (AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, "")) {
-            "English" -> {
+            APPLICATION_LANGUAGE_EN -> {
                 Geocoder(context, Locale.ENGLISH)
             }
             else -> {
@@ -156,7 +158,7 @@ class MapRepo private constructor(/*private var remoteSource: RemoteSource, priv
 
     override fun getCurrentAddress(context: Context, searchForPlace: String): Address {
         val gcd: Geocoder = when (AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, "")) {
-            "English" -> {
+            APPLICATION_LANGUAGE_EN -> {
                 Geocoder(context, Locale.ENGLISH)
             }
             else -> {

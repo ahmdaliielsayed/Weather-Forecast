@@ -2,6 +2,7 @@ package com.ahmdalii.weatherforecast.ui.home.repo
 
 import android.Manifest
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -9,34 +10,44 @@ import android.location.Location
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.LiveData
+import com.ahmdalii.weatherforecast.db.LocalSource
 import com.ahmdalii.weatherforecast.model.WeatherModel
 import com.ahmdalii.weatherforecast.network.RemoteSource
+import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE
+import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE_AR
+import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE_EN
+import com.ahmdalii.weatherforecast.utils.AppConstants.CURRENT_TIMEZONE
+import com.ahmdalii.weatherforecast.utils.AppConstants.FIRST_TIME_COMPLETED
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_ADMIN_AREA
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LATITUDE
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LOCALITY
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LONGITUDE
+import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD
 import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT
+import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_IMPERIAL
+import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_METRIC
+import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_STANDARD
 import com.ahmdalii.weatherforecast.utils.AppConstants.NOTIFICATION
 import com.ahmdalii.weatherforecast.utils.AppConstants.SETTING_FILE
+import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_FACTOR
+import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT
+import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_H
+import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_S
 import com.ahmdalii.weatherforecast.utils.AppSharedPref
 import com.google.android.gms.location.*
 import retrofit2.Response
 import java.io.IOException
 import java.util.*
-import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import androidx.lifecycle.LiveData
-import com.ahmdalii.weatherforecast.db.LocalSource
-import com.ahmdalii.weatherforecast.utils.AppConstants.CURRENT_TIMEZONE
-import com.ahmdalii.weatherforecast.utils.AppConstants.FIRST_TIME_COMPLETED
-import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD
-import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_STANDARD
 
 
-class HomeRepo private constructor(private var remoteSource: RemoteSource, private var localSource: LocalSource): HomeRepoInterface{
+class HomeRepo private constructor(
+    private var remoteSource: RemoteSource,
+    private var localSource: LocalSource
+) : HomeRepoInterface {
 
-    companion object{
+    companion object {
         private var instance: HomeRepoInterface? = null
         fun getInstance(remoteSource: RemoteSource, localSource: LocalSource): HomeRepoInterface {
             return instance ?: HomeRepo(remoteSource, localSource)
@@ -77,7 +88,7 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource, priva
         locationRequest = LocationRequest.create().apply {
             interval = 10000
             fastestInterval = 5000
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
         }
     }
 
@@ -98,7 +109,7 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource, priva
 
     private fun getPlaceName(context: Context, latitude: Double, longitude: Double) {
         val gcd: Geocoder = when (AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, "")) {
-            "English" -> {
+            APPLICATION_LANGUAGE_EN -> {
                 Geocoder(context, Locale.ENGLISH)
             }
             else -> {
@@ -112,7 +123,10 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource, priva
             if (addresses.isNotEmpty())
                 Log.d("lastLocation:", addresses[0].locality)
 
-            Log.d("lLoc:getAddressLine", addresses[0].getAddressLine(0)) // 5C2P+5R، ديسط، مركز طلخا،، الدقهلية، مصر
+            Log.d(
+                "lLoc:getAddressLine",
+                addresses[0].getAddressLine(0)
+            ) // 5C2P+5R، ديسط، مركز طلخا،، الدقهلية، مصر
             Log.d("lLoc:getLocality", addresses[0].locality) // ديسط
             Log.d("lLoc:getCountryName", addresses[0].countryName) // مصر
             Log.d("lLoc:getFeatureName", addresses[0].featureName) // 5C2P+5R
@@ -126,8 +140,10 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource, priva
     }
 
     private fun saveCurrentPlaceName(context: Context, addresses: List<Address>) {
-        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_ADMIN_AREA, addresses[0].adminArea)
-        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_LOCALITY, addresses[0].locality)
+        AppSharedPref.getInstance(context, SETTING_FILE)
+            .setValue(LOCATION_ADMIN_AREA, addresses[0].adminArea)
+        AppSharedPref.getInstance(context, SETTING_FILE)
+            .setValue(LOCATION_LOCALITY, addresses[0].locality)
     }
 
     private fun stopLocationUpdates() {
@@ -135,8 +151,10 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource, priva
     }
 
     private fun saveLocationData(context: Context, location: Location) {
-        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_LATITUDE, location.latitude.toFloat())
-        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_LONGITUDE, location.longitude.toFloat())
+        AppSharedPref.getInstance(context, SETTING_FILE)
+            .setValue(LOCATION_LATITUDE, location.latitude.toFloat())
+        AppSharedPref.getInstance(context, SETTING_FILE)
+            .setValue(LOCATION_LONGITUDE, location.longitude.toFloat())
     }
 
     override fun isNotificationChecked(context: Context, isChecked: Boolean) {
@@ -149,12 +167,13 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource, priva
         val longitude =
             AppSharedPref.getInstance(context, SETTING_FILE).getFloatValue(LOCATION_LONGITUDE)
         val langAttribute: String = if (Locale.getDefault().displayLanguage.equals("العربية")) {
-            "ar"
+            APPLICATION_LANGUAGE_AR
         } else {
-            "en"
+            APPLICATION_LANGUAGE_EN
         }
         val language =
-            AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, langAttribute)
+            AppSharedPref.getInstance(context, SETTING_FILE)
+                .getStringValue(APPLICATION_LANGUAGE, langAttribute)
         val measurementUnit = getCurrentTempMeasurementUnit(context)
         Log.d("asdfg:repoLat", "$latitude")
         Log.d("asdfg:repoLon", "$longitude")
@@ -167,8 +186,25 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource, priva
             language,
             measurementUnit
         )
-        saveCurrentTimeZone(context, currentWeatherOverNetwork.body()!!.getTimezone())
+        val windSpeedUnit = AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(WIND_SPEED_UNIT, WIND_SPEED_UNIT_M_P_S)
+        val measurementUnitValue = AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(MEASUREMENT_UNIT, MEASUREMENT_UNIT_STANDARD)
+        if (measurementUnitValue == MEASUREMENT_UNIT_IMPERIAL && windSpeedUnit == WIND_SPEED_UNIT_M_P_S) {
+            currentWeatherOverNetwork.body()!!.current.windSpeed =
+                convertWindSpeedToMPS(currentWeatherOverNetwork.body()!!.current.windSpeed)
+        } else if ((measurementUnitValue == MEASUREMENT_UNIT_METRIC && windSpeedUnit == WIND_SPEED_UNIT_M_P_H) ||
+            (measurementUnitValue == MEASUREMENT_UNIT_STANDARD && windSpeedUnit == WIND_SPEED_UNIT_M_P_H)) {
+            currentWeatherOverNetwork.body()!!.current.windSpeed = convertWindSpeedToMPH(currentWeatherOverNetwork.body()!!.current.windSpeed)
+        }
+        saveCurrentTimeZone(context, currentWeatherOverNetwork.body()!!.timezone)
         return currentWeatherOverNetwork
+    }
+
+    private fun convertWindSpeedToMPH(windSpeed: Double): Double {
+        return windSpeed * WIND_SPEED_FACTOR
+    }
+
+    private fun convertWindSpeedToMPS(windSpeed: Double): Double {
+        return windSpeed.div(WIND_SPEED_FACTOR)
     }
 
     private fun saveCurrentTimeZone(context: Context, timeZone: String) {
@@ -177,13 +213,20 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource, priva
 
     override fun getCurrentLocation(context: Context): List<String> {
         return listOf(
-            AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(LOCATION_ADMIN_AREA, ""),
+            AppSharedPref.getInstance(context, SETTING_FILE)
+                .getStringValue(LOCATION_ADMIN_AREA, ""),
             AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(LOCATION_LOCALITY, "")
         )
     }
 
     override fun getCurrentTempMeasurementUnit(context: Context): String {
-        return AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(MEASUREMENT_UNIT, MEASUREMENT_UNIT_STANDARD)
+        return AppSharedPref.getInstance(context, SETTING_FILE)
+            .getStringValue(MEASUREMENT_UNIT, MEASUREMENT_UNIT_STANDARD)
+    }
+
+    override fun getWindSpeedMeasurementUnit(context: Context): String {
+        return AppSharedPref.getInstance(context, SETTING_FILE)
+            .getStringValue(WIND_SPEED_UNIT, WIND_SPEED_UNIT_M_P_S)
     }
 
     override fun getAppSharedPref(context: Context): SharedPreferences {
@@ -191,7 +234,8 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource, priva
     }
 
     override fun isLocationSet(context: Context): Boolean {
-        return AppSharedPref.getInstance(context, SETTING_FILE).getFloatValue(LOCATION_LONGITUDE) != 0f
+        return AppSharedPref.getInstance(context, SETTING_FILE)
+            .getFloatValue(LOCATION_LONGITUDE) != 0f
     }
 
     override fun firstTimeCompleted(context: Context) {
@@ -199,7 +243,8 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource, priva
     }
 
     override fun isFirstTimeCompleted(context: Context): Boolean {
-        return AppSharedPref.getInstance(context, SETTING_FILE).getBooleanValue(FIRST_TIME_COMPLETED, false)
+        return AppSharedPref.getInstance(context, SETTING_FILE)
+            .getBooleanValue(FIRST_TIME_COMPLETED, false)
     }
 
     override fun getCurrentTimeZone(context: Context): String {
@@ -208,8 +253,8 @@ class HomeRepo private constructor(private var remoteSource: RemoteSource, priva
 
     override fun insertWeatherModel(weatherModel: WeatherModel) {
         localSource.insertWeatherModel(weatherModel)
-        if (weatherModel.getAlerts().isNotEmpty()) {
-            for (alert in weatherModel.getAlerts()) {
+        if (weatherModel.alerts?.isNotEmpty() == true) {
+            for (alert in weatherModel.alerts) {
                 localSource.insertAlert(alert)
             }
         }

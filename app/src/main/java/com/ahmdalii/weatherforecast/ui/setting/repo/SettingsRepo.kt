@@ -11,6 +11,8 @@ import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE
+import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE_AR
+import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE_EN
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_ADMIN_AREA
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LATITUDE
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LOCALITY
@@ -65,9 +67,9 @@ class SettingsRepo private constructor(): SettingsRepoInterface {
 
     override fun getLanguage(context: Context): String {
         val langAttribute: String = if (Locale.getDefault().displayLanguage.equals("العربية")) {
-            "ar"
+            APPLICATION_LANGUAGE_AR
         } else {
-            "en"
+            APPLICATION_LANGUAGE_EN
         }
         return AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, langAttribute)
     }
@@ -139,7 +141,7 @@ class SettingsRepo private constructor(): SettingsRepoInterface {
         locationRequest = LocationRequest.create().apply {
             interval = 10000
             fastestInterval = 5000
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
         }
     }
 
@@ -165,7 +167,7 @@ class SettingsRepo private constructor(): SettingsRepoInterface {
 
     private fun getPlaceName(context: Context, latitude: Double, longitude: Double) {
         val gcd: Geocoder = when (AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, "")) {
-            "English" -> {
+            APPLICATION_LANGUAGE_EN -> {
                 Geocoder(context, Locale.ENGLISH)
             }
             else -> {

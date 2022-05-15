@@ -20,6 +20,7 @@ import com.ahmdalii.weatherforecast.ui.map.viewmodel.MapViewModel
 import com.ahmdalii.weatherforecast.ui.map.viewmodel.MapViewModelFactory
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -163,6 +164,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Turn on the My Location layer and the related control on the map.
         updateLocationUI()
+
+        mMap.setOnMapClickListener {
+            Toast.makeText(this@MapsActivity, "Lat: ${it.latitude} \n Lon: ${it.latitude}", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun updateLocationUI() {
