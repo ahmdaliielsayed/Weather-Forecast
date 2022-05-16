@@ -2,11 +2,13 @@ package com.ahmdalii.weatherforecast.ui.map.view
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Address
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -15,12 +17,20 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.databinding.ActivityMapsBinding
+import com.ahmdalii.weatherforecast.db.favorite.ConcreteLocalSourceFavorite
+import com.ahmdalii.weatherforecast.db.weather.ConcreteLocalSource
+import com.ahmdalii.weatherforecast.model.FavoritePlace
 import com.ahmdalii.weatherforecast.ui.map.repo.MapRepo
 import com.ahmdalii.weatherforecast.ui.map.viewmodel.MapViewModel
 import com.ahmdalii.weatherforecast.ui.map.viewmodel.MapViewModelFactory
+import com.ahmdalii.weatherforecast.utils.AppConstants.COMING_FROM
+import com.ahmdalii.weatherforecast.utils.AppConstants.FAVORITE_FRAGMENT
+import com.ahmdalii.weatherforecast.utils.AppConstants.INITIAL_DIALOG
+import com.ahmdalii.weatherforecast.utils.AppConstants.SETTING_FRAGMENT
+import com.ahmdalii.weatherforecast.utils.AppConstants.getPlaceName
+import com.ahmdalii.weatherforecast.utils.AppConstants.playAnimation
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -39,14 +49,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var locationPermissionGranted: Boolean = false
 
     private val DEFAULT_ZOOM_VALUE = 15f
+    private lateinit var address: Address
+    private lateinit var latLng: LatLng
+    private var addMarker: Marker? = null
+    private lateinit var comingFrom: String
 
-    private var markerList = mutableListOf<Marker>()
+    private var isViewOpen = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        comingFrom = intent.getStringExtra(COMING_FROM).toString()
 
         gettingViewModelReady()
         // Prompt the user for permission.
@@ -59,6 +75,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val postToServerRunnable = Runnable {
         searchForPlace(binding.txtInputEditTextSearchPlace.text.toString())
     }
+
     private fun handleUIAction() {
         binding.txtInputEditTextSearchPlace.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -84,34 +101,49 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun afterTextChanged(p0: Editable?) {
 
             }
-
         })
 
         binding.cardGPS.setOnClickListener {
             viewModel.getDeviceLocation(this)
         }
+
+        binding.imgViewClose.setOnClickListener {
+            playAnimation(binding.constraintLayout, this, R.anim.close_view_zoom_out)
+            binding.constraintLayout.visibility = View.GONE
+            isViewOpen = false
+        }
     }
 
     private fun searchForPlace(placeName: String) {
-        Log.d("asdfer:pN", placeName)
         viewModel.getCurrentAddress(this, placeName)
     }
 
     private fun gettingViewModelReady() {
-        mapViewModelFactory = MapViewModelFactory(
-            MapRepo.getInstance()
+        mapViewModelFactory = MapViewModelFactory (
+            MapRepo.getInstance(ConcreteLocalSourceFavorite(this))
         )
         viewModel = ViewModelProvider(this, mapViewModelFactory)[MapViewModel::class.java]
         viewModel.observeOnSharedPref(this)
         viewModel.getDeviceLocation(this)
 
         viewModel.currentDeviceLocation.observe(this, {
-            Log.d("asdfer:cDL", it.toString())
-            moveCamera(LatLng(it.latitude, it.longitude))
+            latLng = LatLng(it.latitude, it.longitude)
+            moveCamera(latLng)
+            if (comingFrom == INITIAL_DIALOG) {
+                val placeName = getPlaceName(this, latLng.latitude, latLng.longitude)
+                openViewWithAddress(placeName, latLng)
+            }
         })
         viewModel.searchAddress.observe(this, {
-            Log.d("asdfer:Ob", it.toString())
-            moveCameraAndAddMarker(LatLng(it.latitude, it.longitude), listOf(it.adminArea, it.locality))
+            address = it
+            latLng = LatLng(address.latitude, address.longitude)
+            drawMarker(latLng,
+                listOf(
+                    address.adminArea ?: getString(R.string.unknown_adminArea),
+                    address.locality ?: getString(R.string.unknown_locality)
+                )
+            )
+            moveCamera(latLng)
         })
     }
 
@@ -119,28 +151,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM_VALUE))
     }
 
-    private fun moveCameraAndAddMarker(latLng: LatLng, areaLocality: List<String>) {
-        clearMarkers()
-        drawMarker(latLng, areaLocality)
-        moveCamera(latLng)
-    }
-
     private fun drawMarker(latLng: LatLng, areaLocality: List<String>) {
-        val addMarker = mMap.addMarker(
+        mMap.clear()
+        addMarker = mMap.addMarker(
             MarkerOptions()
                 .position(latLng)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                 .title(areaLocality[0].plus(", ").plus(areaLocality[1]))
         )
-
-        markerList.add(addMarker!!)
-    }
-
-    private fun clearMarkers() {
-        if (markerList.isNotEmpty()) {
-            markerList[0].remove()
-            markerList.clear()
-        }
     }
 
     private fun initializeMap() {
@@ -165,8 +183,55 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Turn on the My Location layer and the related control on the map.
         updateLocationUI()
 
+        handleOnMapClick()
+    }
+
+    private fun handleOnMapClick() {
         mMap.setOnMapClickListener {
-            Toast.makeText(this@MapsActivity, "Lat: ${it.latitude} \n Lon: ${it.latitude}", Toast.LENGTH_LONG).show()
+            latLng = it
+            address = getPlaceName(this, it.latitude, it.longitude)
+            drawMarker(
+                LatLng(latLng.latitude, latLng.longitude),
+                listOf(
+                    address.adminArea ?: getString(R.string.unknown_adminArea),
+                    address.locality ?: getString(R.string.unknown_locality)
+                )
+            )
+
+            openViewWithAddress(address, latLng)
+        }
+    }
+
+    private fun openViewWithAddress(address: Address, latLng: LatLng) {
+        binding.txtViewAddressGovernorateValue.text = address.adminArea ?: getString(R.string.unknown_adminArea)
+        binding.txtViewAddressLocalityValue.text = address.locality ?: getString(R.string.unknown_locality)
+        if (!isViewOpen) {
+            binding.constraintLayout.visibility = View.VISIBLE
+            playAnimation(binding.constraintLayout, this, R.anim.open_view_zoom_in)
+            isViewOpen = true
+        }
+
+        binding.btnSave.setOnClickListener {
+            Log.d("qqqwww:", "0")
+            when (comingFrom) {
+                INITIAL_DIALOG -> {
+                    Log.d("qqqwww:lat", latLng.toString())
+                    Log.d("qqqwww:add", address.toString())
+                    viewModel.saveUpdateLocationPlace(this, latLng, address)
+                    Log.d("qqqwww:", "1")
+                }
+                FAVORITE_FRAGMENT -> {
+                    viewModel.insertFavoritePlace(FavoritePlace(latLng.latitude, latLng.longitude, address.adminArea, address.locality))
+                    Log.d("qqqwww:", "2")
+                }
+                SETTING_FRAGMENT -> {
+                    Log.d("qqqwww:lat", latLng.toString())
+                    Log.d("qqqwww:add", address.toString())
+                    viewModel.saveUpdateLocationPlace(this, latLng, address)
+                    Log.d("qqqwww:", "3")
+                }
+            }
+            finish()
         }
     }
 
@@ -195,10 +260,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
-            /*&& ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED*/
+        /*&& ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED*/
         ) {
             locationPermissionGranted = true
             /*if (LocationManagerCompat.isLocationEnabled(getSystemService(Context.LOCATION_SERVICE) as LocationManager)) {

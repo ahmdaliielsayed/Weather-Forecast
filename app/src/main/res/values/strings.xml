@@ -36,4 +36,6 @@
     <string name="changed_successfully">success!</string>
     <string name="denied_map_request">You can\'t make map request!</string>
     <string name="empty_string">Empty! \nPlease, write a place to search for!</string>
+    <string name="unknown_adminArea">unknown admin area</string>
+    <string name="unknown_locality">unknown locality</string>
 </resources>

@@ -10,11 +10,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ahmdalii.weatherforecast.R
+import com.ahmdalii.weatherforecast.model.FavoritePlace
 import com.ahmdalii.weatherforecast.ui.map.repo.MapRepoInterface
+import com.ahmdalii.weatherforecast.ui.map.view.MapsActivity
 import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.CURRENT_DEVICE_LOCATION
 import com.ahmdalii.weatherforecast.utils.AppConstants.DEVICE_LONGITUDE
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LONGITUDE
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -70,5 +73,17 @@ class MapViewModel(private val _repo: MapRepoInterface) : ViewModel() {
 
     fun unRegisterOnSharedPreferenceChangeListener(){
         preferences.unregisterOnSharedPreferenceChangeListener(listener)
+    }
+
+    fun saveUpdateLocationPlace(context: Context, latLng: LatLng, address: Address) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            _repo.saveUpdateLocationPlace(context, latLng, address)
+        }
+    }
+
+    fun insertFavoritePlace(favoritePlace: FavoritePlace) {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            _repo.insertFavoritePlace(favoritePlace)
+        }
     }
 }

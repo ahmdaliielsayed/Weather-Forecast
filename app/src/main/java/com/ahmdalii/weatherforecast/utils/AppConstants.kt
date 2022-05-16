@@ -4,16 +4,23 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import android.os.Build
+import android.util.Log
+import android.view.View
+import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.location.LocationManagerCompat
 import com.ahmdalii.weatherforecast.BuildConfig
 import com.ahmdalii.weatherforecast.R
+import kotlinx.coroutines.runBlocking
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,7 +41,6 @@ object AppConstants {
     const val APPLICATION_LANGUAGE_AR: String = "ar"
     const val APPLICATION_LANGUAGE_EN: String = "en"
     const val MEASUREMENT_UNIT: String = "measurement unit"
-
     /*
     * default: kelvin ==> metre/sec
     * metric: Celsius ==> metre/sec
@@ -52,6 +58,10 @@ object AppConstants {
     const val WIND_SPEED_UNIT: String = "windSpeed unit"
     const val WIND_SPEED_UNIT_M_P_S: String = "meter per second"
     const val WIND_SPEED_UNIT_M_P_H: String = "mile per hour"
+    const val COMING_FROM: String = "coming from"
+    const val INITIAL_DIALOG: String = "initial dialog"
+    const val FAVORITE_FRAGMENT: String = "favorite"
+    const val SETTING_FRAGMENT: String = "setting"
 
     const val BASE_URL: String = BuildConfig.BASE_URL
     const val IMG_URL: String = BuildConfig.IMG_URL
@@ -68,8 +78,9 @@ object AppConstants {
 
     @SuppressLint("SimpleDateFormat")
     fun getDateTime(dt: Int, pattern: String): String {
-        val format = SimpleDateFormat(pattern)
-        format.timeZone = TimeZone.getTimeZone("GMT+2")
+        val format = SimpleDateFormat(pattern, Locale(getDisplayCurrentLanguage()))
+//        format.timeZone = TimeZone.getTimeZone("GMT+2")
+        format.timeZone = TimeZone.getDefault()
         return format.format(Date(dt * 1000L))
     }
 
@@ -102,5 +113,59 @@ object AppConstants {
 
     fun isLocationEnabled(context: Context): Boolean {
         return LocationManagerCompat.isLocationEnabled(context.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
+    }
+
+    fun getDisplayCurrentLanguage(): String {
+        return if (Locale.getDefault().displayLanguage.equals("العربية")) {
+            APPLICATION_LANGUAGE_AR
+        } else {
+            APPLICATION_LANGUAGE_EN
+        }
+    }
+
+    fun getGeocoder(context: Context): Geocoder {
+        return when (AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, getDisplayCurrentLanguage())) {
+            APPLICATION_LANGUAGE_EN -> {
+                Geocoder(context, Locale.ENGLISH)
+            }
+            else -> {
+                Geocoder(context, Locale.getDefault())
+            }
+        }
+    }
+
+    fun getPlaceName(context: Context, latitude: Double, longitude: Double): Address {
+        val gcd: Geocoder = getGeocoder(context)
+        val addresses: List<Address>
+        var address = Address(Locale(getDisplayCurrentLanguage()))
+
+        try {
+            addresses = gcd.getFromLocation(latitude, longitude, 1)
+
+            if (!addresses.isNullOrEmpty()) {
+                Log.d("asdfg:asd", addresses[0].toString())
+//                printLogAddress(addresses[0])
+                address = addresses[0]
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        return address
+    }
+
+    /*private fun printLogAddress(address: Address) {
+        Log.d("lastLocation:", address.locality)
+        Log.d("lLoc:getAddressLine", address.getAddressLine(0)) // 5C2P+5R، ديسط، مركز طلخا،، الدقهلية، مصر
+        Log.d("lLoc:getLocality", address.locality) // ديسط
+        Log.d("lLoc:getCountryName", address.countryName) // مصر
+        Log.d("lLoc:getFeatureName", address.featureName) // 5C2P+5R
+        Log.d("lLoc:getAdminArea", address.adminArea) // الدقهلية
+        Log.d("lLoc:getSubAdminArea", address.subAdminArea) // مركز طلخا،
+        Log.d("lLoc:getCountryCode", address.countryCode) // EG
+    }*/
+
+    fun playAnimation(view: View, context: Context, animation: Int) {
+        view.startAnimation(AnimationUtils.loadAnimation(context, animation))
     }
 }

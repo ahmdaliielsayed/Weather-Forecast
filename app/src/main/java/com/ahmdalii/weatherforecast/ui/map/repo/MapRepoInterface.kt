@@ -5,7 +5,9 @@ import android.content.SharedPreferences
 import android.location.Address
 import android.location.Location
 import androidx.lifecycle.LiveData
+import com.ahmdalii.weatherforecast.model.FavoritePlace
 import com.ahmdalii.weatherforecast.model.WeatherModel
+import com.google.android.gms.maps.model.LatLng
 import retrofit2.Response
 
 interface MapRepoInterface {
@@ -18,20 +20,7 @@ interface MapRepoInterface {
     fun getLocationLongitude(context: Context): Float
     fun getCurrentDeviceLocation(context: Context): Location
     fun getCurrentAddress(context: Context, searchForPlace: String): Address
+    fun saveUpdateLocationPlace(context: Context, latLng: LatLng, address: Address)
 
-    /*fun saveUpdateLocation(context: Context)
-    fun isNotificationChecked(context: Context, isChecked: Boolean)
-
-    suspend fun getCurrentWeatherOverNetwork(context: Context): Response<WeatherModel>
-    fun getCurrentTempMeasurementUnit(context: Context): String
-
-    fun firstTimeCompleted(context: Context)
-    fun isFirstTimeCompleted(context: Context): Boolean
-
-    fun getCurrentTimeZone(context: Context): String
-
-    fun insertWeatherModel(weatherModel: WeatherModel)
-    fun selectAllStoredWeatherModel(context: Context): LiveData<WeatherModel>
-
-    fun setLocationMethod(context: Context, locationMethod: String)*/
+    fun insertFavoritePlace(favoritePlace: FavoritePlace)
 }

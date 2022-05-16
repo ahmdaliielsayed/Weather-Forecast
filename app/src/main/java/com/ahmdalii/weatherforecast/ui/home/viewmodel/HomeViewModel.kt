@@ -2,6 +2,7 @@ package com.ahmdalii.weatherforecast.ui.home.viewmodel
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,6 +19,9 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
 
     private var _weatherModelResponse = MutableLiveData<WeatherModel>()
     val weatherModelResponse: LiveData<WeatherModel> = _weatherModelResponse
+
+    private var _showProgressBar = MutableLiveData<Boolean>()
+    val showProgressBar: LiveData<Boolean> = _showProgressBar
 
     private var _errorMsgResponse = MutableLiveData<String>()
     val errorMsgResponse: LiveData<String> = _errorMsgResponse
@@ -37,6 +41,7 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
     private val coroutineExceptionHandler = CoroutineExceptionHandler{ _, t ->
         run {
             t.printStackTrace()
+            Log.e("asdfg:coroutine", t.message.toString())
             _errorMsgResponse.postValue(t.message)
         }
     }
@@ -54,8 +59,8 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
     }
 
     private fun getCurrentWeatherOverNetwork(context: Context) {
-//        _repo.saveUpdateLocation(context)
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            _showProgressBar.postValue(true)
             val currentWeatherResponse = _repo.getCurrentWeatherOverNetwork(context)
             if (currentWeatherResponse.isSuccessful) {
                 val hourlyList = mutableListOf<Hourly>()
@@ -68,6 +73,7 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
                 saveCurrentWeatherModelToRoom(currentWeatherResponse.body()!!)
                 _weatherModelResponse.postValue(currentWeatherResponse.body())
             } else {
+                Log.e("asdfg:getCurrWeth", currentWeatherResponse.message().toString())
                 _errorMsgResponse.postValue(currentWeatherResponse.message())
             }
         }
@@ -83,6 +89,7 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             val currentLocationList = _repo.getCurrentLocation(context)
             if (currentLocationList.isNullOrEmpty()) {
+                Log.e("asdfg:getCurrLoc", "${currentLocationList.size} \nerror viewModel getCurrentLocation")
                 _errorMsgResponse.postValue("${currentLocationList.size} \nerror viewModel getCurrentLocation")
             } else {
                 _currentLocation.postValue(currentLocationList)
@@ -120,6 +127,7 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
     }
 
     fun unRegisterOnSharedPreferenceChangeListener(){
+        // error
         preferences.unregisterOnSharedPreferenceChangeListener(listener)
     }
 

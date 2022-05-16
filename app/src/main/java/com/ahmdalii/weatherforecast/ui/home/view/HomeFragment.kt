@@ -3,6 +3,7 @@ package com.ahmdalii.weatherforecast.ui.home.view
 import android.Manifest
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -22,15 +23,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.databinding.FragmentHomeBinding
-import com.ahmdalii.weatherforecast.db.ConcreteLocalSource
+import com.ahmdalii.weatherforecast.db.weather.ConcreteLocalSource
 import com.ahmdalii.weatherforecast.model.Weather
 import com.ahmdalii.weatherforecast.model.WeatherModel
 import com.ahmdalii.weatherforecast.network.WeatherClient
 import com.ahmdalii.weatherforecast.ui.home.repo.HomeRepo
 import com.ahmdalii.weatherforecast.ui.home.viewmodel.HomeViewModel
 import com.ahmdalii.weatherforecast.ui.home.viewmodel.HomeViewModelFactory
+import com.ahmdalii.weatherforecast.ui.map.view.MapsActivity
 import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.IMG_URL
+import com.ahmdalii.weatherforecast.utils.AppConstants.INITIAL_DIALOG
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD_GPS
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD_MAP
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_S
@@ -114,10 +117,19 @@ class HomeFragment : Fragment() {
         viewModel = ViewModelProvider(this, homeViewModelFactory)[HomeViewModel::class.java]
 
         viewModel.errorMsgResponse.observe(viewLifecycleOwner, {
+            binding.progressBar.visibility = View.GONE
             Toast.makeText(myView.context, it, Toast.LENGTH_LONG).show()
+        })
+        viewModel.showProgressBar.observe(viewLifecycleOwner, {
+            if (it) {
+                binding.progressBar.visibility = View.VISIBLE
+            }
         })
         viewModel.weatherModelResponse.observe(viewLifecycleOwner, {
             binding.progressBar.visibility = View.GONE
+            binding.animationView.visibility = View.GONE
+            binding.animationView.loop(false)
+            binding.showWeatherData.visibility = View.VISIBLE
             renderDataOnScreen(it)
         })
     }
@@ -257,6 +269,12 @@ class HomeFragment : Fragment() {
             }
         }*/
 
+        dialog.findViewById<RadioButton>(R.id.radioBtnMap).setOnClickListener {
+            val intent = Intent(myView.context, MapsActivity::class.java)
+            intent.putExtra(AppConstants.COMING_FROM, INITIAL_DIALOG)
+            startActivity(intent)
+        }
+
         btnOk.setOnClickListener {
             val checkedRadioButtonId = radioGroup.checkedRadioButtonId
             radioBtn = dialog.findViewById(checkedRadioButtonId)
@@ -274,23 +292,27 @@ class HomeFragment : Fragment() {
 
                 if (isLocationEnabled(myView.context)) {
                     saveUpdateGPSLocation()
+                    viewModel.isNotificationChecked(myView.context, notificationSwitch.isChecked)
+                    getWeather()
                 } else {
                     Toast.makeText(myView.context, R.string.open_gps, Toast.LENGTH_LONG).show()
                 }
             } else {
                 saveLocationMethod(myView.context, LOCATION_METHOD_MAP)
-            }
-
-            viewModel.isNotificationChecked(myView.context, notificationSwitch.isChecked)
-            if (isInternetAvailable(myView.context)) {
-                viewModel.firstTimeCompleted(myView.context)
-                getWeatherDataOverNetwork()
-                dialog.dismiss()
-            } else {
-                Toast.makeText(myView.context, R.string.first_time_fetch, Toast.LENGTH_LONG).show()
+                getWeather()
             }
         } else {
             requestLocationPermissions()
+        }
+    }
+
+    private fun getWeather() {
+        if (isInternetAvailable(myView.context)) {
+            viewModel.firstTimeCompleted(myView.context)
+            getWeatherDataOverNetwork()
+            dialog.dismiss()
+        } else {
+            Toast.makeText(myView.context, R.string.first_time_fetch, Toast.LENGTH_LONG).show()
         }
     }
 

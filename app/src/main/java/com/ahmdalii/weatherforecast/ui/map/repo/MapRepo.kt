@@ -10,9 +10,10 @@ import android.location.Location
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
-import com.ahmdalii.weatherforecast.utils.AppConstants
-import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE
-import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE_EN
+import com.ahmdalii.weatherforecast.R
+import com.ahmdalii.weatherforecast.db.favorite.LocalSourceFavorite
+import com.ahmdalii.weatherforecast.db.weather.LocalSource
+import com.ahmdalii.weatherforecast.model.FavoritePlace
 import com.ahmdalii.weatherforecast.utils.AppConstants.CURRENT_DEVICE_LOCATION
 import com.ahmdalii.weatherforecast.utils.AppConstants.DEVICE_LATITUDE
 import com.ahmdalii.weatherforecast.utils.AppConstants.DEVICE_LONGITUDE
@@ -21,18 +22,19 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LATITUDE
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LOCALITY
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LONGITUDE
 import com.ahmdalii.weatherforecast.utils.AppConstants.SETTING_FILE
+import com.ahmdalii.weatherforecast.utils.AppConstants.getGeocoder
+import com.ahmdalii.weatherforecast.utils.AppConstants.getPlaceName
 import com.ahmdalii.weatherforecast.utils.AppSharedPref
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.model.LatLng
 import java.io.IOException
-import java.util.*
 
-
-class MapRepo private constructor(/*private var remoteSource: RemoteSource, private var localSource: LocalSource*/): MapRepoInterface{
+class MapRepo private constructor(/*private var remoteSource: RemoteSource,*/ private var localSourceFavorite: LocalSourceFavorite): MapRepoInterface{
 
     companion object{
         private var instance: MapRepoInterface? = null
-        fun getInstance(/*remoteSource: RemoteSource, localSource: LocalSource*/): MapRepoInterface {
-            return instance ?: MapRepo(/*remoteSource, localSource*/)
+        fun getInstance(/*remoteSource: RemoteSource,*/ localSourceFavorite: LocalSourceFavorite): MapRepoInterface {
+            return instance ?: MapRepo(/*remoteSource,*/ localSourceFavorite)
         }
     }
 
@@ -81,7 +83,9 @@ class MapRepo private constructor(/*private var remoteSource: RemoteSource, priv
                 for (location in locationResult.locations) {
                     if (location != null) {
                         saveDeviceLocationData(context, location)
-                        getPlaceName(context, location.latitude, location.longitude)
+                        val placeName = getPlaceName(context, location.latitude, location.longitude)
+                        Log.d("getPlaceName:mapR", placeName.toString())
+                        saveCurrentPlaceName(context, placeName)
                         stopLocationUpdates()
                     }
                 }
@@ -94,38 +98,9 @@ class MapRepo private constructor(/*private var remoteSource: RemoteSource, priv
         AppSharedPref.getInstance(context, SETTING_FILE).setValue(DEVICE_LONGITUDE, location.longitude.toFloat())
     }
 
-    private fun getPlaceName(context: Context, latitude: Double, longitude: Double) {
-        val gcd: Geocoder = when (AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, "")) {
-            APPLICATION_LANGUAGE_EN -> {
-                Geocoder(context, Locale.ENGLISH)
-            }
-            else -> {
-                Geocoder(context, Locale.getDefault())
-            }
-        }
-        val addresses: List<Address>
-        try {
-            addresses = gcd.getFromLocation(latitude, longitude, 1)
-
-            if (addresses.isNotEmpty())
-                Log.d("lastLocation:", addresses[0].locality)
-
-            Log.d("lLoc:getAddressLine", addresses[0].getAddressLine(0)) // 5C2P+5R، ديسط، مركز طلخا،، الدقهلية، مصر
-            Log.d("lLoc:getLocality", addresses[0].locality) // ديسط
-            Log.d("lLoc:getCountryName", addresses[0].countryName) // مصر
-            Log.d("lLoc:getFeatureName", addresses[0].featureName) // 5C2P+5R
-            Log.d("lLoc:getAdminArea", addresses[0].adminArea) // الدقهلية
-            Log.d("lLoc:getSubAdminArea", addresses[0].subAdminArea) // مركز طلخا،
-            Log.d("lLoc:getCountryCode", addresses[0].countryCode) // EG
-            saveCurrentPlaceName(context, addresses)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun saveCurrentPlaceName(context: Context, addresses: List<Address>) {
-        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_ADMIN_AREA, addresses[0].adminArea)
-        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_LOCALITY, addresses[0].locality)
+    private fun saveCurrentPlaceName(context: Context, address: Address) {
+        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_ADMIN_AREA, address.adminArea ?: context.getString(R.string.unknown_adminArea))
+        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_LOCALITY, address.locality ?: context.getString(R.string.unknown_locality))
     }
 
     private fun stopLocationUpdates() {
@@ -157,14 +132,7 @@ class MapRepo private constructor(/*private var remoteSource: RemoteSource, priv
     }
 
     override fun getCurrentAddress(context: Context, searchForPlace: String): Address {
-        val gcd: Geocoder = when (AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, "")) {
-            APPLICATION_LANGUAGE_EN -> {
-                Geocoder(context, Locale.ENGLISH)
-            }
-            else -> {
-                Geocoder(context, Locale.getDefault())
-            }
-        }
+        val gcd: Geocoder = getGeocoder(context)
         var addresses: List<Address> = emptyList()
         try {
             addresses = gcd.getFromLocationName(searchForPlace, 1)
@@ -175,12 +143,24 @@ class MapRepo private constructor(/*private var remoteSource: RemoteSource, priv
                 location.longitude = addresses[0].longitude
                 location.latitude = addresses[0].latitude
                 saveLocationData(context, location)
-                saveCurrentPlaceName(context, addresses)
+                saveCurrentPlaceName(context, addresses[0])
             }
         } catch (e: IOException) {
             e.printStackTrace()
         }
         return addresses[0]
+    }
+
+    override fun saveUpdateLocationPlace(context: Context, latLng: LatLng, address: Address) {
+        val location = Location(CURRENT_DEVICE_LOCATION)
+        location.longitude = latLng.longitude
+        location.latitude = latLng.latitude
+        saveLocationData(context, location)
+        saveCurrentPlaceName(context, address)
+    }
+
+    override fun insertFavoritePlace(favoritePlace: FavoritePlace) {
+        localSourceFavorite.insertFavoritePlace(favoritePlace)
     }
 
     private fun saveLocationData(context: Context, location: Location) {

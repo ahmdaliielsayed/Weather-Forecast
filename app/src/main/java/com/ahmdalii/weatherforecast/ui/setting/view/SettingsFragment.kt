@@ -25,11 +25,13 @@ import com.ahmdalii.weatherforecast.ui.setting.viewmodel.SettingsViewModelFactor
 import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE_AR
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE_EN
+import com.ahmdalii.weatherforecast.utils.AppConstants.COMING_FROM
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD_GPS
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD_MAP
 import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_IMPERIAL
 import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_METRIC
 import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_STANDARD
+import com.ahmdalii.weatherforecast.utils.AppConstants.SETTING_FRAGMENT
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_H
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_S
 import com.google.android.gms.common.ConnectionResult
@@ -73,12 +75,16 @@ class SettingsFragment : Fragment() {
                 }
                 R.id.radioBtnMap -> {
                     // play with map
-                    Log.d("asdfg:B", "Map")
-                    if (isServiceAvailable()) {
-                        viewModel.setLocationMethod(myView.context, LOCATION_METHOD_MAP)
-                        startActivity(Intent(myView.context, MapsActivity::class.java))
-                    }
+//                    binding.radioBtnMap.performClick()
                 }
+            }
+        }
+        binding.radioBtnMap.setOnClickListener {
+            if (isServiceAvailable()) {
+                viewModel.setLocationMethod(myView.context, LOCATION_METHOD_MAP)
+                val intent = Intent(myView.context, MapsActivity::class.java)
+                intent.putExtra(COMING_FROM, SETTING_FRAGMENT)
+                startActivity(intent)
             }
         }
 

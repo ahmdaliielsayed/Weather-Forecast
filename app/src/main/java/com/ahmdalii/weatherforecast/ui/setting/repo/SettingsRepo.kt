@@ -10,6 +10,7 @@ import android.location.Location
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE_AR
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE_EN
@@ -25,6 +26,8 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.NOTIFICATION
 import com.ahmdalii.weatherforecast.utils.AppConstants.SETTING_FILE
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_S
+import com.ahmdalii.weatherforecast.utils.AppConstants.getDisplayCurrentLanguage
+import com.ahmdalii.weatherforecast.utils.AppConstants.getGeocoder
 import com.ahmdalii.weatherforecast.utils.AppSharedPref
 import com.google.android.gms.location.*
 import java.io.IOException
@@ -66,12 +69,7 @@ class SettingsRepo private constructor(): SettingsRepoInterface {
     }
 
     override fun getLanguage(context: Context): String {
-        val langAttribute: String = if (Locale.getDefault().displayLanguage.equals("العربية")) {
-            APPLICATION_LANGUAGE_AR
-        } else {
-            APPLICATION_LANGUAGE_EN
-        }
-        return AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, langAttribute)
+        return AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, getDisplayCurrentLanguage())
     }
 
     override fun setCurrentTempMeasurementUnit(context: Context, measurementUnit: String) {
@@ -166,14 +164,7 @@ class SettingsRepo private constructor(): SettingsRepoInterface {
     }
 
     private fun getPlaceName(context: Context, latitude: Double, longitude: Double) {
-        val gcd: Geocoder = when (AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, "")) {
-            APPLICATION_LANGUAGE_EN -> {
-                Geocoder(context, Locale.ENGLISH)
-            }
-            else -> {
-                Geocoder(context, Locale.getDefault())
-            }
-        }
+        val gcd: Geocoder = getGeocoder(context)
         val addresses: List<Address>
         try {
             addresses = gcd.getFromLocation(latitude, longitude, 1)
@@ -195,8 +186,8 @@ class SettingsRepo private constructor(): SettingsRepoInterface {
     }
 
     private fun saveCurrentPlaceName(context: Context, addresses: List<Address>) {
-        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_ADMIN_AREA, addresses[0].adminArea)
-        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_LOCALITY, addresses[0].locality)
+        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_ADMIN_AREA, addresses[0].adminArea ?: context.getString(R.string.unknown_adminArea))
+        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_LOCALITY, addresses[0].locality  ?: context.getString(R.string.unknown_locality))
     }
 
     private fun stopLocationUpdates() {
