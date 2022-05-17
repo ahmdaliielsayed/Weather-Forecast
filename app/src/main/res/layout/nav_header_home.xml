@@ -16,12 +16,12 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="32dp"
-        android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/cloudy_nav" />
+        app:srcCompat="@drawable/cloudy_nav"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/textView"

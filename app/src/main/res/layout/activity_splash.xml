@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/mine_shaft"
-    tools:context=".SplashActivity">
+    tools:context=".ui.splash.view.SplashActivity">
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"

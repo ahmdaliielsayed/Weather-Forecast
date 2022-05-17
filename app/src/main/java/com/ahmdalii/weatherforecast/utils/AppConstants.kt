@@ -62,6 +62,8 @@ object AppConstants {
     const val INITIAL_DIALOG: String = "initial dialog"
     const val FAVORITE_FRAGMENT: String = "favorite"
     const val SETTING_FRAGMENT: String = "setting"
+    const val REPLY_INTENT_KEY: String = "reply intent"
+    const val FAVORITE_KEY: String = "weather intent"
 
     const val BASE_URL: String = BuildConfig.BASE_URL
     const val IMG_URL: String = BuildConfig.IMG_URL
@@ -77,8 +79,8 @@ object AppConstants {
     }
 
     @SuppressLint("SimpleDateFormat")
-    fun getDateTime(dt: Int, pattern: String): String {
-        val format = SimpleDateFormat(pattern, Locale(getDisplayCurrentLanguage()))
+    fun getDateTime(dt: Int, pattern: String, language: String): String {
+        val format = SimpleDateFormat(pattern, Locale(language))
 //        format.timeZone = TimeZone.getTimeZone("GMT+2")
         format.timeZone = TimeZone.getDefault()
         return format.format(Date(dt * 1000L))
@@ -144,7 +146,6 @@ object AppConstants {
 
             if (!addresses.isNullOrEmpty()) {
                 Log.d("asdfg:asd", addresses[0].toString())
-//                printLogAddress(addresses[0])
                 address = addresses[0]
             }
         } catch (e: IOException) {
@@ -167,5 +168,22 @@ object AppConstants {
 
     fun playAnimation(view: View, context: Context, animation: Int) {
         view.startAnimation(AnimationUtils.loadAnimation(context, animation))
+    }
+
+    fun convertWindSpeedToMPH(windSpeed: Double): Double {
+        return windSpeed * WIND_SPEED_FACTOR
+    }
+
+    fun convertWindSpeedToMPS(windSpeed: Double): Double {
+        return windSpeed.div(WIND_SPEED_FACTOR)
+    }
+
+    fun setAppLocale(context: Context, language: String) {
+        val locale = Locale(language)
+        Locale.setDefault(locale)
+        val config = context.resources.configuration
+        config.setLocale(locale)
+        context.createConfigurationContext(config)
+        context.resources.updateConfiguration(config, context.resources.displayMetrics)
     }
 }

@@ -32,6 +32,8 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_FACTOR
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_H
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_S
+import com.ahmdalii.weatherforecast.utils.AppConstants.convertWindSpeedToMPH
+import com.ahmdalii.weatherforecast.utils.AppConstants.convertWindSpeedToMPS
 import com.ahmdalii.weatherforecast.utils.AppConstants.getDisplayCurrentLanguage
 import com.ahmdalii.weatherforecast.utils.AppConstants.getPlaceName
 import com.ahmdalii.weatherforecast.utils.AppSharedPref
@@ -127,13 +129,16 @@ class HomeRepo private constructor(
     }
 
     override suspend fun getCurrentWeatherOverNetwork(context: Context): Response<WeatherModel> {
-        if (AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(LOCATION_METHOD, LOCATION_METHOD_GPS) == LOCATION_METHOD_GPS) {
-            saveUpdateLocation(context)
-        }
         val latitude =
             AppSharedPref.getInstance(context, SETTING_FILE).getFloatValue(LOCATION_LATITUDE)
         val longitude =
             AppSharedPref.getInstance(context, SETTING_FILE).getFloatValue(LOCATION_LONGITUDE)
+        if (AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(LOCATION_METHOD, LOCATION_METHOD_GPS) == LOCATION_METHOD_GPS) {
+            saveUpdateLocation(context)
+        } else {
+            val placeName = getPlaceName(context, latitude.toDouble(), longitude.toDouble())
+            saveCurrentPlaceName(context, placeName)
+        }
         val language =
             AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, getDisplayCurrentLanguage())
 
@@ -156,14 +161,6 @@ class HomeRepo private constructor(
         }
         saveCurrentTimeZone(context, currentWeatherOverNetwork.body()!!.timezone)
         return currentWeatherOverNetwork
-    }
-
-    private fun convertWindSpeedToMPH(windSpeed: Double): Double {
-        return windSpeed * WIND_SPEED_FACTOR
-    }
-
-    private fun convertWindSpeedToMPS(windSpeed: Double): Double {
-        return windSpeed.div(WIND_SPEED_FACTOR)
     }
 
     private fun saveCurrentTimeZone(context: Context, timeZone: String) {
@@ -225,5 +222,9 @@ class HomeRepo private constructor(
 
     override fun setLocationMethod(context: Context, locationMethod: String) {
         AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_METHOD, locationMethod)
+    }
+
+    override fun getLanguage(context: Context): String {
+        return AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(APPLICATION_LANGUAGE, getDisplayCurrentLanguage())
     }
 }

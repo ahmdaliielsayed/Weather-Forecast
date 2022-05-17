@@ -80,10 +80,4 @@ class MapViewModel(private val _repo: MapRepoInterface) : ViewModel() {
             _repo.saveUpdateLocationPlace(context, latLng, address)
         }
     }
-
-    fun insertFavoritePlace(favoritePlace: FavoritePlace) {
-        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            _repo.insertFavoritePlace(favoritePlace)
-        }
-    }
 }

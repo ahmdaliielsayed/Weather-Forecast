@@ -7,6 +7,8 @@ import com.ahmdalii.weatherforecast.model.WeatherModel
 
 interface LocalSourceFavorite {
 
-    fun insertFavoritePlace(favoritePlace: FavoritePlace)
+    fun deleteFavoritePlace(favoritePlace: FavoritePlace)
     val allFavoritePlacesList: LiveData<List<FavoritePlace>>
+    fun insertFavoritePlace(favoritePlace: FavoritePlace)
+    fun updateFavoritePlace(favoritePlace: FavoritePlace)
 }

@@ -1,18 +1,12 @@
 <resources>
     <string name="app_name">Weather Forecast</string>
     <string name="title_activity_home">HomeActivity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_favorite">Favorites</string>
     <string name="menu_notifications">Notifications</string>
     <string name="menu_settings">Settings</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="gps">GPS</string>
     <string name="map">Map</string>
@@ -20,6 +14,7 @@
     <string name="location">Location</string>
     <string name="notifications">Notifications</string>
     <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
     <string name="permission_required">We can\'t continue without your permissions! \nPlease, give us location permissions to get the weather on your location.</string>
     <string name="warning">Warning</string>
     <string name="open_gps">Please, Open GPS or Enable Network to fetch your location!</string>
@@ -38,4 +33,51 @@
     <string name="empty_string">Empty! \nPlease, write a place to search for!</string>
     <string name="unknown_adminArea">unknown admin area</string>
     <string name="unknown_locality">unknown locality</string>
+    <string name="delete_place">Are you sure to delete this place?</string>
+
+    <string name="governorate">Governorate:</string>
+    <string name="area">Area</string>
+    <string name="eighteen">18</string>
+    <string name="broken_clouds">broken clouds</string>
+    <string name="_1013_hpa">1013 hPa</string>
+    <string name="pressure">Pressure</string>
+    <string name="_16">16 %</string>
+    <string name="clouds">Clouds</string>
+    <string name="humidity">Humidity</string>
+    <string name="_6_84">6.84</string>
+    <string name="ultra_violet_index">Ultra Violet Index</string>
+    <string name="wind_speed">Wind Speed</string>
+    <string name="_10000_metres">10000 metres</string>
+    <string name="visibility">Visibility</string>
+    <string name="feels_like">Feels Like</string>
+    <string name="_29_63">29.63</string>
+
+    <string name="search_by_address_or_city">Search by address, or city</string>
+    <string name="governorate_value">Governorate Value</string>
+    <string name="region">Region:</string>
+    <string name="region_value">Region Value</string>
+    <string name="save">Save</string>
+
+    <string name="no_places">No Places</string>
+    <string name="add_favorite_place">add favorite place</string>
+
+    <string name="_18">18</string>
+
+    <string name="meter_second">Meter / Second</string>
+    <string name="miles_hour">Miles / Hour</string>
+    <string name="enable">Enable</string>
+    <string name="disable">Disable</string>
+    <string name="language">Language</string>
+    <string name="english">English</string>
+    <string name="arabic">Arabic</string>
+    <string name="temperature">Temperature</string>
+    <string name="celsius">Celsius</string>
+    <string name="kelvin">Kelvin</string>
+    <string name="fahrenheit">Fahrenheit</string>
+
+    <string name="today">Today</string>
+    <string name="_31_16">31 / 16</string>
+
+    <string name="_01_00_am">01:00 AM</string>
+    <string name="_27">27</string>
 </resources>

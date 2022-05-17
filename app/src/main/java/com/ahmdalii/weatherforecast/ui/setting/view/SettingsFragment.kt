@@ -4,8 +4,13 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,8 +21,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.location.LocationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.databinding.FragmentSettingsBinding
+import com.ahmdalii.weatherforecast.ui.HomeActivity
 import com.ahmdalii.weatherforecast.ui.map.view.MapsActivity
 import com.ahmdalii.weatherforecast.ui.setting.repo.SettingsRepo
 import com.ahmdalii.weatherforecast.ui.setting.viewmodel.SettingsViewModel
@@ -34,8 +41,10 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_STANDARD
 import com.ahmdalii.weatherforecast.utils.AppConstants.SETTING_FRAGMENT
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_H
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_S
+import com.ahmdalii.weatherforecast.utils.AppConstants.setAppLocale
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import java.util.*
 
 class SettingsFragment : Fragment() {
 
@@ -91,11 +100,11 @@ class SettingsFragment : Fragment() {
         binding.radioGroupLanguage.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.radioBtnEnglish -> {
-                    Log.d("asdfg:A", "English")
+                    setAppLocale(myView.context, APPLICATION_LANGUAGE_EN)
                     viewModel.setLanguage(myView.context, APPLICATION_LANGUAGE_EN)
                 }
                 R.id.radioBtnArabic -> {
-                    Log.d("asdfg:B", "Arabic")
+                    setAppLocale(myView.context, APPLICATION_LANGUAGE_AR)
                     viewModel.setLanguage(myView.context, APPLICATION_LANGUAGE_AR)
                 }
             }
@@ -138,6 +147,27 @@ class SettingsFragment : Fragment() {
                 }
             }
         }
+
+        binding.radioBtnEnglish.setOnClickListener {
+            changeConfiguration(APPLICATION_LANGUAGE_EN)
+        }
+
+        binding.radioBtnArabic.setOnClickListener {
+            changeConfiguration(APPLICATION_LANGUAGE_AR)
+        }
+    }
+
+    private fun changeConfiguration(language: String) {
+        val locale = Locale(language)
+        Locale.setDefault(locale)
+
+        val res: Resources = context!!.resources
+        val config = Configuration(res.configuration)
+        config.locale = locale
+        res.updateConfiguration(config, res.displayMetrics)
+
+        activity?.finish()
+        startActivity(activity?.intent)
     }
 
     private fun saveUpdateGPSLocation() {

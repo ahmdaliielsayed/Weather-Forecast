@@ -1,4 +1,4 @@
-package com.ahmdalii.weatherforecast
+package com.ahmdalii.weatherforecast.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -8,9 +8,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.databinding.ActivityHomeBinding
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 
 class HomeActivity : AppCompatActivity() {
 

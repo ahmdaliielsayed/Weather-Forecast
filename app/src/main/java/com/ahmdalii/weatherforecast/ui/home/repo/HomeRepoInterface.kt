@@ -28,4 +28,6 @@ interface HomeRepoInterface {
     fun selectAllStoredWeatherModel(context: Context): LiveData<WeatherModel>
 
     fun setLocationMethod(context: Context, locationMethod: String)
+
+    fun getLanguage(context: Context): String
 }

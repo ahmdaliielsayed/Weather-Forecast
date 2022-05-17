@@ -10,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.ahmdalii.weatherforecast.model.Hourly
 import com.ahmdalii.weatherforecast.model.WeatherModel
 import com.ahmdalii.weatherforecast.ui.home.repo.HomeRepoInterface
+import com.ahmdalii.weatherforecast.utils.AppConstants
+import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LOCALITY
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LONGITUDE
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -89,7 +91,6 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             val currentLocationList = _repo.getCurrentLocation(context)
             if (currentLocationList.isNullOrEmpty()) {
-                Log.e("asdfg:getCurrLoc", "${currentLocationList.size} \nerror viewModel getCurrentLocation")
                 _errorMsgResponse.postValue("${currentLocationList.size} \nerror viewModel getCurrentLocation")
             } else {
                 _currentLocation.postValue(currentLocationList)
@@ -120,15 +121,17 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
                         if (_repo.isLocationSet(context)) {
                             getCurrentWeatherOverNetwork(context)
                         }
+                    } else if (key == LOCATION_LOCALITY) {
+                        val currentLocation = _repo.getCurrentLocation(context)
+                        if (currentLocation.isNullOrEmpty()) {
+                            _errorMsgResponse.postValue("${currentLocation.size} \nerror viewModel getCurrentLocation")
+                        } else {
+                            _currentLocation.postValue(currentLocation)
+                        }
                     }
                 }
             preferences.registerOnSharedPreferenceChangeListener(listener)
         }
-    }
-
-    fun unRegisterOnSharedPreferenceChangeListener(){
-        // error
-        preferences.unregisterOnSharedPreferenceChangeListener(listener)
     }
 
     fun firstTimeCompleted(context: Context) {
@@ -144,5 +147,9 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
 
     fun saveLocationMethod(context: Context, locationMethod: String) {
         _repo.setLocationMethod(context, locationMethod)
+    }
+
+    fun getLanguage(context: Context): String {
+        return _repo.getLanguage(context)
     }
 }

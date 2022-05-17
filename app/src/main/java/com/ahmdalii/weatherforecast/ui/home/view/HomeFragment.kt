@@ -96,11 +96,11 @@ class HomeFragment : Fragment() {
                 if (it) {
                     getWeatherDataOverNetwork()
                 } else {
+                    Snackbar.make(myView, getString(R.string.connection_lost), Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show()
                     viewModel.getAllStoredWeatherModel(myView.context).observe(this, { weatherModel ->
                         if (weatherModel != null) {
                             renderDataOnScreen(weatherModel)
-                            Snackbar.make(myView, getString(R.string.connection_lost), Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show()
                         }
                     })
                 }
@@ -126,15 +126,16 @@ class HomeFragment : Fragment() {
             }
         })
         viewModel.weatherModelResponse.observe(viewLifecycleOwner, {
-            binding.progressBar.visibility = View.GONE
-            binding.animationView.visibility = View.GONE
-            binding.animationView.loop(false)
-            binding.showWeatherData.visibility = View.VISIBLE
             renderDataOnScreen(it)
         })
     }
 
     private fun renderDataOnScreen(it: WeatherModel) {
+        binding.progressBar.visibility = View.GONE
+        binding.animationView.visibility = View.GONE
+        binding.animationView.loop(false)
+        binding.showWeatherData.visibility = View.VISIBLE
+
         setCurrentLocation()
         setCurrentTempDiscrimination()
         setWindSpeedDiscrimination()
@@ -145,7 +146,7 @@ class HomeFragment : Fragment() {
         }
         setCurrentWeatherDescription(it.current.weather)
         setCurrentWeatherIcon(it.current.weather[0].icon)
-        binding.txtViewCurrentDateTime.text = getDateTime(it.current.dt, "EEE, MMM d, yyyy hh:mm a")
+        binding.txtViewCurrentDateTime.text = getDateTime(it.current.dt, "EEE, MMM d, yyyy hh:mm a", viewModel.getLanguage(myView.context))
         homeHourlyAdapter.setDataToAdapter(it.hourly!!)
         homeDailyAdapter.setDataToAdapter(it.daily!!)
         binding.txtViewPressure.text = it.current.pressure.toString().plus(" hPa")
@@ -360,10 +361,5 @@ class HomeFragment : Fragment() {
     private fun getWeatherDataOverNetwork() {
         binding.progressBar.visibility = View.VISIBLE
         viewModel.observeOnSharedPref(myView.context)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.unRegisterOnSharedPreferenceChangeListener()
     }
 }

@@ -18,7 +18,15 @@ class ConcreteLocalSourceFavorite(context: Context) : LocalSourceFavorite {
         allFavoritePlacesList = dao?.favoritePlacesList!!
     }
 
+    override fun deleteFavoritePlace(favoritePlace: FavoritePlace) {
+        dao?.deleteFavoritePlace(favoritePlace)
+    }
+
     override fun insertFavoritePlace(favoritePlace: FavoritePlace) {
         dao?.insertFavoritePlace(favoritePlace)
+    }
+
+    override fun updateFavoritePlace(favoritePlace: FavoritePlace) {
+        dao?.updateFavoritePlace(favoritePlace)
     }
 }

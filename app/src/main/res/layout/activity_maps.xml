@@ -14,7 +14,7 @@
         android:layout_marginEnd="16dp"
         android:background="@drawable/round_corner_toggle"
         android:elevation="24dp"
-        android:hint="Search by address, or city"
+        android:hint="@string/search_by_address_or_city"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -52,7 +52,8 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_margin="8dp"
-            app:srcCompat="@drawable/ic_baseline_gps_fixed_24" />
+            app:srcCompat="@drawable/ic_baseline_gps_fixed_24"
+            tools:ignore="ContentDescription" />
     </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -71,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:text="Governorate:"
+            android:text="@string/governorate"
             android:textAlignment="viewStart"
             android:textColor="@color/white"
             android:textSize="24sp"
@@ -86,7 +87,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="24dp"
-            android:text="Governorate Value"
+            android:text="@string/governorate_value"
             android:textAlignment="viewStart"
             android:textColor="@color/white"
             android:textSize="24sp"
@@ -100,7 +101,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Region:"
+            android:text="@string/region"
             android:textAlignment="viewStart"
             android:textColor="@color/white"
             android:textSize="24sp"
@@ -113,7 +114,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Region Value"
+            android:text="@string/region_value"
             android:textAlignment="viewStart"
             android:textColor="@color/white"
             android:textSize="24sp"
@@ -129,7 +130,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
             android:background="@drawable/txt_background_gradient"
-            android:text="Save"
+            android:text="@string/save"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:textSize="24sp"
@@ -146,6 +147,7 @@
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_close_24" />
+            app:srcCompat="@drawable/ic_baseline_close_24"
+            tools:ignore="ContentDescription" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

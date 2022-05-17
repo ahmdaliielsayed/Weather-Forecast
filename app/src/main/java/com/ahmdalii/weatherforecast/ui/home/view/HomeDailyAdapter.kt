@@ -16,6 +16,7 @@ import com.ahmdalii.weatherforecast.model.Daily
 import com.ahmdalii.weatherforecast.ui.home.viewmodel.HomeViewModel
 import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.getDateTime
+import com.ahmdalii.weatherforecast.utils.AppConstants.playAnimation
 import com.bumptech.glide.Glide
 
 class HomeDailyAdapter(
@@ -25,6 +26,8 @@ class HomeDailyAdapter(
     var viewLifecycleOwner: LifecycleOwner
 ) : RecyclerView.Adapter<HomeDailyAdapter.ViewHolder>() {
 
+    var lastRowPosition = -1
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.row_daily, parent, false)
@@ -32,39 +35,45 @@ class HomeDailyAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.txtViewDate?.text = getDateTime(dailyListWeather[position].dt, "EEE, MMM d")
-        holder.imgViewDayIcon?.let {
-            Glide
-                .with(context)
-                .load("${AppConstants.IMG_URL}${dailyListWeather[position].weather[0].icon}@4x.png")
-                .into(it)
-        }
-        holder.txtViewDailyWeatherDescription?.text =  dailyListWeather[position].weather[0].description
-        viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner, Observer {
-            when {
-                it.isNullOrBlank() -> {
-                    holder.txtViewMinMaxDiscrimination?.text = context.getString(R.string.temp_kelvin)
-                }
-                it.equals("metric") -> {
-                    holder.txtViewMinMaxDiscrimination?.text = context.getString(R.string.temp_celsius)
-                }
-                it.equals("imperial") -> {
-                    holder.txtViewMinMaxDiscrimination?.text = context.getString(R.string.temp_fahrenheit)
-                }
+        if (holder.adapterPosition > lastRowPosition) {
+            playAnimation(holder.itemView, context, R.anim.row_slide_in)
+
+            holder.txtViewDate?.text = getDateTime(dailyListWeather[position].dt, "EEE, MMM d", viewModel.getLanguage(context))
+            holder.imgViewDayIcon?.let {
+                Glide
+                    .with(context)
+                    .load("${AppConstants.IMG_URL}${dailyListWeather[position].weather[0].icon}@4x.png")
+                    .into(it)
             }
-        })
-        val minMaxTemp = StringBuilder()
-        if (dailyListWeather[position].temp.max.rem(100) >= 50) {
-            minMaxTemp.append(dailyListWeather[position].temp.max.toInt().plus(1)).append(" / ")
-        } else {
-            minMaxTemp.append(dailyListWeather[position].temp.max.toInt()).append(" / ")
+            holder.txtViewDailyWeatherDescription?.text =  dailyListWeather[position].weather[0].description
+            viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner, Observer {
+                when {
+                    it.isNullOrBlank() -> {
+                        holder.txtViewMinMaxDiscrimination?.text = context.getString(R.string.temp_kelvin)
+                    }
+                    it.equals("metric") -> {
+                        holder.txtViewMinMaxDiscrimination?.text = context.getString(R.string.temp_celsius)
+                    }
+                    it.equals("imperial") -> {
+                        holder.txtViewMinMaxDiscrimination?.text = context.getString(R.string.temp_fahrenheit)
+                    }
+                }
+            })
+            val minMaxTemp = StringBuilder()
+            if (dailyListWeather[position].temp.max.rem(100) >= 50) {
+                minMaxTemp.append(dailyListWeather[position].temp.max.toInt().plus(1)).append(" / ")
+            } else {
+                minMaxTemp.append(dailyListWeather[position].temp.max.toInt()).append(" / ")
+            }
+            if (dailyListWeather[position].temp.min.rem(100) >= 50) {
+                minMaxTemp.append(dailyListWeather[position].temp.min.toInt().plus(1))
+            } else {
+                minMaxTemp.append(dailyListWeather[position].temp.min.toInt())
+            }
+            holder.txtViewDailyTempMinMax?.text = minMaxTemp
+
+            lastRowPosition = holder.adapterPosition
         }
-        if (dailyListWeather[position].temp.min.rem(100) >= 50) {
-            minMaxTemp.append(dailyListWeather[position].temp.min.toInt().plus(1))
-        } else {
-            minMaxTemp.append(dailyListWeather[position].temp.min.toInt())
-        }
-        holder.txtViewDailyTempMinMax?.text = minMaxTemp
     }
 
     override fun getItemCount(): Int {

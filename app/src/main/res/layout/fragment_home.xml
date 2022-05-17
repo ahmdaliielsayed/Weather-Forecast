@@ -42,7 +42,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="Governorate"
+                android:text="@string/governorate"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="20sp"
@@ -57,7 +57,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="area"
+                android:text="@string/area"
                 android:textAlignment="center"
                 android:textColor="@color/alto"
                 android:textSize="16sp"
@@ -88,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="64dp"
-                android:text="18"
+                android:text="@string/_18"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="96sp"
@@ -100,7 +100,7 @@
                 android:id="@+id/txtViewCurrentTempDiscrimination"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="°c"
+                android:text="@string/temp_celsius"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="48sp"
@@ -113,7 +113,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="broken clouds"
+                android:text="@string/broken_clouds"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="20sp"
@@ -129,7 +129,8 @@
                 android:src="@drawable/clouds"
                 app:layout_constraintBottom_toBottomOf="@+id/txtViewCurrentTemp"
                 app:layout_constraintEnd_toEndOf="@+id/txtViewCurrentDateTime"
-                app:layout_constraintTop_toTopOf="@+id/txtViewCurrentTemp" />
+                app:layout_constraintTop_toTopOf="@+id/txtViewCurrentTemp"
+                tools:ignore="ContentDescription" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewHourly"
@@ -170,7 +171,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    tools:ignore="DisableBaselineAlignment">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -184,7 +186,8 @@
                             android:layout_height="70dp"
                             android:layout_gravity="center"
                             android:layout_marginTop="16dp"
-                            app:srcCompat="@drawable/pressure" />
+                            app:srcCompat="@drawable/pressure"
+                            tools:ignore="ContentDescription" />
 
                         <TextView
                             android:id="@+id/txtViewPressure"
@@ -192,7 +195,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:gravity="center"
-                            android:text="1013 hPa"
+                            android:text="@string/_1013_hpa"
                             android:textColor="@color/white"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -203,7 +206,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:gravity="center"
-                            android:text="Pressure"
+                            android:text="@string/pressure"
                             android:textColor="@color/alto"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -214,7 +217,8 @@
                             android:layout_height="70dp"
                             android:layout_gravity="center"
                             android:layout_marginTop="32dp"
-                            app:srcCompat="@drawable/clouds" />
+                            app:srcCompat="@drawable/clouds"
+                            tools:ignore="ContentDescription" />
 
                         <TextView
                             android:id="@+id/txtViewClouds"
@@ -222,7 +226,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:gravity="center"
-                            android:text="16 %"
+                            android:text="@string/_16"
                             android:textColor="@color/white"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -234,7 +238,7 @@
                             android:layout_marginTop="8dp"
                             android:layout_marginBottom="16dp"
                             android:gravity="center"
-                            android:text="Clouds"
+                            android:text="@string/clouds"
                             android:textColor="@color/alto"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -252,7 +256,8 @@
                             android:layout_height="70dp"
                             android:layout_gravity="center"
                             android:layout_marginTop="16dp"
-                            app:srcCompat="@drawable/humidity" />
+                            app:srcCompat="@drawable/humidity"
+                            tools:ignore="ContentDescription" />
 
                         <TextView
                             android:id="@+id/txtViewHumidity"
@@ -260,7 +265,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:gravity="center"
-                            android:text="16 %"
+                            android:text="@string/_16"
                             android:textColor="@color/white"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -271,7 +276,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:gravity="center"
-                            android:text="Humidity"
+                            android:text="@string/humidity"
                             android:textColor="@color/alto"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -282,7 +287,8 @@
                             android:layout_height="70dp"
                             android:layout_gravity="center"
                             android:layout_marginTop="32dp"
-                            app:srcCompat="@drawable/uv" />
+                            app:srcCompat="@drawable/uv"
+                            tools:ignore="ContentDescription" />
 
                         <TextView
                             android:id="@+id/txtViewUVI"
@@ -290,7 +296,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:gravity="center"
-                            android:text="6.84"
+                            android:text="@string/_6_84"
                             android:textColor="@color/white"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -302,7 +308,7 @@
                             android:layout_marginTop="8dp"
                             android:layout_marginBottom="16dp"
                             android:gravity="center"
-                            android:text="Ultra Violet Index"
+                            android:text="@string/ultra_violet_index"
                             android:textColor="@color/alto"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -320,7 +326,8 @@
                             android:layout_height="70dp"
                             android:layout_gravity="center"
                             android:layout_marginTop="16dp"
-                            app:srcCompat="@drawable/wind" />
+                            app:srcCompat="@drawable/wind"
+                            tools:ignore="ContentDescription" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -334,7 +341,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
                                 android:gravity="center"
-                                android:text="6.28"
+                                android:text="@string/_6_84"
                                 android:textColor="@color/white"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -345,7 +352,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
                                 android:gravity="center"
-                                android:text=" metre/sec"
+                                android:text="@string/m_p_s"
                                 android:textColor="@color/white"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -357,7 +364,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:gravity="center"
-                            android:text="Wind Speed"
+                            android:text="@string/wind_speed"
                             android:textColor="@color/alto"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -368,7 +375,8 @@
                             android:layout_height="70dp"
                             android:layout_gravity="center"
                             android:layout_marginTop="32dp"
-                            app:srcCompat="@drawable/visibility" />
+                            app:srcCompat="@drawable/visibility"
+                            tools:ignore="ContentDescription" />
 
                         <TextView
                             android:id="@+id/txtViewVisibility"
@@ -376,7 +384,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:gravity="center"
-                            android:text="10000 metres"
+                            android:text="@string/_10000_metres"
                             android:textColor="@color/white"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -388,7 +396,7 @@
                             android:layout_marginTop="8dp"
                             android:layout_marginBottom="16dp"
                             android:gravity="center"
-                            android:text="Visibility"
+                            android:text="@string/visibility"
                             android:textColor="@color/alto"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -421,7 +429,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="8dp"
-                        android:text="Feels Like"
+                        android:text="@string/feels_like"
                         android:textAlignment="viewStart"
                         android:textColor="@color/alto"
                         android:textSize="20sp"
@@ -440,14 +448,15 @@
                         android:src="@drawable/cloudy"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/guideline3"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:ignore="ContentDescription" />
 
                     <TextView
                         android:id="@+id/txtViewFeelsLikeTemp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="32dp"
-                        android:text="29.63"
+                        android:text="@string/_29_63"
                         android:textAlignment="center"
                         android:textColor="@color/white"
                         android:textSize="24sp"
@@ -460,7 +469,7 @@
                         android:id="@+id/txtViewFeelsLikeDiscrimination"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="°c"
+                        android:text="@string/temp_celsius"
                         android:textAlignment="center"
                         android:textColor="@color/white"
                         android:textSize="20sp"

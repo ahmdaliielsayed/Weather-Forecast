@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">الطقس</string>
+    <string name="title_activity_home">الرئيسية</string>
+    <string name="action_settings">الاعدادات</string>
+
+    <string name="menu_home">الرئيسية</string>
+    <string name="menu_favorite">المفضلة</string>
+    <string name="menu_notifications">التنبيهات</string>
+    <string name="menu_settings">الاعدادات</string>
+
+    <string name="gps">موقعي الحالي</string>
+    <string name="map">الخريطة</string>
+    <string name="initial_setup">اعدادات أولية</string>
+    <string name="location">الموقع</string>
+    <string name="notifications">الإشعارات</string>
+    <string name="ok">موافق</string>
+    <string name="cancel">إلغاء</string>
+    <string name="permission_required">لا نستطيع الاستمرار بدون موافقتكـ\n من فضلكـ ، وافق على إذن الوصول إلى موقعكـ لتمكننا من الوصول إلى الطقس في منطقتكـ.</string>
+    <string name="warning">تحذير</string>
+    <string name="open_gps">من فضلكـ ، افتح الموقع الحالي (GPS) أو اتصل بـ الشبكة لتمكنا من الوصول إلى منطقتكـ!</string>
+    <string name="cancelled">تم الإلغاء!</string>
+    <string name="temp_kelvin">°ك</string>
+    <string name="temp_celsius">°س</string>
+    <string name="temp_fahrenheit">°ف</string>
+    <string name="m_p_s">متر/ث</string>
+    <string name="m_p_h">ميل/س</string>
+    <string name="metres">متر</string>
+    <string name="connection_lost">انقطع الاتصال بـ الانترنت!\n الرجاء إعادة الاتصال مرة أخرى لتمكننا من الوصول إلى بيانات حديثة.</string>
+    <string name="first_time_fetch">يجب الاتصال بـ الانترنت في أول مرة تستخدم فيها التطبيق!</string>
+    <string name="title_activity_maps">الخريطة</string>
+    <string name="changed_successfully">تم بنجاح!</string>
+    <string name="denied_map_request">لا تستطيع الوصول إلى الخريطة!</string>
+    <string name="empty_string">فارغ!\n من فضلكـ أكتب مكان للبحث عنه</string>
+    <string name="unknown_adminArea">المحافظة غير معروفة</string>
+    <string name="unknown_locality">المنطقة غير معروفة</string>
+    <string name="delete_place">هل أنت متأكد من حذف هذا المكان؟</string>
+
+    <string name="governorate">المحافظة:</string>
+    <string name="area">المنطقة</string>
+    <string name="eighteen">18</string>
+    <string name="broken_clouds">غيوم قاتمة</string>
+    <string name="_1013_hpa">1013 hPa</string>
+    <string name="pressure">الضغط</string>
+    <string name="_16">16 %</string>
+    <string name="clouds">السحب</string>
+    <string name="humidity">الرطوبة</string>
+    <string name="_6_84">6.84</string>
+    <string name="ultra_violet_index">الأشعة فوق بنفسجية</string>
+    <string name="wind_speed">سرعة الرياح</string>
+    <string name="_10000_metres">10000 متر</string>
+    <string name="visibility">الرؤية</string>
+    <string name="feels_like">تشعر و كأنها</string>
+    <string name="_29_63">29.63</string>
+
+    <string name="search_by_address_or_city">ابحث بالعنوان أو المدينة</string>
+    <string name="governorate_value">اسم المحافظة</string>
+    <string name="region">المنطقة:</string>
+    <string name="region_value">اسم المنطقة</string>
+    <string name="save">حفظ</string>
+
+    <string name="no_places">لا يوجد أماكن</string>
+    <string name="add_favorite_place">أضف مكانكـ المفضل</string>
+
+    <string name="_18">18</string>
+
+    <string name="meter_second">متر / ثانية</string>
+    <string name="miles_hour">ميل / ساعة</string>
+    <string name="enable">تفعيل</string>
+    <string name="disable">إلغاء</string>
+    <string name="language">اللغة</string>
+    <string name="english">الإنجليزية</string>
+    <string name="arabic">العربية</string>
+    <string name="temperature">درجة الحرارة</string>
+    <string name="celsius">درجة مئوية</string>
+    <string name="kelvin">كلفن</string>
+    <string name="fahrenheit">فهرنهايت</string>
+
+    <string name="today">اليوم</string>
+    <string name="_31_16">31 / 16</string>
+
+    <string name="_01_00_am">01:00 ص</string>
+    <string name="_27">27</string>
+</resources>

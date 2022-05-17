@@ -80,7 +80,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
             android:background="@drawable/txt_background_gradient"
-            android:text="Wind Speed"
+            android:text="@string/wind_speed"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="20sp"
@@ -111,7 +111,7 @@
                     android:buttonTint="@color/mauve"
                     android:checked="true"
                     android:minHeight="48dp"
-                    android:text="Meter / Second"
+                    android:text="@string/meter_second"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -122,7 +122,7 @@
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/mauve"
                     android:minHeight="48dp"
-                    android:text="Miles / Hour"
+                    android:text="@string/miles_hour"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -169,7 +169,7 @@
                     android:buttonTint="@color/mauve"
                     android:checked="true"
                     android:minHeight="48dp"
-                    android:text="Enable"
+                    android:text="@string/enable"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -180,7 +180,7 @@
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/mauve"
                     android:minHeight="48dp"
-                    android:text="Disable"
+                    android:text="@string/disable"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -204,7 +204,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
             android:background="@drawable/txt_background_gradient"
-            android:text="Language"
+            android:text="@string/language"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="20sp"
@@ -235,7 +235,7 @@
                     android:buttonTint="@color/mauve"
                     android:checked="true"
                     android:minHeight="48dp"
-                    android:text="English"
+                    android:text="@string/english"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -246,7 +246,7 @@
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/mauve"
                     android:minHeight="48dp"
-                    android:text="Arabic"
+                    android:text="@string/arabic"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -262,7 +262,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
             android:background="@drawable/txt_background_gradient"
-            android:text="Temperature"
+            android:text="@string/temperature"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="20sp"
@@ -293,7 +293,7 @@
                     android:buttonTint="@color/mauve"
                     android:checked="true"
                     android:minHeight="48dp"
-                    android:text="Celsius"
+                    android:text="@string/celsius"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -304,7 +304,7 @@
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/mauve"
                     android:minHeight="48dp"
-                    android:text="Kelvin"
+                    android:text="@string/kelvin"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -315,7 +315,7 @@
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/mauve"
                     android:minHeight="48dp"
-                    android:text="Fahrenheit"
+                    android:text="@string/fahrenheit"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
                     android:textStyle="bold" />

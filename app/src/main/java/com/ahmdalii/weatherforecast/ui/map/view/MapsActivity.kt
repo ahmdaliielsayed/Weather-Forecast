@@ -1,6 +1,7 @@
 package com.ahmdalii.weatherforecast.ui.map.view
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.os.Bundle
@@ -26,6 +27,7 @@ import com.ahmdalii.weatherforecast.ui.map.viewmodel.MapViewModelFactory
 import com.ahmdalii.weatherforecast.utils.AppConstants.COMING_FROM
 import com.ahmdalii.weatherforecast.utils.AppConstants.FAVORITE_FRAGMENT
 import com.ahmdalii.weatherforecast.utils.AppConstants.INITIAL_DIALOG
+import com.ahmdalii.weatherforecast.utils.AppConstants.REPLY_INTENT_KEY
 import com.ahmdalii.weatherforecast.utils.AppConstants.SETTING_FRAGMENT
 import com.ahmdalii.weatherforecast.utils.AppConstants.getPlaceName
 import com.ahmdalii.weatherforecast.utils.AppConstants.playAnimation
@@ -83,17 +85,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             override fun onTextChanged(value: CharSequence, start: Int, count: Int, after: Int) {
-
-                // remove existing callback (timer reset)
                 handler.removeCallbacks(postToServerRunnable)
 
                 if (value.isEmpty()) {
-                    Log.d("asdfer:hand", "isEmpty")
                     Toast.makeText(this@MapsActivity, R.string.empty_string, Toast.LENGTH_SHORT)
                         .show()
                 } else {
-                    Log.d("asdfer:hand", value.toString())
-                    // 500 millisecond delay. Change to whatever delay you want.
                     handler.postDelayed(postToServerRunnable, 3000)
                 }
             }
@@ -108,7 +105,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         binding.imgViewClose.setOnClickListener {
-            playAnimation(binding.constraintLayout, this, R.anim.close_view_zoom_out)
+            playAnimation(binding.constraintLayout, this, R.anim.close_view_zoom_out_fade_out)
             binding.constraintLayout.visibility = View.GONE
             isViewOpen = false
         }
@@ -207,28 +204,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.txtViewAddressLocalityValue.text = address.locality ?: getString(R.string.unknown_locality)
         if (!isViewOpen) {
             binding.constraintLayout.visibility = View.VISIBLE
-            playAnimation(binding.constraintLayout, this, R.anim.open_view_zoom_in)
+            playAnimation(binding.constraintLayout, this, R.anim.open_view_zoom_in_fade_in)
             isViewOpen = true
         }
 
         binding.btnSave.setOnClickListener {
-            Log.d("qqqwww:", "0")
             when (comingFrom) {
                 INITIAL_DIALOG -> {
-                    Log.d("qqqwww:lat", latLng.toString())
-                    Log.d("qqqwww:add", address.toString())
                     viewModel.saveUpdateLocationPlace(this, latLng, address)
-                    Log.d("qqqwww:", "1")
                 }
                 FAVORITE_FRAGMENT -> {
-                    viewModel.insertFavoritePlace(FavoritePlace(latLng.latitude, latLng.longitude, address.adminArea, address.locality))
-                    Log.d("qqqwww:", "2")
+                    val replyIntent = Intent()
+                    replyIntent.putExtra(REPLY_INTENT_KEY,
+                        FavoritePlace(latLng.latitude, latLng.longitude,
+                            address.adminArea ?: getString(R.string.unknown_adminArea),
+                            address.locality ?: getString(R.string.unknown_locality)))
+                    setResult(RESULT_OK, replyIntent)
                 }
                 SETTING_FRAGMENT -> {
-                    Log.d("qqqwww:lat", latLng.toString())
-                    Log.d("qqqwww:add", address.toString())
                     viewModel.saveUpdateLocationPlace(this, latLng, address)
-                    Log.d("qqqwww:", "3")
                 }
             }
             finish()
@@ -291,13 +285,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             permissions.entries.forEach {
                 if (it.value) {
                     // Permission is granted. Continue the action or workflow in your app.
-                    Log.d("asdfg:", "${it.key} granted")
                     locationPermissionGranted = true
-                    /*if (isNetworkConnected) {
-                        dismissDialogAndGetWeather()
-                    } else {
-                        Toast.makeText(myView.context, R.string.first_time_fetch, Toast.LENGTH_LONG).show()
-                    }*/
                     initializeMap()
                     viewModel.getDeviceLocation(this)
                 } else {
