@@ -35,6 +35,7 @@
     <string name="unknown_adminArea">المحافظة غير معروفة</string>
     <string name="unknown_locality">المنطقة غير معروفة</string>
     <string name="delete_place">هل أنت متأكد من حذف هذا المكان؟</string>
+    <string name="delete_alert">هل أنت متأكد من حذف هذا التنبيه؟</string>
 
     <string name="governorate">المحافظة:</string>
     <string name="area">المنطقة</string>
@@ -81,4 +82,28 @@
 
     <string name="_01_00_am">01:00 ص</string>
     <string name="_27">27</string>
+
+    <string name="draw_overlays">من فضلكـ ، قم بتفعيل إذن الظهور فوق التطبيقات الأخرى.</string>
+    <string name="draw_overlays_description">لن تستقبل أي تنبيهات أثناء وجود التطبيق في الخلفية إذا قمت برفض أو تعطيل هذه الأذونات\n\nقم بتفعيل…\n1) عرض النوافذ المنبثقة أثناء التشغيل في الخلفية\n2) عرض نافذة منبثقة</string>
+    <string name="go_to_settings">اذهب إلى الإعدادات</string>
+    <string name="error_msg_permission_required">الإذن مطلوب! \nمن فضلكـ ، وافق على الإذن للعمل بشكل صحيح!</string>
+    <string name="empty_alarm_from">يجب عليكـ اختيار (بداية) التاريخ و الوقت أولاََ!</string>
+    <string name="empty_alarm_to">يجب عليكـ اختيار (نهاية) التاريخ و الوقت أولاََ!</string>
+
+    <string name="weather_alert">تنبيه الطقس</string>
+    <string name="weather_description">الدنيا ربيع و الجو بديع.</string>
+    <string name="dismiss">إغلاق</string>
+
+    <string name="from">من</string>
+    <string name="to">إلى</string>
+    <string name="_3_52_am">3:52 ص</string>
+    <string name="_26_feb_2021">26 فبراير, 2022</string>
+    <string name="alarm">تنبيه</string>
+    <string name="notification">اشعار</string>
+
+    <string name="no_alerts">لا يوجد تنبيهات</string>
+    <string name="add_alert">اضافة تنبيه</string>
+
+    <string name="_2_52_am">2:52 ص</string>
+    <string name="_to">إلى</string>
 </resources>

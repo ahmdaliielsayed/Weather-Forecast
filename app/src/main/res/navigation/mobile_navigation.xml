@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/nav_notifications"
-        android:name="com.ahmdalii.weatherforecast.ui.notification.view.NotificationsFragment"
+        android:name="com.ahmdalii.weatherforecast.ui.notification.view.NotificationFragment"
         android:label="@string/menu_notifications"
         tools:layout="@layout/fragment_notifications" />
     <fragment

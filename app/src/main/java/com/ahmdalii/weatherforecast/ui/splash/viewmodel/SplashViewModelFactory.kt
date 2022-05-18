@@ -2,8 +2,6 @@ package com.ahmdalii.weatherforecast.ui.splash.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.ahmdalii.weatherforecast.ui.home.repo.HomeRepoInterface
-import com.ahmdalii.weatherforecast.ui.setting.repo.SettingsRepoInterface
 import com.ahmdalii.weatherforecast.ui.splash.repo.SplashRepoInterface
 
 class SplashViewModelFactory (private val _repo: SplashRepoInterface): ViewModelProvider.Factory {

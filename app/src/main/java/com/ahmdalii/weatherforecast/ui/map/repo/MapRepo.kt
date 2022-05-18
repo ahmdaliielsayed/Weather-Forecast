@@ -12,7 +12,6 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.db.favorite.LocalSourceFavorite
-import com.ahmdalii.weatherforecast.db.weather.LocalSource
 import com.ahmdalii.weatherforecast.model.FavoritePlace
 import com.ahmdalii.weatherforecast.utils.AppConstants.CURRENT_DEVICE_LOCATION
 import com.ahmdalii.weatherforecast.utils.AppConstants.DEVICE_LATITUDE
@@ -29,7 +28,7 @@ import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import java.io.IOException
 
-class MapRepo private constructor(/*private var remoteSource: RemoteSource,*/ private var localSourceFavorite: LocalSourceFavorite): MapRepoInterface{
+class MapRepo private constructor(private var localSourceFavorite: LocalSourceFavorite): MapRepoInterface{
 
     companion object{
         private var instance: MapRepoInterface? = null

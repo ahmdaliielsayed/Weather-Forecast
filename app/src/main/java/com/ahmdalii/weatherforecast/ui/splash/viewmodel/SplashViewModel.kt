@@ -1,21 +1,11 @@
 package com.ahmdalii.weatherforecast.ui.splash.viewmodel
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ahmdalii.weatherforecast.R
-import com.ahmdalii.weatherforecast.model.WeatherModel
-import com.ahmdalii.weatherforecast.ui.setting.repo.SettingsRepoInterface
 import com.ahmdalii.weatherforecast.ui.splash.repo.SplashRepoInterface
-import com.ahmdalii.weatherforecast.utils.AppConstants
-import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE
-import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD
-import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT
-import com.ahmdalii.weatherforecast.utils.AppConstants.NOTIFICATION
-import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

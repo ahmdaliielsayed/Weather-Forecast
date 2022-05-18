@@ -28,7 +28,6 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_METRIC
 import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_STANDARD
 import com.ahmdalii.weatherforecast.utils.AppConstants.NOTIFICATION
 import com.ahmdalii.weatherforecast.utils.AppConstants.SETTING_FILE
-import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_FACTOR
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_H
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_S
@@ -209,11 +208,6 @@ class HomeRepo private constructor(
 
     override fun insertWeatherModel(weatherModel: WeatherModel) {
         localSource.insertWeatherModel(weatherModel)
-        if (weatherModel.alerts?.isNotEmpty() == true) {
-            for (alert in weatherModel.alerts) {
-                localSource.insertAlert(alert)
-            }
-        }
     }
 
     override fun selectAllStoredWeatherModel(context: Context): LiveData<WeatherModel> {

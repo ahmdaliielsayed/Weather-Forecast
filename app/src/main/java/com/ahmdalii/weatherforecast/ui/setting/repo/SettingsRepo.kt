@@ -12,8 +12,6 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE
-import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE_AR
-import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE_EN
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_ADMIN_AREA
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LATITUDE
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LOCALITY
@@ -31,7 +29,6 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.getGeocoder
 import com.ahmdalii.weatherforecast.utils.AppSharedPref
 import com.google.android.gms.location.*
 import java.io.IOException
-import java.util.*
 
 class SettingsRepo private constructor(): SettingsRepoInterface {
 
@@ -54,8 +51,6 @@ class SettingsRepo private constructor(): SettingsRepoInterface {
         AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_METHOD, locationMethod)
         if (locationMethod == LOCATION_METHOD_GPS) {
             saveUpdateLocation(context)
-        } else {
-            // work with map !!!
         }
     }
 

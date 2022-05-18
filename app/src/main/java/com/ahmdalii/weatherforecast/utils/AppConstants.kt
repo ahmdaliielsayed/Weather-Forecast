@@ -9,25 +9,26 @@ import android.location.Geocoder
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.net.NetworkInfo
-import android.os.Build
-import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.location.LocationManagerCompat
+import androidx.room.TypeConverter
 import com.ahmdalii.weatherforecast.BuildConfig
 import com.ahmdalii.weatherforecast.R
-import kotlinx.coroutines.runBlocking
+import com.ahmdalii.weatherforecast.model.MyAlert
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.io.IOException
+import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 
 object AppConstants {
 
     const val SPLASH_TIME_OUT: Long = 5000
-    const val WIND_SPEED_FACTOR = 2.23693629
+    private const val WIND_SPEED_FACTOR = 2.23693629
 
     const val SETTING_FILE: String = "setting file"
     const val LOCATION_LONGITUDE: String = "location longitude"
@@ -65,6 +66,13 @@ object AppConstants {
     const val REPLY_INTENT_KEY: String = "reply intent"
     const val FAVORITE_KEY: String = "weather intent"
 
+    const val ALARM_CHECKED: String = "alarm checked"
+    const val NOTIFICATION_CHECKED: String = "notification checked"
+    const val MY_ALERT: String = "my alert"
+    const val DESCRIPTION: String = "description"
+    const val ICON: String = "icon"
+    const val FROM_TIME_IN_MILLIS: String = "fromTimeInMillis"
+
     const val BASE_URL: String = BuildConfig.BASE_URL
     const val IMG_URL: String = BuildConfig.IMG_URL
     const val WEATHER_APP_ID: String = BuildConfig.WEATHER_APP_ID
@@ -84,6 +92,20 @@ object AppConstants {
 //        format.timeZone = TimeZone.getTimeZone("GMT+2")
         format.timeZone = TimeZone.getDefault()
         return format.format(Date(dt * 1000L))
+    }
+
+    fun getDateTime(milliSeconds: Long, pattern: String, language: String): String {
+        val formatter = SimpleDateFormat(pattern, Locale(language))
+
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = milliSeconds
+        return formatter.format(calendar.time)
+    }
+
+    fun getDateTime(calendar: Calendar, pattern: String, language: String): String {
+        val format = SimpleDateFormat(pattern, Locale(language))
+        format.timeZone = TimeZone.getDefault()
+        return format.format(calendar.time)
     }
 
     fun isInternetAvailable(context: Context): Boolean {
@@ -145,7 +167,6 @@ object AppConstants {
             addresses = gcd.getFromLocation(latitude, longitude, 1)
 
             if (!addresses.isNullOrEmpty()) {
-                Log.d("asdfg:asd", addresses[0].toString())
                 address = addresses[0]
             }
         } catch (e: IOException) {
@@ -186,4 +207,44 @@ object AppConstants {
         context.createConfigurationContext(config)
         context.resources.updateConfiguration(config, context.resources.displayMetrics)
     }
+
+    fun getIcon(imageString: String): Int {
+        val imageInInteger: Int
+        when (imageString) {
+            "01d" -> imageInInteger = R.drawable.icon_01d
+            "01n" -> imageInInteger = R.drawable.icon_01n
+            "02d" -> imageInInteger = R.drawable.icon_02d
+            "02n" -> imageInInteger = R.drawable.icon_02n
+            "03n" -> imageInInteger = R.drawable.icon_03n
+            "03d" -> imageInInteger = R.drawable.icon_03d
+            "04d" -> imageInInteger = R.drawable.icon_04d
+            "04n" -> imageInInteger = R.drawable.icon_04n
+            "09d" -> imageInInteger = R.drawable.icon_09d
+            "09n" -> imageInInteger = R.drawable.icon_09n
+            "10d" -> imageInInteger = R.drawable.icon_10d
+            "10n" -> imageInInteger = R.drawable.icon_10n
+            "11d" -> imageInInteger = R.drawable.icon_11d
+            "11n" -> imageInInteger = R.drawable.icon_11n
+            "13d" -> imageInInteger = R.drawable.icon_13d
+            "13n" -> imageInInteger = R.drawable.icon_13n
+            "50d" -> imageInInteger = R.drawable.icon_50d
+            "50n" -> imageInInteger = R.drawable.icon_50n
+            else -> imageInInteger = R.drawable.icon_50n
+        }
+        return imageInInteger
+    }
+
+    fun openNotification(context: Context, myAlert: MyAlert, description: String, icon: String, title: String) {
+        val notificationHelper = Notification(context, description, icon, title)
+        val nb = notificationHelper.getChannelNotification()
+        notificationHelper.getManager()!!.notify(myAlert.id.hashCode(), nb.build())
+    }
+
+    @TypeConverter
+    fun convertToMyAlert(value: String): MyAlert {
+        val type: Type = object : TypeToken<MyAlert>() {}.type
+        return Gson().fromJson(value, type)
+    }
+    @TypeConverter
+    fun convertMyAlertToString(myAlert: MyAlert): String = Gson().toJson(myAlert)
 }

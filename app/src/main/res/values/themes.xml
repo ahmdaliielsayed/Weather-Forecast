@@ -28,4 +28,9 @@
         <item name="colorControlActivated">@color/mauve</item>
         <item name="colorSwitchThumbNormal">@color/mauve</item>
     </style>
+
+    <style name="dialogueTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>

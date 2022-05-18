@@ -17,9 +17,6 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityHomeBinding
 
-//    private lateinit var homeViewModelFactory: HomeViewModelFactory
-//    private lateinit var viewModel: HomeViewModel
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -27,28 +24,12 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupToolbar()
-//        handleFab()
         configureNavView()
-//        gettingViewModelReady()
     }
-
-    /*private fun gettingViewModelReady() {
-        homeViewModelFactory = HomeViewModelFactory(
-            HomeRepo.getInstance(WeatherClient.getInstance())
-        )
-        viewModel = ViewModelProvider(this, homeViewModelFactory)[HomeViewModel::class.java]
-    }*/
 
     private fun setupToolbar() {
         setSupportActionBar(binding.appBarHome.toolbar)
     }
-
-    /*private fun handleFab() {
-        binding.appBarHome.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
-    }*/
 
     private fun configureNavView() {
         val drawerLayout: DrawerLayout = binding.drawerLayout
@@ -64,12 +45,6 @@ class HomeActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
-
-    /*override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.home, menu)
-        return true
-    }*/
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_home)

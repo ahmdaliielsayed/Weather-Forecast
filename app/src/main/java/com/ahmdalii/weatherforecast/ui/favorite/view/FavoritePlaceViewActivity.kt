@@ -17,7 +17,6 @@ import com.ahmdalii.weatherforecast.network.WeatherClient
 import com.ahmdalii.weatherforecast.ui.favorite.repo.FavoriteRepo
 import com.ahmdalii.weatherforecast.ui.favorite.viewmodel.FavoriteViewModel
 import com.ahmdalii.weatherforecast.ui.favorite.viewmodel.FavoriteViewModelFactory
-import com.ahmdalii.weatherforecast.ui.home.view.HomeHourlyAdapter
 import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.FAVORITE_KEY
 import com.ahmdalii.weatherforecast.utils.AppConstants.getPlaceName

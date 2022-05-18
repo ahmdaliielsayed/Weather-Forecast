@@ -3,7 +3,6 @@ package com.ahmdalii.weatherforecast.ui.favorite.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ahmdalii.weatherforecast.ui.favorite.repo.FavoriteRepoInterface
-import com.ahmdalii.weatherforecast.ui.map.repo.MapRepoInterface
 
 class FavoriteViewModelFactory (private val _repo: FavoriteRepoInterface): ViewModelProvider.Factory {
 

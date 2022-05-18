@@ -7,7 +7,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -256,20 +255,6 @@ class HomeFragment : Fragment() {
         notificationSwitch = dialog.findViewById(R.id.notificationSwitch)
         val btnOk = dialog.findViewById<Button>(R.id.btnOk)
 
-        /*radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            val radioBtn = dialog.findViewById<RadioButton>(checkedId)
-            when (checkedId) {
-                R.id.radioBtnGPS -> {
-                    // check permission
-                    Log.d("asdfg:A", radioBtn.text.toString())
-                }
-                R.id.radioBtnMap -> {
-                    // open map
-                    Log.d("asdfg:B", radioBtn.text.toString())
-                }
-            }
-        }*/
-
         dialog.findViewById<RadioButton>(R.id.radioBtnMap).setOnClickListener {
             val intent = Intent(myView.context, MapsActivity::class.java)
             intent.putExtra(AppConstants.COMING_FROM, INITIAL_DIALOG)
@@ -339,7 +324,6 @@ class HomeFragment : Fragment() {
             permissions.entries.forEach {
                 if (it.value) {
                     // Permission is granted. Continue the action or workflow in your app.
-                    Log.d("asdfg:", "${it.key} granted")
                     isAllPermissionsGranted = true
                     if (!isInternetAvailable(myView.context)) {
                         Toast.makeText(myView.context, R.string.first_time_fetch, Toast.LENGTH_LONG).show()

@@ -7,11 +7,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,10 +17,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.location.LocationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.databinding.FragmentSettingsBinding
-import com.ahmdalii.weatherforecast.ui.HomeActivity
 import com.ahmdalii.weatherforecast.ui.map.view.MapsActivity
 import com.ahmdalii.weatherforecast.ui.setting.repo.SettingsRepo
 import com.ahmdalii.weatherforecast.ui.setting.viewmodel.SettingsViewModel
@@ -138,11 +132,9 @@ class SettingsFragment : Fragment() {
         binding.radioGroupNotifications.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.radioBtnEnable -> {
-                    Log.d("asdfg:A", "Enable")
                     viewModel.setNotificationChecked(myView.context, true)
                 }
                 R.id.radioBtnDisable -> {
-                    Log.d("asdfg:B", "Disable")
                     viewModel.setNotificationChecked(myView.context, false)
                 }
             }
@@ -200,7 +192,6 @@ class SettingsFragment : Fragment() {
             permissions.entries.forEach {
                 if (it.value) {
                     // Permission is granted. Continue the action or workflow in your app.
-                    Log.d("asdfg:", "${it.key} granted")
                     isAllPermissionsGranted = true
                     viewModel.setLocationMethod(myView.context, LOCATION_METHOD_GPS)
                     binding.radioBtnGPS.isChecked = true

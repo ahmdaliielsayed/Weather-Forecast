@@ -2,14 +2,12 @@ package com.ahmdalii.weatherforecast.ui.home.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.model.Hourly
@@ -23,10 +21,10 @@ class HomeHourlyAdapter(
     var context: Context,
     private var hourlyListWeather: List<Hourly>,
     var viewModel: HomeViewModel,
-    var viewLifecycleOwner: LifecycleOwner
+    private var viewLifecycleOwner: LifecycleOwner
 ) : RecyclerView.Adapter<HomeHourlyAdapter.ViewHolder>() {
 
-    var lastRowPosition = -1
+//    var lastRowPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -35,41 +33,36 @@ class HomeHourlyAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (holder.adapterPosition > lastRowPosition) {
-            playAnimation(holder.itemView, context, R.anim.row_slide_down)
+        playAnimation(holder.itemView, context, R.anim.row_slide_down)
 
-            holder.txtViewHourlyTime?.text = getDateTime(hourlyListWeather[position].dt, "hh:mm a", viewModel.getLanguage(context))
-            holder.imgViewHourlyWeatherIcon?.let {
-                Glide
-                    .with(context)
-                    .load("${AppConstants.IMG_URL}${hourlyListWeather[position].weather[0].icon}@4x.png")
-                    .into(it)
-            }
-            viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner, Observer {
-                when {
-                    it.isNullOrBlank() -> {
-                        holder.txtViewHourlyTempDiscrimination?.text = context.getString(R.string.temp_kelvin)
-                    }
-                    it.equals("metric") -> {
-                        holder.txtViewHourlyTempDiscrimination?.text = context.getString(R.string.temp_celsius)
-                    }
-                    it.equals("imperial") -> {
-                        holder.txtViewHourlyTempDiscrimination?.text = context.getString(R.string.temp_fahrenheit)
-                    }
+        holder.txtViewHourlyTime?.text = getDateTime(hourlyListWeather[position].dt, "hh:mm a", viewModel.getLanguage(context))
+        holder.imgViewHourlyWeatherIcon?.let {
+            Glide
+                .with(context)
+                .load("${AppConstants.IMG_URL}${hourlyListWeather[position].weather[0].icon}@4x.png")
+                .into(it)
+        }
+        viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner, {
+            when {
+                it.isNullOrBlank() -> {
+                    holder.txtViewHourlyTempDiscrimination?.text = context.getString(R.string.temp_kelvin)
                 }
-            })
-            if (hourlyListWeather[position].temp.rem(100) >= 50) {
-                holder.txtViewHourlyTemp?.text = "${hourlyListWeather[position].temp.toInt().plus(1)}"
-            } else {
-                holder.txtViewHourlyTemp?.text = "${hourlyListWeather[position].temp.toInt()}"
+                it.equals("metric") -> {
+                    holder.txtViewHourlyTempDiscrimination?.text = context.getString(R.string.temp_celsius)
+                }
+                it.equals("imperial") -> {
+                    holder.txtViewHourlyTempDiscrimination?.text = context.getString(R.string.temp_fahrenheit)
+                }
             }
-
-            lastRowPosition = holder.adapterPosition
+        })
+        if (hourlyListWeather[position].temp.rem(100) >= 50) {
+            holder.txtViewHourlyTemp?.text = "${hourlyListWeather[position].temp.toInt().plus(1)}"
+        } else {
+            holder.txtViewHourlyTemp?.text = "${hourlyListWeather[position].temp.toInt()}"
         }
     }
 
     override fun getItemCount(): Int {
-        Log.d("asdfg:hourly", hourlyListWeather.size.toString())
         return hourlyListWeather.size
     }
 

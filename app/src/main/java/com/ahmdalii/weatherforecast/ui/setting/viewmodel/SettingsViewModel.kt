@@ -7,9 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ahmdalii.weatherforecast.R
-import com.ahmdalii.weatherforecast.model.WeatherModel
 import com.ahmdalii.weatherforecast.ui.setting.repo.SettingsRepoInterface
-import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD
 import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT

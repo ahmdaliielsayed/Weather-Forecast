@@ -34,6 +34,7 @@
     <string name="unknown_adminArea">unknown admin area</string>
     <string name="unknown_locality">unknown locality</string>
     <string name="delete_place">Are you sure to delete this place?</string>
+    <string name="delete_alert">Are you sure to delete this alert?</string>
 
     <string name="governorate">Governorate:</string>
     <string name="area">Area</string>
@@ -80,4 +81,28 @@
 
     <string name="_01_00_am">01:00 AM</string>
     <string name="_27">27</string>
+
+    <string name="draw_overlays">Please, Enable Draw Overlays permission.</string>
+    <string name="draw_overlays_description">You will not receive notifications while the app is in the background if you disable these permissions.\n\nEnable…\n1) Display pop-up windows while running in the background \n2) Display pop-up window</string>
+    <string name="go_to_settings">Go to Settings</string>
+    <string name="error_msg_permission_required">Permission required!\nPlease, give the permission to work correctly!</string>
+    <string name="empty_alarm_from">You must select (From) date and time!</string>
+    <string name="empty_alarm_to">You must select (To) date and time!</string>
+
+    <string name="weather_alert">Weather Alert</string>
+    <string name="weather_description">Weather is fine, no alerts for the scheduled time period.</string>
+    <string name="dismiss">Dismiss</string>
+
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="_3_52_am">3:52 AM</string>
+    <string name="_26_feb_2021">26 Feb, 2021</string>
+    <string name="alarm">Alarm</string>
+    <string name="notification">Notification</string>
+
+    <string name="no_alerts">No Alerts</string>
+    <string name="add_alert">add alert</string>
+
+    <string name="_2_52_am">2:52 AM</string>
+    <string name="_to">TO</string>
 </resources>

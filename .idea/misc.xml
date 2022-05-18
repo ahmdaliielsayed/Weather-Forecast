@@ -9,6 +9,7 @@
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/drawable-v24/row_background_gradient.xml" value="0.2203125" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/drawable/btn_background_gradient.xml" value="0.2203125" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/drawable/btn_round.xml" value="0.2203125" />
+        <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/drawable/ic_back.xml" value="0.2203125" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.2203125" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/drawable/ic_baseline_delete_forever_24.xml" value="0.2203125" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/drawable/ic_baseline_favorite_border_24.xml" value="0.2203125" />
@@ -20,11 +21,16 @@
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/drawable/row_hourly_background.xml" value="0.2203125" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/drawable/toolbar_background.xml" value="0.2203125" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/drawable/txt_background_gradient.xml" value="0.2203125" />
+        <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/activity_dialog.xml" value="0.19010416666666666" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/activity_favorite_place_view.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/activity_home.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/activity_main.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/activity_maps.xml" value="0.25" />
+        <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/activity_notify.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/activity_splash.xml" value="0.27291666666666664" />
+        <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/alarm_row.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/alert_notification_dialog.xml" value="0.22" />
+        <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/alert_window_manger.xml" value="0.33" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/app_bar_home.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/content_home.xml" value="0.22" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/fragment_favorite.xml" value="0.22" />
@@ -34,6 +40,7 @@
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/initial_setup_dialog.xml" value="0.2" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/layout_weather_data.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/nav_header_home.xml" value="0.25" />
+        <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/row_alert.xml" value="0.25" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/row_daily.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/row_favorite.xml" value="0.33" />
         <entry key="..\:/Users/AhmedAli/AndroidStudioProjects/WeatherForecast/app/src/main/res/layout/row_hourly.xml" value="0.9" />

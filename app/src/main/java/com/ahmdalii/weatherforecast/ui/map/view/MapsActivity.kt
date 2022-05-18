@@ -19,7 +19,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.databinding.ActivityMapsBinding
 import com.ahmdalii.weatherforecast.db.favorite.ConcreteLocalSourceFavorite
-import com.ahmdalii.weatherforecast.db.weather.ConcreteLocalSource
 import com.ahmdalii.weatherforecast.model.FavoritePlace
 import com.ahmdalii.weatherforecast.ui.map.repo.MapRepo
 import com.ahmdalii.weatherforecast.ui.map.viewmodel.MapViewModel

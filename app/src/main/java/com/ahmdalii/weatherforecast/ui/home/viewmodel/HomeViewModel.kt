@@ -2,7 +2,6 @@ package com.ahmdalii.weatherforecast.ui.home.viewmodel
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.ahmdalii.weatherforecast.model.Hourly
 import com.ahmdalii.weatherforecast.model.WeatherModel
 import com.ahmdalii.weatherforecast.ui.home.repo.HomeRepoInterface
-import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LOCALITY
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LONGITUDE
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -43,7 +41,6 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
     private val coroutineExceptionHandler = CoroutineExceptionHandler{ _, t ->
         run {
             t.printStackTrace()
-            Log.e("asdfg:coroutine", t.message.toString())
             _errorMsgResponse.postValue(t.message)
         }
     }
@@ -75,7 +72,6 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
                 saveCurrentWeatherModelToRoom(currentWeatherResponse.body()!!)
                 _weatherModelResponse.postValue(currentWeatherResponse.body())
             } else {
-                Log.e("asdfg:getCurrWeth", currentWeatherResponse.message().toString())
                 _errorMsgResponse.postValue(currentWeatherResponse.message())
             }
         }

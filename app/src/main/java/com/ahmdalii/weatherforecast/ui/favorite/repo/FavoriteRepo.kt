@@ -1,7 +1,6 @@
 package com.ahmdalii.weatherforecast.ui.favorite.repo
 
 import android.content.Context
-import android.location.Address
 import androidx.lifecycle.LiveData
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.db.favorite.LocalSourceFavorite

@@ -1,13 +1,9 @@
 package com.ahmdalii.weatherforecast.model
 
 import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-@Entity(tableName = "Alert")
-class Alert(
-    @PrimaryKey
+data class Alert(
     @ColumnInfo(name = "sender_name")
     @SerializedName("sender_name")
     val senderName: String,

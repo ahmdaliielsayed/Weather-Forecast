@@ -3,7 +3,6 @@ package com.ahmdalii.weatherforecast.ui.favorite.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +25,6 @@ import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.COMING_FROM
 import com.ahmdalii.weatherforecast.utils.AppConstants.FAVORITE_KEY
 import com.ahmdalii.weatherforecast.utils.AppConstants.REPLY_INTENT_KEY
-import com.ahmdalii.weatherforecast.utils.AppConstants.getPlaceName
 import com.ahmdalii.weatherforecast.utils.AppConstants.isInternetAvailable
 import com.google.android.material.snackbar.Snackbar
 
@@ -79,7 +77,6 @@ class FavoritesFragment : Fragment(), OnFavoriteClickListener {
         }
 
         viewModel.getFavoritePlacesList().observe(this, {
-            Log.d("favfav:", it.toString())
             if (it == null || it.isEmpty()) {
                 binding.noFavoriteData.visibility = View.VISIBLE
                 binding.recyclerView.visibility = View.GONE
@@ -105,7 +102,6 @@ class FavoritesFragment : Fragment(), OnFavoriteClickListener {
                 val data = result.data
                 val favoritePlace = data?.getParcelableExtra<FavoritePlace>(REPLY_INTENT_KEY)
                 if (favoritePlace != null) {
-                    Log.d("asdfg:", "Data ** ${favoritePlace.longitude}")
                     viewModel.insertFavoritePlace(favoritePlace)
                 }
             }

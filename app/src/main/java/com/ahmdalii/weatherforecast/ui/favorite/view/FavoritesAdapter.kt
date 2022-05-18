@@ -7,20 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.model.FavoritePlace
+import com.ahmdalii.weatherforecast.utils.AppConstants.getPlaceName
 import com.ahmdalii.weatherforecast.utils.AppConstants.playAnimation
 
 class FavoritesAdapter(
     var context: Context,
-    var places: List<FavoritePlace>,
+    private var places: List<FavoritePlace>,
     private var onFavoriteClickListener: OnFavoriteClickListener
 ) : RecyclerView.Adapter<FavoritesAdapter.ViewHolder>() {
 
-    var lastRowPosition = -1
+    private var lastRowPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -32,8 +31,11 @@ class FavoritesAdapter(
         if (holder.adapterPosition > lastRowPosition) {
             playAnimation(holder.itemView, context, R.anim.row_slide_in)
 
-            holder.txtViewGovernorate?.text = places[position].adminArea
-            holder.txtViewRegion?.text = places[position].locality
+            val placeName =
+                getPlaceName(context, places[position].latitude, places[position].longitude)
+
+            holder.txtViewGovernorate?.text = placeName.adminArea ?: context.getString(R.string.unknown_adminArea)
+            holder.txtViewRegion?.text = placeName.locality ?: context.getString(R.string.location)
 
             holder.imgViewDeleteIcon?.setOnClickListener {
                 onFavoriteClickListener.onRemoveClick(places[position])
