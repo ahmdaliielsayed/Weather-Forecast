@@ -1,9 +1,11 @@
 package com.ahmdalii.weatherforecast.ui.notification.view
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.databinding.ActivityDialogBinding
 import com.ahmdalii.weatherforecast.db.notification.ConcreteLocalSourceNotification
 import com.ahmdalii.weatherforecast.db.weather.ConcreteLocalSource
@@ -23,6 +25,8 @@ class DialogActivity: AppCompatActivity() {
 
     private lateinit var description: String
     private lateinit var icon: String
+
+    private var mediaPlayerSong: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +56,12 @@ class DialogActivity: AppCompatActivity() {
         binding.imageIcon.setImageResource(getIcon(icon))
         binding.textDescription.text = description
         binding.btnDismiss.setOnClickListener {
+            mediaPlayerSong!!.stop()
             finish()
         }
+
+        mediaPlayerSong = MediaPlayer.create(this, R.raw.thunder)
+        mediaPlayerSong!!.isLooping = true
+        mediaPlayerSong!!.start()
     }
 }
