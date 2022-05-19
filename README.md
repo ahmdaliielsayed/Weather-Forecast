@@ -6,6 +6,13 @@ It's an Android Mobile Application to:-
 4) Choose units of temperature (Kelvin, Celsius, and Fahrenheit).
 Choose units of wind speed (meter/sec, miles/hour.).
 Choose a language (Arabic – English)
+<p align = "center">
+  
+
+https://user-images.githubusercontent.com/29761752/169357540-38f8c5d6-bcf2-470c-8350-2bb5695dd859.mp4
+
+
+</p>
 Project functionality:
 - Kotlin
 - MVVM
