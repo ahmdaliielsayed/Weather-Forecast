@@ -164,16 +164,16 @@ class SettingsRepo private constructor(): SettingsRepoInterface {
         try {
             addresses = gcd.getFromLocation(latitude, longitude, 1)
 
-            if (addresses.isNotEmpty())
-                Log.d("lastLocation:", addresses[0].locality)
-
-            Log.d("lLoc:getAddressLine", addresses[0].getAddressLine(0)) // 5C2P+5R، ديسط، مركز طلخا،، الدقهلية، مصر
-            Log.d("lLoc:getLocality", addresses[0].locality) // ديسط
-            Log.d("lLoc:getCountryName", addresses[0].countryName) // مصر
-            Log.d("lLoc:getFeatureName", addresses[0].featureName) // 5C2P+5R
-            Log.d("lLoc:getAdminArea", addresses[0].adminArea) // الدقهلية
-            Log.d("lLoc:getSubAdminArea", addresses[0].subAdminArea) // مركز طلخا،
-            Log.d("lLoc:getCountryCode", addresses[0].countryCode) // EG
+//            if (addresses.isNotEmpty())
+//                Log.d("lastLocation:", addresses[0].locality)
+//
+//            Log.d("lLoc:getAddressLine", addresses[0].getAddressLine(0)) // 5C2P+5R، ديسط، مركز طلخا،، الدقهلية، مصر
+//            Log.d("lLoc:getLocality", addresses[0].locality) // ديسط
+//            Log.d("lLoc:getCountryName", addresses[0].countryName) // مصر
+//            Log.d("lLoc:getFeatureName", addresses[0].featureName) // 5C2P+5R
+//            Log.d("lLoc:getAdminArea", addresses[0].adminArea) // الدقهلية
+//            Log.d("lLoc:getSubAdminArea", addresses[0].subAdminArea) // مركز طلخا،
+//            Log.d("lLoc:getCountryCode", addresses[0].countryCode) // EG
             saveCurrentPlaceName(context, addresses)
         } catch (e: IOException) {
             e.printStackTrace()

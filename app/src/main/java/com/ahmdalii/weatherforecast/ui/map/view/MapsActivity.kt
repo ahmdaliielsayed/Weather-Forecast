@@ -9,7 +9,9 @@ import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -72,20 +74,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         handleUIAction()
     }
 
-    private val handler = Handler()
+    /*private val handler = Handler()
     private val postToServerRunnable = Runnable {
         searchForPlace(binding.txtInputEditTextSearchPlace.text.toString())
-    }
+    }*/
 
     private fun handleUIAction() {
-        binding.txtInputEditTextSearchPlace.addTextChangedListener(object : TextWatcher {
+        /*binding.txtInputEditTextSearchPlace.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
             }
 
             override fun onTextChanged(value: CharSequence, start: Int, count: Int, after: Int) {
                 handler.removeCallbacks(postToServerRunnable)
-
                 if (value.isEmpty()) {
                     Toast.makeText(this@MapsActivity, R.string.empty_string, Toast.LENGTH_SHORT)
                         .show()
@@ -97,7 +98,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun afterTextChanged(p0: Editable?) {
 
             }
-        })
+        })*/
+
+        binding.txtInputEditTextSearchPlace.setOnEditorActionListener { value, actionId, event ->
+            if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH ||
+                event.action == KeyEvent.ACTION_DOWN ||
+                event.action == KeyEvent.KEYCODE_ENTER ){
+                if (binding.txtInputEditTextSearchPlace.text.toString().isEmpty()) {
+                    Toast.makeText(this@MapsActivity, R.string.empty_string, Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    searchForPlace(binding.txtInputEditTextSearchPlace.text.toString())
+                }
+                true
+            } else {
+                false
+            }
+        }
 
         binding.cardGPS.setOnClickListener {
             viewModel.getDeviceLocation(this)
@@ -112,6 +129,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun searchForPlace(placeName: String) {
         viewModel.getCurrentAddress(this, placeName)
+//        handler.removeCallbacks(postToServerRunnable)
     }
 
     private fun gettingViewModelReady() {
@@ -132,6 +150,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         })
         viewModel.searchAddress.observe(this, {
             address = it
+            address.adminArea = it.adminArea
+            address.locality = it.featureName
+            Log.d("asdsad:", address.adminArea)
+            Log.d("asdsad:", address.locality)
+            Log.d("asdsad:", address.latitude.toString())
+            Log.d("asdsad:", address.longitude.toString())
             latLng = LatLng(address.latitude, address.longitude)
             drawMarker(latLng,
                 listOf(
@@ -140,6 +164,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 )
             )
             moveCamera(latLng)
+            openViewWithAddress(address, latLng)
         })
     }
 
