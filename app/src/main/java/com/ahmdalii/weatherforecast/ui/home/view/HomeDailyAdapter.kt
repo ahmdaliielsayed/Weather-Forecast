@@ -12,8 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.model.Daily
 import com.ahmdalii.weatherforecast.ui.home.viewmodel.HomeViewModel
-import com.ahmdalii.weatherforecast.utils.AppConstants
+import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_IMPERIAL
+import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_METRIC
 import com.ahmdalii.weatherforecast.utils.AppConstants.getDateTime
+import com.ahmdalii.weatherforecast.utils.AppConstants.getIcon
 import com.ahmdalii.weatherforecast.utils.AppConstants.playAnimation
 import com.bumptech.glide.Glide
 
@@ -39,23 +41,27 @@ class HomeDailyAdapter(
         holder.imgViewDayIcon?.let {
             Glide
                 .with(context)
-                .load("${AppConstants.IMG_URL}${dailyListWeather[position].weather[0].icon}@4x.png")
+//                .load("${AppConstants.IMG_URL}${dailyListWeather[position].weather[0].icon}@4x.png")
+                .load(getIcon(dailyListWeather[position].weather[0].icon))
                 .into(it)
         }
         holder.txtViewDailyWeatherDescription?.text =  dailyListWeather[position].weather[0].description
-        viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner, {
+        viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner) {
             when {
                 it.isNullOrBlank() -> {
-                    holder.txtViewMinMaxDiscrimination?.text = context.getString(R.string.temp_kelvin)
+                    holder.txtViewMinMaxDiscrimination?.text =
+                        context.getString(R.string.temp_kelvin)
                 }
-                it.equals("metric") -> {
-                    holder.txtViewMinMaxDiscrimination?.text = context.getString(R.string.temp_celsius)
+                it.equals(MEASUREMENT_UNIT_METRIC) -> {
+                    holder.txtViewMinMaxDiscrimination?.text =
+                        context.getString(R.string.temp_celsius)
                 }
-                it.equals("imperial") -> {
-                    holder.txtViewMinMaxDiscrimination?.text = context.getString(R.string.temp_fahrenheit)
+                it.equals(MEASUREMENT_UNIT_IMPERIAL) -> {
+                    holder.txtViewMinMaxDiscrimination?.text =
+                        context.getString(R.string.temp_fahrenheit)
                 }
             }
-        })
+        }
         val minMaxTemp = StringBuilder()
         if (dailyListWeather[position].temp.max.rem(100) >= 50) {
             minMaxTemp.append(dailyListWeather[position].temp.max.toInt().plus(1)).append(" / ")

@@ -13,6 +13,7 @@ import com.ahmdalii.weatherforecast.ui.splash.viewmodel.SplashViewModel
 import com.ahmdalii.weatherforecast.ui.splash.viewmodel.SplashViewModelFactory
 import com.ahmdalii.weatherforecast.utils.AppConstants.SPLASH_TIME_OUT
 import com.ahmdalii.weatherforecast.utils.AppConstants.setAppLocale
+import com.google.android.gms.ads.MobileAds
 
 class SplashActivity : AppCompatActivity() {
 
@@ -26,6 +27,8 @@ class SplashActivity : AppCompatActivity() {
 
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        MobileAds.initialize(this) {}
 
         gettingViewModelReady()
 
@@ -41,8 +44,8 @@ class SplashActivity : AppCompatActivity() {
         )
         viewModel = ViewModelProvider(this, splashViewModelFactory)[SplashViewModel::class.java]
         viewModel.getLanguage(this)
-        viewModel.language.observe(this, {
+        viewModel.language.observe(this) {
             setAppLocale(this, it)
-        })
+        }
     }
 }

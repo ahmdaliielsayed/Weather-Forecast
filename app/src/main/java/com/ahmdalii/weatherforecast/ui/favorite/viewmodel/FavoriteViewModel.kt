@@ -87,10 +87,4 @@ class FavoriteViewModel(private val _repo: FavoriteRepoInterface) : ViewModel() 
     fun getLanguage(context: Context): String {
         return _repo.getLanguage(context)
     }
-
-    fun updateCurrentPlaceName(favoritePlace: FavoritePlace) {
-        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            _repo.updateCurrentPlaceName(favoritePlace)
-        }
-    }
 }

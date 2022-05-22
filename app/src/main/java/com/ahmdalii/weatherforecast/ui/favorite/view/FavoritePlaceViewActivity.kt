@@ -19,7 +19,12 @@ import com.ahmdalii.weatherforecast.ui.favorite.viewmodel.FavoriteViewModel
 import com.ahmdalii.weatherforecast.ui.favorite.viewmodel.FavoriteViewModelFactory
 import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.FAVORITE_KEY
+import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_IMPERIAL
+import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_METRIC
+import com.ahmdalii.weatherforecast.utils.AppConstants.atNight
+import com.ahmdalii.weatherforecast.utils.AppConstants.getIcon
 import com.ahmdalii.weatherforecast.utils.AppConstants.getPlaceName
+import com.ahmdalii.weatherforecast.utils.AppConstants.showBannerAd
 import com.ahmdalii.weatherforecast.utils.ConnectionLiveData
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
@@ -47,6 +52,7 @@ class FavoritePlaceViewActivity : AppCompatActivity() {
 
         favoritePlace = intent.getParcelableExtra(FAVORITE_KEY)!!
 
+        showBannerAd(binding.adView)
         gettingViewModelReady()
         initHourlyRecyclerView()
         initDailyRecyclerView()
@@ -54,13 +60,17 @@ class FavoritePlaceViewActivity : AppCompatActivity() {
     }
 
     private fun listenerOnNetwork() {
-        ConnectionLiveData(this).observe(this, {
+        ConnectionLiveData(this).observe(this) {
             if (!it) {
-                Snackbar.make(findViewById(android.R.id.content), getString(R.string.connection_lost), Snackbar.LENGTH_LONG)
+                Snackbar.make(
+                    findViewById(android.R.id.content),
+                    getString(R.string.connection_lost),
+                    Snackbar.LENGTH_LONG
+                )
                     .setAction("Action", null).show()
 //                Toast.makeText(this, getString(R.string.connection_lost), Toast.LENGTH_LONG).show()
             }
-        })
+        }
     }
 
     private fun gettingViewModelReady() {
@@ -70,18 +80,18 @@ class FavoritePlaceViewActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, favoritePlacesViewModelFactory)[FavoriteViewModel::class.java]
         viewModel.getCurrentWeatherOverNetwork(this, favoritePlace)
 
-        viewModel.errorMsgResponse.observe(this, {
+        viewModel.errorMsgResponse.observe(this) {
             Toast.makeText(this, it, Toast.LENGTH_LONG).show()
-        })
-        viewModel.animationView.observe(this, {
+        }
+        viewModel.animationView.observe(this) {
             if (it) {
                 binding.animationView.visibility = View.GONE
                 binding.animationView.loop(false)
             }
-        })
-        viewModel.weatherModelResponse.observe(this, {
+        }
+        viewModel.weatherModelResponse.observe(this) {
             renderDataOnScreen(it)
-        })
+        }
     }
 
     private fun initHourlyRecyclerView() {
@@ -130,6 +140,11 @@ class FavoritePlaceViewActivity : AppCompatActivity() {
         } else {
             "${it.current.feelsLike.toInt()}"
         }
+        if (atNight) {
+            binding.parentView.setBackgroundResource(R.drawable.background_image)
+        } else {
+            binding.parentView.setBackgroundResource(R.drawable.background_image_day)
+        }
     }
 
     private fun setCurrentLocation() {
@@ -140,27 +155,29 @@ class FavoritePlaceViewActivity : AppCompatActivity() {
 
     private fun setCurrentTempDiscrimination() {
         viewModel.getCurrentTempMeasurementUnit(this)
-        viewModel.currentTempMeasurementUnit.observe(this, {
+        viewModel.currentTempMeasurementUnit.observe(this) {
             when {
                 it.isNullOrBlank() -> {
                     binding.txtViewCurrentTempDiscrimination.text = getString(R.string.temp_kelvin)
                     binding.txtViewFeelsLikeDiscrimination.text = getString(R.string.temp_kelvin)
                 }
-                it.equals("metric") -> {
+                it.equals(MEASUREMENT_UNIT_METRIC) -> {
                     binding.txtViewCurrentTempDiscrimination.text = getString(R.string.temp_celsius)
                     binding.txtViewFeelsLikeDiscrimination.text = getString(R.string.temp_celsius)
                 }
-                it.equals("imperial") -> {
-                    binding.txtViewCurrentTempDiscrimination.text = getString(R.string.temp_fahrenheit)
-                    binding.txtViewFeelsLikeDiscrimination.text = getString(R.string.temp_fahrenheit)
+                it.equals(MEASUREMENT_UNIT_IMPERIAL) -> {
+                    binding.txtViewCurrentTempDiscrimination.text =
+                        getString(R.string.temp_fahrenheit)
+                    binding.txtViewFeelsLikeDiscrimination.text =
+                        getString(R.string.temp_fahrenheit)
                 }
             }
-        })
+        }
     }
 
     private fun setWindSpeedDiscrimination() {
         viewModel.getWindSpeedMeasurementUnit(this)
-        viewModel.windSpeedMeasurementUnit.observe(this, {
+        viewModel.windSpeedMeasurementUnit.observe(this) {
             when {
                 it.isNullOrBlank() || it.equals(AppConstants.WIND_SPEED_UNIT_M_P_S) -> {
                     binding.txtViewWindSpeedDiscrimination.text = getString(R.string.m_p_s)
@@ -169,7 +186,7 @@ class FavoritePlaceViewActivity : AppCompatActivity() {
                     binding.txtViewWindSpeedDiscrimination.text = getString(R.string.m_p_h)
                 }
             }
-        })
+        }
     }
 
     private fun setCurrentWeatherDescription(weatherList: List<Weather>) {
@@ -183,12 +200,14 @@ class FavoritePlaceViewActivity : AppCompatActivity() {
     private fun setCurrentWeatherIcon(iconURL: String) {
         Glide
             .with(this)
-            .load("${AppConstants.IMG_URL}${iconURL}@4x.png")
+//            .load("${AppConstants.IMG_URL}${iconURL}@4x.png")
+            .load(getIcon(iconURL))
             .into(binding.imgViewCurrentWeatherIcon)
 
         Glide
             .with(this)
-            .load("${AppConstants.IMG_URL}${iconURL}@4x.png")
+//            .load("${AppConstants.IMG_URL}${iconURL}@4x.png")
+            .load(getIcon(iconURL))
             .into(binding.imgViewFeelsLikeIcon)
     }
 }

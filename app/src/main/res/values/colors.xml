@@ -18,4 +18,7 @@
     <color name="alto">#DDDDDD</color>
     <color name="magenta_fuchsia">#FF20EC</color>
     <color name="electric_violet">#6F2AFE</color>
+
+    <color name="lucky_point">#161362</color>
+    <color name="scooter">#23ADD8</color>
 </resources>

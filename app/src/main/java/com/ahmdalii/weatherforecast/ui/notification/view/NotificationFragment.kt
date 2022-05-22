@@ -41,7 +41,9 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.ALARM_CHECKED
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE_AR
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE_EN
 import com.ahmdalii.weatherforecast.utils.AppConstants.NOTIFICATION_CHECKED
+import com.ahmdalii.weatherforecast.utils.AppConstants.atNight
 import com.ahmdalii.weatherforecast.utils.AppConstants.getDateTime
+import com.ahmdalii.weatherforecast.utils.AppConstants.showBannerAd
 import com.ahmdalii.weatherforecast.utils.AppSharedPref
 import com.ahmdalii.weatherforecast.utils.WorkRequestManager.createWorkRequest
 import com.ahmdalii.weatherforecast.utils.WorkRequestManager.removeWork
@@ -90,6 +92,8 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         this.myView = view
+
+        showBannerAd(binding.adView)
         gettingViewModelReady()
         initRecyclerView()
         handleUIEvents()
@@ -117,7 +121,7 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
             layoutManager = linearNotificationLayoutManager
         }
 
-        viewModel.getAlertList().observe(this, {
+        viewModel.getAlertList().observe(viewLifecycleOwner) {
             if (it == null || it.isEmpty()) {
                 binding.noAlertData.visibility = View.VISIBLE
                 binding.recyclerView.visibility = View.GONE
@@ -126,17 +130,17 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
                 binding.noAlertData.visibility = View.GONE
                 binding.recyclerView.visibility = View.VISIBLE
             }
-        })
+        }
 
-        viewModel.id.observe(this, { id ->
-            viewModel.getAllStoredWeatherModel(myView.context).observe(this, { weatherModel ->
+        viewModel.id.observe(viewLifecycleOwner) { id ->
+            viewModel.getAllStoredWeatherModel(myView.context).observe(viewLifecycleOwner) { weatherModel ->
                 if (weatherModel != null) {
                     this.weatherModel = weatherModel
                     viewModel.getAlert(id)
                 }
-            })
-        })
-        viewModel.myAlert.observe(this, { alert ->
+            }
+        }
+        viewModel.myAlert.observe(viewLifecycleOwner) { alert ->
             if (weatherModel.alerts.isNullOrEmpty()) {
                 setOneTimeWorkRequest(
                     alert,
@@ -151,7 +155,13 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
                     weatherModel.current.weather[0].icon
                 )
             }
-        })
+        }
+
+        if (atNight) {
+            binding.parentView.setBackgroundResource(R.drawable.background_image)
+        } else {
+            binding.parentView.setBackgroundResource(R.drawable.background_image_day)
+        }
     }
 
     private fun setOneTimeWorkRequest(alert: MyAlert, description: String, icon: String) {
@@ -169,7 +179,7 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
                 intent.data = Uri.parse("package:" + view!!.context.packageName)
                 startActivity(intent)
             } else {
-                showAddAlertDialog(true)
+                showAddAlertDialog()
             }
         }
     }
@@ -212,7 +222,7 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
 
     private val runtimePermissionResultLauncher = registerForActivityResult(StartActivityForResult()) { }
 
-    private fun showAddAlertDialog(isAddAlert: Boolean) {
+    private fun showAddAlertDialog() {
         dialog = Dialog(myView.context)
         dialog.setContentView(R.layout.alert_notification_dialog)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

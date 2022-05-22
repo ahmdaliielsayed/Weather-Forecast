@@ -12,8 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.model.Hourly
 import com.ahmdalii.weatherforecast.ui.home.viewmodel.HomeViewModel
-import com.ahmdalii.weatherforecast.utils.AppConstants
+import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_IMPERIAL
+import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_METRIC
 import com.ahmdalii.weatherforecast.utils.AppConstants.getDateTime
+import com.ahmdalii.weatherforecast.utils.AppConstants.getIcon
 import com.ahmdalii.weatherforecast.utils.AppConstants.playAnimation
 import com.bumptech.glide.Glide
 
@@ -39,22 +41,26 @@ class HomeHourlyAdapter(
         holder.imgViewHourlyWeatherIcon?.let {
             Glide
                 .with(context)
-                .load("${AppConstants.IMG_URL}${hourlyListWeather[position].weather[0].icon}@4x.png")
+//                .load("${AppConstants.IMG_URL}${hourlyListWeather[position].weather[0].icon}@4x.png")
+                .load(getIcon(hourlyListWeather[position].weather[0].icon))
                 .into(it)
         }
-        viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner, {
+        viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner) {
             when {
                 it.isNullOrBlank() -> {
-                    holder.txtViewHourlyTempDiscrimination?.text = context.getString(R.string.temp_kelvin)
+                    holder.txtViewHourlyTempDiscrimination?.text =
+                        context.getString(R.string.temp_kelvin)
                 }
-                it.equals("metric") -> {
-                    holder.txtViewHourlyTempDiscrimination?.text = context.getString(R.string.temp_celsius)
+                it.equals(MEASUREMENT_UNIT_METRIC) -> {
+                    holder.txtViewHourlyTempDiscrimination?.text =
+                        context.getString(R.string.temp_celsius)
                 }
-                it.equals("imperial") -> {
-                    holder.txtViewHourlyTempDiscrimination?.text = context.getString(R.string.temp_fahrenheit)
+                it.equals(MEASUREMENT_UNIT_IMPERIAL) -> {
+                    holder.txtViewHourlyTempDiscrimination?.text =
+                        context.getString(R.string.temp_fahrenheit)
                 }
             }
-        })
+        }
         if (hourlyListWeather[position].temp.rem(100) >= 50) {
             holder.txtViewHourlyTemp?.text = "${hourlyListWeather[position].temp.toInt().plus(1)}"
         } else {

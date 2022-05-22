@@ -1,4 +1,4 @@
-#Weather_App
+# Weather Forecast
 It's an Android Mobile Application to:-
 1) Displays the weather status and the temperature from your location. or choose a specific location from the map
 2) you can pick a specific location on the map and/or search for it by auto-complete edit text and add it to a list of favorite locations and get all the weather information at this location.
@@ -13,19 +13,21 @@ https://user-images.githubusercontent.com/29761752/169357540-38f8c5d6-bcf2-470c-
 
 
 </p>
-Project functionality:
-- Kotlin
-- MVVM
-- Room
-- Retrofit
-- Gson
-- Coroutine
-- Coroutine worker
-- Notification
-- Glide
-- Navigation component
-- LBS(Location Based Service)
-## Screenshots
+
+## Project functionality:
+  * MVVM
+  * Room
+  * Retrofit
+  * Gson
+  * Coroutine
+  * Coroutine worker
+  * Notification
+  * Glide
+  * Navigation component
+  * LBS(Location Based Service)
+  * minSdk 27
+  * targetSdk 32
+  ## Screenshots
 <table>
   <tr>
     <td>

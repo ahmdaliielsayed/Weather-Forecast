@@ -8,7 +8,6 @@ import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Looper
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.db.favorite.LocalSourceFavorite
@@ -83,7 +82,6 @@ class MapRepo private constructor(private var localSourceFavorite: LocalSourceFa
                     if (location != null) {
                         saveDeviceLocationData(context, location)
                         val placeName = getPlaceName(context, location.latitude, location.longitude)
-                        Log.d("getPlaceName:mapR", placeName.toString())
                         saveCurrentPlaceName(context, placeName)
                         stopLocationUpdates()
                     }
@@ -137,7 +135,6 @@ class MapRepo private constructor(private var localSourceFavorite: LocalSourceFa
             addresses = gcd.getFromLocationName(searchForPlace, 1)
 
             if (addresses.isNotEmpty()) {
-                Log.d("lastLocation:", addresses[0].locality)
                 val location = Location(CURRENT_DEVICE_LOCATION)
                 location.longitude = addresses[0].longitude
                 location.latitude = addresses[0].latitude

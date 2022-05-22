@@ -25,7 +25,9 @@ import com.ahmdalii.weatherforecast.utils.AppConstants
 import com.ahmdalii.weatherforecast.utils.AppConstants.COMING_FROM
 import com.ahmdalii.weatherforecast.utils.AppConstants.FAVORITE_KEY
 import com.ahmdalii.weatherforecast.utils.AppConstants.REPLY_INTENT_KEY
+import com.ahmdalii.weatherforecast.utils.AppConstants.atNight
 import com.ahmdalii.weatherforecast.utils.AppConstants.isInternetAvailable
+import com.ahmdalii.weatherforecast.utils.AppConstants.showBannerAd
 import com.google.android.material.snackbar.Snackbar
 
 class FavoritesFragment : Fragment(), OnFavoriteClickListener {
@@ -56,6 +58,8 @@ class FavoritesFragment : Fragment(), OnFavoriteClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         this.myView = view
+
+        showBannerAd(binding.adView)
         gettingViewModelReady()
         initRecyclerView()
         handleUIEvents()
@@ -76,7 +80,7 @@ class FavoritesFragment : Fragment(), OnFavoriteClickListener {
             layoutManager = linearFavoriteLayoutManager
         }
 
-        viewModel.getFavoritePlacesList().observe(this, {
+        viewModel.getFavoritePlacesList().observe(viewLifecycleOwner) {
             if (it == null || it.isEmpty()) {
                 binding.noFavoriteData.visibility = View.VISIBLE
                 binding.recyclerView.visibility = View.GONE
@@ -85,7 +89,13 @@ class FavoritesFragment : Fragment(), OnFavoriteClickListener {
                 binding.noFavoriteData.visibility = View.GONE
                 binding.recyclerView.visibility = View.VISIBLE
             }
-        })
+        }
+
+        if (atNight) {
+            binding.parentView.setBackgroundResource(R.drawable.background_image)
+        } else {
+            binding.parentView.setBackgroundResource(R.drawable.background_image_day)
+        }
     }
 
     private fun handleUIEvents() {

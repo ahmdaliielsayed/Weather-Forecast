@@ -10,6 +10,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.databinding.ActivityHomeBinding
+import com.ahmdalii.weatherforecast.utils.AppConstants.drawerLayout
 import com.google.android.material.navigation.NavigationView
 
 class HomeActivity : AppCompatActivity() {
@@ -25,6 +26,7 @@ class HomeActivity : AppCompatActivity() {
 
         setupToolbar()
         configureNavView()
+        drawerLayout = binding.drawerLayout
     }
 
     private fun setupToolbar() {

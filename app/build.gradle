@@ -6,25 +6,69 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
 
     id 'com.google.secrets_gradle_plugin' version '0.4'
+
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
+    def localProperties = new Properties()
+    localProperties.load(new FileInputStream("local.properties"))
+
+    signingConfigs {
+        debug {
+            storeFile file('C:\\Users\\AhmedAli\\AndroidStudioProjects\\WeatherForecast\\app\\keyStore\\PlayConsoleKey.jks')
+            storePassword localProperties['STORE_PASSWORD']
+            keyAlias localProperties['KEY_ALIAS']
+            keyPassword localProperties['STORE_PASSWORD']
+        }
+    }
+
     compileSdk 32
 
     defaultConfig {
         applicationId "com.ahmdalii.weatherforecast"
         minSdk 23
         targetSdk 32
-        versionCode 1
-        versionName "1.0"
+        versionCode 4
+        versionName "1.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        signingConfig signingConfigs.debug
+
+        // NAME APK
+        var timeStamp = new Date().format('yyyy.MM.dd_HHmm')
+        setProperty("archivesBaseName", "${applicationId}-v${versionName}(${versionCode}) date=${timeStamp}")
+
+        // Sets up parameters for both jni build and cmake.
+        // For a complete list of parameters,
+        // see developer.android.com/ndk/guides/cmake.html#variables
+        externalNativeBuild {
+            cmake {
+                // cppFlags are configured according to your selection of
+                //    "Customize C++ Support", in this codelab's
+                //    "Create a Sample App with the C++ Template",
+                //    step 6
+                cppFlags '-std=c++17'
+            }
+        }
     }
 
     buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+
+            resValue("string", "GOOGLE_MAPS_API_KEY", localProperties['GOOGLE_MAPS_API_KEY'])
+            resValue("string", "ADS_APP_ID", localProperties['ADS_APP_ID'])
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+
+            resValue("string", "GOOGLE_MAPS_API_KEY", localProperties['GOOGLE_MAPS_API_KEY'])
+            resValue("string", "ADS_APP_ID", localProperties['ADS_APP_ID'])
         }
     }
     compileOptions {
@@ -33,6 +77,14 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    // Specifies the location of the top level CMakeLists.txt
+    // The path is relative to the hosting directory of this build.gradle file
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.18.1'
+        }
     }
     buildFeatures {
         viewBinding true
@@ -104,4 +156,12 @@ dependencies {
     implementation "com.airbnb.android:lottie:$lottie_version"
 
     implementation "androidx.work:work-runtime-ktx:2.7.1"
+
+    // ads
+    implementation 'com.google.android.gms:play-services-ads:21.1.0'
+
+    // firebase (analytics and crashlytics)
+    implementation platform('com.google.firebase:firebase-bom:30.3.1')
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 }

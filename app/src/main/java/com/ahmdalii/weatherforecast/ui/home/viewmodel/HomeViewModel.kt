@@ -86,7 +86,7 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
     fun getCurrentLocation(context: Context) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             val currentLocationList = _repo.getCurrentLocation(context)
-            if (currentLocationList.isNullOrEmpty()) {
+            if (currentLocationList.isEmpty()) {
                 _errorMsgResponse.postValue("${currentLocationList.size} \nerror viewModel getCurrentLocation")
             } else {
                 _currentLocation.postValue(currentLocationList)
@@ -119,7 +119,7 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
                         }
                     } else if (key == LOCATION_LOCALITY) {
                         val currentLocation = _repo.getCurrentLocation(context)
-                        if (currentLocation.isNullOrEmpty()) {
+                        if (currentLocation.isEmpty()) {
                             _errorMsgResponse.postValue("${currentLocation.size} \nerror viewModel getCurrentLocation")
                         } else {
                             _currentLocation.postValue(currentLocation)

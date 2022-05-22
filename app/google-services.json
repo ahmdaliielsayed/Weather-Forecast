@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "201808269124",
+    "project_id": "weather-forecast-123c6",
+    "storage_bucket": "weather-forecast-123c6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:201808269124:android:3123086ce5aae931f59111",
+        "android_client_info": {
+          "package_name": "com.ahmdalii.weatherforecast"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "201808269124-kmcb7gidu5pk4s212t3gpu6fq9fuqv6m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ahmdalii.weatherforecast",
+            "certificate_hash": "7cf4a9a30708fa758dfa7f0107707e918da0d273"
+          }
+        },
+        {
+          "client_id": "201808269124-din2sbotvf5dfhior0qt5rivuk33uprf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOIAR-pbgzUrSMRLKritw9sloYQ6JabMM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "201808269124-din2sbotvf5dfhior0qt5rivuk33uprf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-4171202920109669~6614436584"
+    }
+  ],
+  "configuration_version": "1"
+}

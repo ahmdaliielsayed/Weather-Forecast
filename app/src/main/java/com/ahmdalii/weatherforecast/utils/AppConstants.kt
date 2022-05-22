@@ -14,10 +14,14 @@ import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.location.LocationManagerCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.room.TypeConverter
-import com.ahmdalii.weatherforecast.BuildConfig
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.model.MyAlert
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.LoadAdError
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.IOException
@@ -73,9 +77,12 @@ object AppConstants {
     const val ICON: String = "icon"
     const val FROM_TIME_IN_MILLIS: String = "fromTimeInMillis"
 
-    const val BASE_URL: String = BuildConfig.BASE_URL
-    const val IMG_URL: String = BuildConfig.IMG_URL
-    const val WEATHER_APP_ID: String = BuildConfig.WEATHER_APP_ID
+    lateinit var BASE_URL: String
+//    const val IMG_URL: String = BuildConfig.IMG_URL
+    lateinit var WEATHER_APP_ID: String
+
+    lateinit var drawerLayout: DrawerLayout
+    var atNight: Boolean = false
 
     fun showAlert(context: Context, title: Int, message: String, icon: Int) {
         AlertDialog.Builder(context)
@@ -166,7 +173,7 @@ object AppConstants {
         try {
             addresses = gcd.getFromLocation(latitude, longitude, 1)
 
-            if (!addresses.isNullOrEmpty()) {
+            if (addresses.isNotEmpty()) {
                 address = addresses[0]
             }
         } catch (e: IOException) {
@@ -247,4 +254,39 @@ object AppConstants {
     }
     @TypeConverter
     fun convertMyAlertToString(myAlert: MyAlert): String = Gson().toJson(myAlert)
+
+    fun showBannerAd(adView: AdView) {
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
+
+        adView.adListener = object: AdListener() {
+            override fun onAdClicked() {
+                // Code to be executed when the user clicks on an ad.
+            }
+
+            override fun onAdClosed() {
+                // Code to be executed when the user is about to return
+                // to the app after tapping on an ad.
+            }
+
+            override fun onAdFailedToLoad(adError : LoadAdError) {
+                // Code to be executed when an ad request fails.
+            }
+
+            override fun onAdImpression() {
+                // Code to be executed when an impression is recorded
+                // for an ad.
+            }
+
+            override fun onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+                adView.visibility = View.VISIBLE
+            }
+
+            override fun onAdOpened() {
+                // Code to be executed when an ad opens an overlay that
+                // covers the screen.
+            }
+        }
+    }
 }

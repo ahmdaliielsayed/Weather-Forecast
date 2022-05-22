@@ -10,7 +10,7 @@ data class Hourly(
     @SerializedName("feels_like")
     val feelsLike: Double,
     val humidity: Int,
-    val pop: Int,
+    val pop: Double,
     val pressure: Int,
     val temp: Double,
     val uvi: Double,

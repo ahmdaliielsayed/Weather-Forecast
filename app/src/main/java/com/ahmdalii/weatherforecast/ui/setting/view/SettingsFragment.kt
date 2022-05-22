@@ -35,7 +35,9 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_STANDARD
 import com.ahmdalii.weatherforecast.utils.AppConstants.SETTING_FRAGMENT
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_H
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_S
+import com.ahmdalii.weatherforecast.utils.AppConstants.atNight
 import com.ahmdalii.weatherforecast.utils.AppConstants.setAppLocale
+import com.ahmdalii.weatherforecast.utils.AppConstants.showBannerAd
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import java.util.*
@@ -66,6 +68,8 @@ class SettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         this.myView = view
+
+        showBannerAd(binding.adView)
         gettingViewModelReady()
         handleUIEvents()
     }
@@ -224,35 +228,35 @@ class SettingsFragment : Fragment() {
         viewModel.getCurrentTempMeasurementUnit(myView.context)
         viewModel.getNotificationChecked(myView.context)
 
-        viewModel.errorMsgResponse.observe(viewLifecycleOwner, {
+        viewModel.errorMsgResponse.observe(viewLifecycleOwner) {
             Toast.makeText(myView.context, it, Toast.LENGTH_LONG).show()
-        })
+        }
         /*viewModel.changedSuccessfully.observe(viewLifecycleOwner, {
             Toast.makeText(myView.context, it, Toast.LENGTH_SHORT).show()
         })*/
 
-        viewModel.locationMethod.observe(viewLifecycleOwner, {
+        viewModel.locationMethod.observe(viewLifecycleOwner) {
             if (it == LOCATION_METHOD_GPS) {
                 binding.radioBtnGPS.isChecked = true
             } else {
                 binding.radioBtnMap.isChecked = true
             }
-        })
-        viewModel.language.observe(viewLifecycleOwner, {
+        }
+        viewModel.language.observe(viewLifecycleOwner) {
             if (it == APPLICATION_LANGUAGE_EN) {
                 binding.radioBtnEnglish.isChecked = true
             } else {
                 binding.radioBtnArabic.isChecked = true
             }
-        })
-        viewModel.windSpeedUnit.observe(viewLifecycleOwner, {
+        }
+        viewModel.windSpeedUnit.observe(viewLifecycleOwner) {
             if (it == WIND_SPEED_UNIT_M_P_S) {
                 binding.radioBtnMPS.isChecked = true
             } else {
                 binding.radioBtnMPH.isChecked = true
             }
-        })
-        viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner, {
+        }
+        viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner) {
             when (it) {
                 MEASUREMENT_UNIT_METRIC -> {
                     binding.radioBtnCelsius.isChecked = true
@@ -264,14 +268,20 @@ class SettingsFragment : Fragment() {
                     binding.radioBtnFahrenheit.isChecked = true
                 }
             }
-        })
-        viewModel.notificationChecked.observe(viewLifecycleOwner, {
+        }
+        viewModel.notificationChecked.observe(viewLifecycleOwner) {
             if (it) {
                 binding.radioBtnEnable.isChecked = true
             } else {
                 binding.radioBtnDisable.isChecked = true
             }
-        })
+        }
+
+        if (atNight) {
+            binding.parentView.setBackgroundResource(R.drawable.background_image)
+        } else {
+            binding.parentView.setBackgroundResource(R.drawable.background_image_day)
+        }
     }
 
     private fun isServiceAvailable(): Boolean {

@@ -8,7 +8,6 @@ import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Looper
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.ahmdalii.weatherforecast.R
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE

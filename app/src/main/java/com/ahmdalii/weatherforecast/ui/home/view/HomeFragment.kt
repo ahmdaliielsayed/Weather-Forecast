@@ -31,18 +31,25 @@ import com.ahmdalii.weatherforecast.ui.home.viewmodel.HomeViewModel
 import com.ahmdalii.weatherforecast.ui.home.viewmodel.HomeViewModelFactory
 import com.ahmdalii.weatherforecast.ui.map.view.MapsActivity
 import com.ahmdalii.weatherforecast.utils.AppConstants
-import com.ahmdalii.weatherforecast.utils.AppConstants.IMG_URL
 import com.ahmdalii.weatherforecast.utils.AppConstants.INITIAL_DIALOG
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD_GPS
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_METHOD_MAP
+import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_IMPERIAL
+import com.ahmdalii.weatherforecast.utils.AppConstants.MEASUREMENT_UNIT_METRIC
 import com.ahmdalii.weatherforecast.utils.AppConstants.WIND_SPEED_UNIT_M_P_S
+import com.ahmdalii.weatherforecast.utils.AppConstants.atNight
 import com.ahmdalii.weatherforecast.utils.AppConstants.checkLocationPermissions
+import com.ahmdalii.weatherforecast.utils.AppConstants.drawerLayout
 import com.ahmdalii.weatherforecast.utils.AppConstants.getDateTime
+import com.ahmdalii.weatherforecast.utils.AppConstants.getIcon
 import com.ahmdalii.weatherforecast.utils.AppConstants.isInternetAvailable
 import com.ahmdalii.weatherforecast.utils.AppConstants.isLocationEnabled
+import com.ahmdalii.weatherforecast.utils.AppConstants.showBannerAd
 import com.ahmdalii.weatherforecast.utils.ConnectionLiveData
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.math.roundToInt
 
 class HomeFragment : Fragment() {
@@ -80,6 +87,8 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         this.myView = view
+
+        showBannerAd(binding.adView)
         gettingViewModelReady()
         initHourlyRecyclerView()
         initDailyRecyclerView()
@@ -90,21 +99,22 @@ class HomeFragment : Fragment() {
     }
 
     private fun listenerOnNetwork() {
-        ConnectionLiveData(myView.context).observe(this, {
+        ConnectionLiveData(myView.context).observe(viewLifecycleOwner) {
             if (viewModel.isFirstTimeCompleted(myView.context)) {
                 if (it) {
                     getWeatherDataOverNetwork()
                 } else {
                     Snackbar.make(myView, getString(R.string.connection_lost), Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show()
-                    viewModel.getAllStoredWeatherModel(myView.context).observe(this, { weatherModel ->
-                        if (weatherModel != null) {
-                            renderDataOnScreen(weatherModel)
+                    viewModel.getAllStoredWeatherModel(myView.context)
+                        .observe(viewLifecycleOwner) { weatherModel ->
+                            if (weatherModel != null) {
+                                renderDataOnScreen(weatherModel)
+                            }
                         }
-                    })
                 }
             }
-        })
+        }
     }
 
     private fun gettingViewModelReady() {
@@ -115,18 +125,18 @@ class HomeFragment : Fragment() {
         )
         viewModel = ViewModelProvider(this, homeViewModelFactory)[HomeViewModel::class.java]
 
-        viewModel.errorMsgResponse.observe(viewLifecycleOwner, {
+        viewModel.errorMsgResponse.observe(viewLifecycleOwner) {
             binding.progressBar.visibility = View.GONE
             Toast.makeText(myView.context, it, Toast.LENGTH_LONG).show()
-        })
-        viewModel.showProgressBar.observe(viewLifecycleOwner, {
+        }
+        viewModel.showProgressBar.observe(viewLifecycleOwner) {
             if (it) {
                 binding.progressBar.visibility = View.VISIBLE
             }
-        })
-        viewModel.weatherModelResponse.observe(viewLifecycleOwner, {
+        }
+        viewModel.weatherModelResponse.observe(viewLifecycleOwner) {
             renderDataOnScreen(it)
-        })
+        }
     }
 
     private fun renderDataOnScreen(it: WeatherModel) {
@@ -159,6 +169,48 @@ class HomeFragment : Fragment() {
         } else {
             "${it.current.feelsLike.toInt()}"
         }
+
+        displayBackgroundImage(System.currentTimeMillis(), it.current.sunrise, it.current.sunset)
+    }
+
+    private fun displayBackgroundImage(currentTimeMillis: Long, sunrise: Int, sunset: Int) {
+        val simpleDateFormat = SimpleDateFormat(
+            "EEE, MMM d, yyyy hh:mm a",
+            Locale(viewModel.getLanguage(myView.context))
+        )
+
+        val currentDate = simpleDateFormat.parse(
+            getDateTime(
+                currentTimeMillis,
+                "EEE, MMM d, yyyy hh:mm a",
+                viewModel.getLanguage(myView.context)
+            )
+        )
+        val sunriseDate = simpleDateFormat.parse(
+            getDateTime(
+                sunrise,
+                "EEE, MMM d, yyyy hh:mm a",
+                viewModel.getLanguage(myView.context)
+            )
+        )
+        val sunsetDate = simpleDateFormat.parse(
+            getDateTime(
+                sunset,
+                "EEE, MMM d, yyyy hh:mm a",
+                viewModel.getLanguage(myView.context)
+            )
+        )
+
+        if (currentDate!!.before(sunsetDate) && currentDate.after(sunriseDate)) {
+            // at day
+            drawerLayout.setBackgroundResource(R.drawable.background_image_day)
+            binding.parentView.setBackgroundResource(R.drawable.background_image_day)
+        } else {
+            // at night
+            atNight = true
+            drawerLayout.setBackgroundResource(R.drawable.background_image)
+            binding.parentView.setBackgroundResource(R.drawable.background_image)
+        }
     }
 
     private fun initHourlyRecyclerView() {
@@ -189,35 +241,37 @@ class HomeFragment : Fragment() {
 
     private fun setCurrentLocation() {
         viewModel.getCurrentLocation(myView.context)
-        viewModel.currentLocation.observe(viewLifecycleOwner, {
+        viewModel.currentLocation.observe(viewLifecycleOwner) {
             binding.txtViewGovernorate.text = it[0]
             binding.txtViewLocality.text = it[1]
-        })
+        }
     }
 
     private fun setCurrentTempDiscrimination() {
         viewModel.getCurrentTempMeasurementUnit(myView.context)
-        viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner, {
+        viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner) {
             when {
                 it.isNullOrBlank() -> {
                     binding.txtViewCurrentTempDiscrimination.text = getString(R.string.temp_kelvin)
                     binding.txtViewFeelsLikeDiscrimination.text = getString(R.string.temp_kelvin)
                 }
-                it.equals("metric") -> {
+                it.equals(MEASUREMENT_UNIT_METRIC) -> {
                     binding.txtViewCurrentTempDiscrimination.text = getString(R.string.temp_celsius)
                     binding.txtViewFeelsLikeDiscrimination.text = getString(R.string.temp_celsius)
                 }
-                it.equals("imperial") -> {
-                    binding.txtViewCurrentTempDiscrimination.text = getString(R.string.temp_fahrenheit)
-                    binding.txtViewFeelsLikeDiscrimination.text = getString(R.string.temp_fahrenheit)
+                it.equals(MEASUREMENT_UNIT_IMPERIAL) -> {
+                    binding.txtViewCurrentTempDiscrimination.text =
+                        getString(R.string.temp_fahrenheit)
+                    binding.txtViewFeelsLikeDiscrimination.text =
+                        getString(R.string.temp_fahrenheit)
                 }
             }
-        })
+        }
     }
 
     private fun setWindSpeedDiscrimination() {
         viewModel.getWindSpeedMeasurementUnit(myView.context)
-        viewModel.windSpeedMeasurementUnit.observe(viewLifecycleOwner, {
+        viewModel.windSpeedMeasurementUnit.observe(viewLifecycleOwner) {
             when {
                 it.isNullOrBlank() || it.equals(WIND_SPEED_UNIT_M_P_S) -> {
                     binding.txtViewWindSpeedDiscrimination.text = getString(R.string.m_p_s)
@@ -226,18 +280,20 @@ class HomeFragment : Fragment() {
                     binding.txtViewWindSpeedDiscrimination.text = getString(R.string.m_p_h)
                 }
             }
-        })
+        }
     }
 
     private fun setCurrentWeatherIcon(iconURL: String) {
         Glide
             .with(myView.context)
-            .load("$IMG_URL${iconURL}@4x.png")
+//            .load("$IMG_URL${iconURL}@4x.png")
+            .load(getIcon(iconURL))
             .into(binding.imgViewCurrentWeatherIcon)
 
         Glide
             .with(myView.context)
-            .load("$IMG_URL${iconURL}@4x.png")
+//            .load("$IMG_URL${iconURL}@4x.png")
+            .load(getIcon(iconURL))
             .into(binding.imgViewFeelsLikeIcon)
     }
 

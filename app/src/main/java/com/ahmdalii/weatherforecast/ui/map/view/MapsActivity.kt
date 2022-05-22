@@ -5,9 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.os.Bundle
-import android.os.Handler
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
@@ -32,6 +29,7 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.REPLY_INTENT_KEY
 import com.ahmdalii.weatherforecast.utils.AppConstants.SETTING_FRAGMENT
 import com.ahmdalii.weatherforecast.utils.AppConstants.getPlaceName
 import com.ahmdalii.weatherforecast.utils.AppConstants.playAnimation
+import com.ahmdalii.weatherforecast.utils.AppConstants.showBannerAd
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -67,6 +65,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         comingFrom = intent.getStringExtra(COMING_FROM).toString()
 
+        showBannerAd(binding.adView)
         gettingViewModelReady()
         // Prompt the user for permission.
         getLocationPermission()
@@ -140,24 +139,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         viewModel.observeOnSharedPref(this)
         viewModel.getDeviceLocation(this)
 
-        viewModel.currentDeviceLocation.observe(this, {
+        viewModel.currentDeviceLocation.observe(this) {
             latLng = LatLng(it.latitude, it.longitude)
             moveCamera(latLng)
             if (comingFrom == INITIAL_DIALOG) {
                 val placeName = getPlaceName(this, latLng.latitude, latLng.longitude)
                 openViewWithAddress(placeName, latLng)
             }
-        })
-        viewModel.searchAddress.observe(this, {
+        }
+        viewModel.searchAddress.observe(this) {
             address = it
             address.adminArea = it.adminArea
             address.locality = it.featureName
-            Log.d("asdsad:", address.adminArea)
-            Log.d("asdsad:", address.locality)
-            Log.d("asdsad:", address.latitude.toString())
-            Log.d("asdsad:", address.longitude.toString())
             latLng = LatLng(address.latitude, address.longitude)
-            drawMarker(latLng,
+            drawMarker(
+                latLng,
                 listOf(
                     address.adminArea ?: getString(R.string.unknown_adminArea),
                     address.locality ?: getString(R.string.unknown_locality)
@@ -165,7 +161,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             )
             moveCamera(latLng)
             openViewWithAddress(address, latLng)
-        })
+        }
+
+        viewModel.errorMsgResponse.observe(this) { error ->
+            Toast.makeText(this, error, Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun moveCamera(latLng: LatLng) {

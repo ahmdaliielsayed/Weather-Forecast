@@ -105,4 +105,6 @@
 
     <string name="_2_52_am">2:52 AM</string>
     <string name="_to">TO</string>
+
+    <string name="bannerId">ca-app-pub-4171202920109669/8375893206</string> <!-- ca-app-pub-3940256099942544/6300978111 -->
 </resources>
