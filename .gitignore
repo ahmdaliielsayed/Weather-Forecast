@@ -14,4 +14,4 @@
 .cxx
 local.properties
 /app/keyStore/*.jks
-/app/src/main/cpp/*.cpp
+/app/src/main/cpp/native-lib.cpp
