@@ -2,6 +2,7 @@ package com.ahmdalii.weatherforecast.db.weather
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.ahmdalii.weatherforecast.db.AppDataBase
 import com.ahmdalii.weatherforecast.model.WeatherModel
 
@@ -15,7 +16,7 @@ class ConcreteLocalSource(context: Context) : LocalSource {
     }
 
     override fun selectAllStoredWeatherModel(currentTimeZone: String): LiveData<WeatherModel> {
-        return dao?.selectWeatherModel(currentTimeZone)!!
+        return dao?.selectWeatherModel(currentTimeZone) ?: MutableLiveData()
     }
 
     override fun insertWeatherModel(weatherModel: WeatherModel) {

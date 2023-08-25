@@ -23,7 +23,7 @@ class NotificationViewModel(private val _repo: NotificationRepoInterface) : View
     private var _id = MutableLiveData<Long>()
     val id: LiveData<Long> = _id
 
-    private val coroutineExceptionHandler = CoroutineExceptionHandler{ _, t ->
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, t ->
         run {
             t.printStackTrace()
             _errorMsgResponse.postValue(t.message)
@@ -43,12 +43,6 @@ class NotificationViewModel(private val _repo: NotificationRepoInterface) : View
     fun deleteAlert(alert: MyAlert) {
         viewModelScope.launch(Dispatchers.IO) {
             _repo.deleteAlert(alert)
-        }
-    }
-
-    fun deleteAlert(id: Long) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _repo.deleteAlert(id)
         }
     }
 

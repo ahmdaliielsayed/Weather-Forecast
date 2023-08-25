@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.os.Build
 import android.os.Looper
 import androidx.core.app.ActivityCompat
 import com.ahmdalii.weatherforecast.R
@@ -23,16 +24,20 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.SETTING_FILE
 import com.ahmdalii.weatherforecast.utils.AppConstants.getGeocoder
 import com.ahmdalii.weatherforecast.utils.AppConstants.getPlaceName
 import com.ahmdalii.weatherforecast.utils.AppSharedPref
-import com.google.android.gms.location.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import java.io.IOException
 
-class MapRepo private constructor(private var localSourceFavorite: LocalSourceFavorite): MapRepoInterface{
+class MapRepo private constructor(private var localSourceFavorite: LocalSourceFavorite) : MapRepoInterface {
 
-    companion object{
+    companion object {
         private var instance: MapRepoInterface? = null
-        fun getInstance(/*remoteSource: RemoteSource,*/ localSourceFavorite: LocalSourceFavorite): MapRepoInterface {
-            return instance ?: MapRepo(/*remoteSource,*/ localSourceFavorite)
+        fun getInstance(localSourceFavorite: LocalSourceFavorite): MapRepoInterface {
+            return instance ?: MapRepo(localSourceFavorite)
         }
     }
 
@@ -43,10 +48,10 @@ class MapRepo private constructor(private var localSourceFavorite: LocalSourceFa
     override fun getDeviceLocation(context: Context) {
         if (ActivityCompat.checkSelfPermission(
                 context,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION,
             ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                 context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
+                Manifest.permission.ACCESS_COARSE_LOCATION,
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             setupLocation(context)
@@ -54,7 +59,7 @@ class MapRepo private constructor(private var localSourceFavorite: LocalSourceFa
             fusedLocationProviderClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
-                Looper.getMainLooper()
+                Looper.getMainLooper(),
             )
         }
     }
@@ -132,7 +137,11 @@ class MapRepo private constructor(private var localSourceFavorite: LocalSourceFa
         val gcd: Geocoder = getGeocoder(context)
         var addresses: List<Address> = emptyList()
         try {
-            addresses = gcd.getFromLocationName(searchForPlace, 1)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                gcd.getFromLocationName(searchForPlace, 1) { addressList -> addresses = addressList }
+            } else {
+                addresses = gcd.getFromLocationName(searchForPlace, 1) ?: emptyList()
+            }
 
             if (addresses.isNotEmpty()) {
                 val location = Location(CURRENT_DEVICE_LOCATION)

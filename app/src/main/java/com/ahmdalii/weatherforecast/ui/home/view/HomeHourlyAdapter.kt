@@ -23,7 +23,7 @@ class HomeHourlyAdapter(
     var context: Context,
     private var hourlyListWeather: List<Hourly>,
     var viewModel: HomeViewModel,
-    private var viewLifecycleOwner: LifecycleOwner
+    private var viewLifecycleOwner: LifecycleOwner,
 ) : RecyclerView.Adapter<HomeHourlyAdapter.ViewHolder>() {
 
 //    var lastRowPosition = -1

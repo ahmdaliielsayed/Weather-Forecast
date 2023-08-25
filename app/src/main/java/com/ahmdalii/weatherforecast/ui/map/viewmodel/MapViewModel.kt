@@ -29,7 +29,7 @@ class MapViewModel(private val _repo: MapRepoInterface) : ViewModel() {
     private lateinit var preferences: SharedPreferences
     private lateinit var listener: SharedPreferences.OnSharedPreferenceChangeListener
 
-    private val coroutineExceptionHandler = CoroutineExceptionHandler{ _, t ->
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, t ->
         run {
             t.printStackTrace()
             _errorMsgResponse.postValue(t.message)
@@ -48,11 +48,11 @@ class MapViewModel(private val _repo: MapRepoInterface) : ViewModel() {
         }
     }
 
-    fun observeOnSharedPref(context: Context){
+    fun observeOnSharedPref(context: Context) {
         preferences = _repo.getAppSharedPref(context)
         listener =
             SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-               when (key) {
+                when (key) {
                     DEVICE_LONGITUDE -> {
                         if (_repo.isLocationSet(context, DEVICE_LONGITUDE)) {
                             val currentLocation = _repo.getCurrentDeviceLocation(context)
@@ -64,7 +64,7 @@ class MapViewModel(private val _repo: MapRepoInterface) : ViewModel() {
         preferences.registerOnSharedPreferenceChangeListener(listener)
     }
 
-    fun unRegisterOnSharedPreferenceChangeListener(){
+    fun unRegisterOnSharedPreferenceChangeListener() {
         preferences.unregisterOnSharedPreferenceChangeListener(listener)
     }
 

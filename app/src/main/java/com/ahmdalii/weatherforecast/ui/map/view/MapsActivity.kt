@@ -73,36 +73,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         handleUIAction()
     }
 
-    /*private val handler = Handler()
-    private val postToServerRunnable = Runnable {
-        searchForPlace(binding.txtInputEditTextSearchPlace.text.toString())
-    }*/
-
     private fun handleUIAction() {
-        /*binding.txtInputEditTextSearchPlace.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-
-            override fun onTextChanged(value: CharSequence, start: Int, count: Int, after: Int) {
-                handler.removeCallbacks(postToServerRunnable)
-                if (value.isEmpty()) {
-                    Toast.makeText(this@MapsActivity, R.string.empty_string, Toast.LENGTH_SHORT)
-                        .show()
-                } else {
-                    handler.postDelayed(postToServerRunnable, 3000)
-                }
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-
-            }
-        })*/
-
         binding.txtInputEditTextSearchPlace.setOnEditorActionListener { value, actionId, event ->
-            if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH ||
-                event.action == KeyEvent.ACTION_DOWN ||
-                event.action == KeyEvent.KEYCODE_ENTER ){
+            if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH ||
+                event.action == KeyEvent.ACTION_DOWN || event.action == KeyEvent.KEYCODE_ENTER
+            ) {
                 if (binding.txtInputEditTextSearchPlace.text.toString().isEmpty()) {
                     Toast.makeText(this@MapsActivity, R.string.empty_string, Toast.LENGTH_SHORT)
                         .show()
@@ -128,12 +103,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun searchForPlace(placeName: String) {
         viewModel.getCurrentAddress(this, placeName)
-//        handler.removeCallbacks(postToServerRunnable)
     }
 
     private fun gettingViewModelReady() {
-        mapViewModelFactory = MapViewModelFactory (
-            MapRepo.getInstance(ConcreteLocalSourceFavorite(this))
+        mapViewModelFactory = MapViewModelFactory(
+            MapRepo.getInstance(ConcreteLocalSourceFavorite(this)),
         )
         viewModel = ViewModelProvider(this, mapViewModelFactory)[MapViewModel::class.java]
         viewModel.observeOnSharedPref(this)
@@ -156,8 +130,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 latLng,
                 listOf(
                     address.adminArea ?: getString(R.string.unknown_adminArea),
-                    address.locality ?: getString(R.string.unknown_locality)
-                )
+                    address.locality ?: getString(R.string.unknown_locality),
+                ),
             )
             moveCamera(latLng)
             openViewWithAddress(address, latLng)
@@ -178,7 +152,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             MarkerOptions()
                 .position(latLng)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-                .title(areaLocality[0].plus(", ").plus(areaLocality[1]))
+                .title(areaLocality[0].plus(", ").plus(areaLocality[1])),
         )
     }
 
@@ -215,8 +189,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 LatLng(latLng.latitude, latLng.longitude),
                 listOf(
                     address.adminArea ?: getString(R.string.unknown_adminArea),
-                    address.locality ?: getString(R.string.unknown_locality)
-                )
+                    address.locality ?: getString(R.string.unknown_locality),
+                ),
             )
 
             openViewWithAddress(address, latLng)
@@ -239,10 +213,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
                 FAVORITE_FRAGMENT -> {
                     val replyIntent = Intent()
-                    replyIntent.putExtra(REPLY_INTENT_KEY,
-                        FavoritePlace(latLng.latitude, latLng.longitude,
+                    replyIntent.putExtra(
+                        REPLY_INTENT_KEY,
+                        FavoritePlace(
+                            latLng.latitude,
+                            latLng.longitude,
                             address.adminArea ?: getString(R.string.unknown_adminArea),
-                            address.locality ?: getString(R.string.unknown_locality)))
+                            address.locality ?: getString(R.string.unknown_locality),
+                        ),
+                    )
                     setResult(RESULT_OK, replyIntent)
                 }
                 SETTING_FRAGMENT -> {
@@ -276,19 +255,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun getLocationPermission() {
         if (ActivityCompat.checkSelfPermission(
                 this,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION,
             ) == PackageManager.PERMISSION_GRANTED
-        /*&& ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED*/
         ) {
             locationPermissionGranted = true
-            /*if (LocationManagerCompat.isLocationEnabled(getSystemService(Context.LOCATION_SERVICE) as LocationManager)) {
-                viewModel.saveUpdateLocation(this)
-            } else {
-                Toast.makeText(this, R.string.open_gps, Toast.LENGTH_LONG).show()
-            }*/
         } else {
             getRequestLocationPermissions()
         }
@@ -297,10 +267,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun getRequestLocationPermissions() {
         requestLocationPermissions.launch(
             arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION
-                /*,
-                Manifest.permission.ACCESS_COARSE_LOCATION*/
-            )
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            ),
         )
     }
 

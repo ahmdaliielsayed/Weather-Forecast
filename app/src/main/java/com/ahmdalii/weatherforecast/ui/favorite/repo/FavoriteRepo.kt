@@ -21,11 +21,13 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.getPlaceName
 import com.ahmdalii.weatherforecast.utils.AppSharedPref
 import retrofit2.Response
 
-class FavoriteRepo private constructor(private var remoteSource: RemoteSource,
-                                       private var localSourceFavorite: LocalSourceFavorite)
-    : FavoriteRepoInterface{
+class FavoriteRepo private constructor(
+    private var remoteSource: RemoteSource,
+    private var localSourceFavorite: LocalSourceFavorite,
+) :
+    FavoriteRepoInterface {
 
-    companion object{
+    companion object {
         private var instance: FavoriteRepoInterface? = null
         fun getInstance(remoteSource: RemoteSource, localSourceFavorite: LocalSourceFavorite): FavoriteRepoInterface {
             return instance ?: FavoriteRepo(remoteSource, localSourceFavorite)
@@ -59,23 +61,24 @@ class FavoriteRepo private constructor(private var remoteSource: RemoteSource,
             favoritePlace.latitude.toFloat(),
             favoritePlace.longitude.toFloat(),
             language,
-            measurementUnit
+            measurementUnit,
         )
 
         val windSpeedUnit = AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(
             WIND_SPEED_UNIT,
-            WIND_SPEED_UNIT_M_P_S
+            WIND_SPEED_UNIT_M_P_S,
         )
         val measurementUnitValue = AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(
             MEASUREMENT_UNIT,
-            MEASUREMENT_UNIT_STANDARD
+            MEASUREMENT_UNIT_STANDARD,
         )
         if (measurementUnitValue == AppConstants.MEASUREMENT_UNIT_IMPERIAL && windSpeedUnit == WIND_SPEED_UNIT_M_P_S) {
-            currentWeatherOverNetwork.body()!!.current.windSpeed =
-                convertWindSpeedToMPS(currentWeatherOverNetwork.body()!!.current.windSpeed)
+            currentWeatherOverNetwork.body()?.current?.windSpeed =
+                convertWindSpeedToMPS(currentWeatherOverNetwork.body()?.current?.windSpeed)
         } else if ((measurementUnitValue == AppConstants.MEASUREMENT_UNIT_METRIC && windSpeedUnit == AppConstants.WIND_SPEED_UNIT_M_P_H) ||
-            (measurementUnitValue == MEASUREMENT_UNIT_STANDARD && windSpeedUnit == AppConstants.WIND_SPEED_UNIT_M_P_H)) {
-            currentWeatherOverNetwork.body()!!.current.windSpeed = convertWindSpeedToMPH(currentWeatherOverNetwork.body()!!.current.windSpeed)
+            (measurementUnitValue == MEASUREMENT_UNIT_STANDARD && windSpeedUnit == AppConstants.WIND_SPEED_UNIT_M_P_H)
+        ) {
+            currentWeatherOverNetwork.body()?.current?.windSpeed = convertWindSpeedToMPH(currentWeatherOverNetwork.body()?.current?.windSpeed)
         }
 
         return currentWeatherOverNetwork

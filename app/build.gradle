@@ -17,21 +17,21 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file('C:\\Users\\AhmedAli\\AndroidStudioProjects\\WeatherForecast\\app\\keyStore\\PlayConsoleKey.jks')
+            storeFile file('C:\\Users\\SharafElDinA\\AndroidStudioProjects\\Weather-Forecast\\app\\keyStore\\PlayConsoleKey.jks')
             storePassword localProperties['STORE_PASSWORD']
             keyAlias localProperties['KEY_ALIAS']
             keyPassword localProperties['STORE_PASSWORD']
         }
     }
 
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.ahmdalii.weatherforecast"
         minSdk 23
-        targetSdk 32
-        versionCode 6
-        versionName "1.6"
+        targetSdk 33
+        versionCode 7
+        versionName "1.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 

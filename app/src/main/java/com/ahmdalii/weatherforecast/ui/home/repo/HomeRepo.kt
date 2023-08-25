@@ -15,6 +15,7 @@ import com.ahmdalii.weatherforecast.model.WeatherModel
 import com.ahmdalii.weatherforecast.network.RemoteSource
 import com.ahmdalii.weatherforecast.utils.AppConstants.APPLICATION_LANGUAGE
 import com.ahmdalii.weatherforecast.utils.AppConstants.CURRENT_TIMEZONE
+import com.ahmdalii.weatherforecast.utils.AppConstants.EMPTY
 import com.ahmdalii.weatherforecast.utils.AppConstants.FIRST_TIME_COMPLETED
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_ADMIN_AREA
 import com.ahmdalii.weatherforecast.utils.AppConstants.LOCATION_LATITUDE
@@ -41,7 +42,7 @@ import retrofit2.Response
 
 class HomeRepo private constructor(
     private var remoteSource: RemoteSource,
-    private var localSource: LocalSource
+    private var localSource: LocalSource,
 ) : HomeRepoInterface {
 
     companion object {
@@ -58,10 +59,10 @@ class HomeRepo private constructor(
     override fun saveUpdateLocation(context: Context) {
         if (ActivityCompat.checkSelfPermission(
                 context,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION,
             ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                 context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
+                Manifest.permission.ACCESS_COARSE_LOCATION,
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             setupLocation(context)
@@ -69,7 +70,7 @@ class HomeRepo private constructor(
             fusedLocationProviderClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
-                Looper.getMainLooper()
+                Looper.getMainLooper(),
             )
         }
     }
@@ -109,7 +110,7 @@ class HomeRepo private constructor(
         AppSharedPref.getInstance(context, SETTING_FILE)
             .setValue(LOCATION_ADMIN_AREA, address.adminArea ?: context.getString(R.string.unknown_adminArea))
         AppSharedPref.getInstance(context, SETTING_FILE)
-            .setValue(LOCATION_LOCALITY, address.locality  ?: context.getString(R.string.unknown_locality))
+            .setValue(LOCATION_LOCALITY, address.locality ?: context.getString(R.string.unknown_locality))
     }
 
     private fun stopLocationUpdates() {
@@ -147,18 +148,18 @@ class HomeRepo private constructor(
             latitude,
             longitude,
             language,
-            measurementUnit
+            measurementUnit,
         )
         val windSpeedUnit = AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(WIND_SPEED_UNIT, WIND_SPEED_UNIT_M_P_S)
-        val measurementUnitValue = AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(MEASUREMENT_UNIT, MEASUREMENT_UNIT_STANDARD)
-        if (measurementUnitValue == MEASUREMENT_UNIT_IMPERIAL && windSpeedUnit == WIND_SPEED_UNIT_M_P_S) {
-            currentWeatherOverNetwork.body()!!.current.windSpeed =
-                convertWindSpeedToMPS(currentWeatherOverNetwork.body()!!.current.windSpeed)
-        } else if ((measurementUnitValue == MEASUREMENT_UNIT_METRIC && windSpeedUnit == WIND_SPEED_UNIT_M_P_H) ||
-            (measurementUnitValue == MEASUREMENT_UNIT_STANDARD && windSpeedUnit == WIND_SPEED_UNIT_M_P_H)) {
-            currentWeatherOverNetwork.body()!!.current.windSpeed = convertWindSpeedToMPH(currentWeatherOverNetwork.body()!!.current.windSpeed)
+        if (measurementUnit == MEASUREMENT_UNIT_IMPERIAL && windSpeedUnit == WIND_SPEED_UNIT_M_P_S) {
+            currentWeatherOverNetwork.body()?.current?.windSpeed =
+                convertWindSpeedToMPS(currentWeatherOverNetwork.body()?.current?.windSpeed)
+        } else if ((measurementUnit == MEASUREMENT_UNIT_METRIC && windSpeedUnit == WIND_SPEED_UNIT_M_P_H) ||
+            (measurementUnit == MEASUREMENT_UNIT_STANDARD && windSpeedUnit == WIND_SPEED_UNIT_M_P_H)
+        ) {
+            currentWeatherOverNetwork.body()?.current?.windSpeed = convertWindSpeedToMPH(currentWeatherOverNetwork.body()?.current?.windSpeed)
         }
-        saveCurrentTimeZone(context, currentWeatherOverNetwork.body()!!.timezone)
+        saveCurrentTimeZone(context, currentWeatherOverNetwork.body()?.timezone ?: EMPTY)
         return currentWeatherOverNetwork
     }
 
@@ -170,13 +171,12 @@ class HomeRepo private constructor(
         return listOf(
             AppSharedPref.getInstance(context, SETTING_FILE)
                 .getStringValue(LOCATION_ADMIN_AREA, ""),
-            AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(LOCATION_LOCALITY, "")
+            AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(LOCATION_LOCALITY, ""),
         )
     }
 
     override fun getCurrentTempMeasurementUnit(context: Context): String {
-        return AppSharedPref.getInstance(context, SETTING_FILE)
-            .getStringValue(MEASUREMENT_UNIT, MEASUREMENT_UNIT_STANDARD)
+        return AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(MEASUREMENT_UNIT, MEASUREMENT_UNIT_METRIC)
     }
 
     override fun getWindSpeedMeasurementUnit(context: Context): String {

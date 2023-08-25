@@ -38,7 +38,7 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
     private lateinit var preferences: SharedPreferences
     private lateinit var listener: SharedPreferences.OnSharedPreferenceChangeListener
 
-    private val coroutineExceptionHandler = CoroutineExceptionHandler{ _, t ->
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, t ->
         run {
             t.printStackTrace()
             _errorMsgResponse.postValue(t.message)
@@ -63,12 +63,12 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
             val currentWeatherResponse = _repo.getCurrentWeatherOverNetwork(context)
             if (currentWeatherResponse.isSuccessful) {
                 val hourlyList = mutableListOf<Hourly>()
-                for (item in currentWeatherResponse.body()?.hourly!!) {
+                for (item in currentWeatherResponse.body()?.hourly ?: emptyList()) {
                     if (hourlyList.size != 24) {
                         hourlyList.add(item)
                     }
                 }
-                currentWeatherResponse.body()!!.hourly = hourlyList
+                currentWeatherResponse.body()?.hourly = hourlyList
                 saveCurrentWeatherModelToRoom(currentWeatherResponse.body()!!)
                 _weatherModelResponse.postValue(currentWeatherResponse.body())
             } else {
@@ -87,7 +87,7 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             val currentLocationList = _repo.getCurrentLocation(context)
             if (currentLocationList.isEmpty()) {
-                _errorMsgResponse.postValue("${currentLocationList.size} \nerror viewModel getCurrentLocation")
+                _errorMsgResponse.postValue("error while fetching current location")
             } else {
                 _currentLocation.postValue(currentLocationList)
             }
@@ -106,11 +106,11 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
         }
     }
 
-    fun observeOnSharedPref(context: Context){
+    fun observeOnSharedPref(context: Context) {
         preferences = _repo.getAppSharedPref(context)
         if (_repo.isLocationSet(context)) {
             getCurrentWeatherOverNetwork(context)
-        } else{
+        } else {
             listener =
                 SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
                     if (key == LOCATION_LONGITUDE) {
@@ -120,7 +120,7 @@ class HomeViewModel(private val _repo: HomeRepoInterface) : ViewModel() {
                     } else if (key == LOCATION_LOCALITY) {
                         val currentLocation = _repo.getCurrentLocation(context)
                         if (currentLocation.isEmpty()) {
-                            _errorMsgResponse.postValue("${currentLocation.size} \nerror viewModel getCurrentLocation")
+                            _errorMsgResponse.postValue("error while fetching current location")
                         } else {
                             _currentLocation.postValue(currentLocation)
                         }

@@ -13,14 +13,16 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.SETTING_FILE
 import com.ahmdalii.weatherforecast.utils.AppConstants.getDisplayCurrentLanguage
 import com.ahmdalii.weatherforecast.utils.AppSharedPref
 
-class NotificationRepo private constructor(private var localSourceNotification: LocalSourceNotification,
-                                           private var localSource: LocalSource)
-    : NotificationRepoInterface{
+class NotificationRepo private constructor(
+    private var localSourceNotification: LocalSourceNotification,
+    private var localSource: LocalSource,
+) :
+    NotificationRepoInterface {
 
-    companion object{
+    companion object {
         private var instance: NotificationRepoInterface? = null
-        fun getInstance(/*remoteSource: RemoteSource,*/ localSourceNotification: LocalSourceNotification, localSource: LocalSource): NotificationRepoInterface {
-            return instance ?: NotificationRepo(/*remoteSource,*/ localSourceNotification, localSource)
+        fun getInstance(localSourceNotification: LocalSourceNotification, localSource: LocalSource): NotificationRepoInterface {
+            return instance ?: NotificationRepo(localSourceNotification, localSource)
         }
     }
 
@@ -46,7 +48,7 @@ class NotificationRepo private constructor(private var localSourceNotification: 
     override fun getLanguage(context: Context): String {
         return AppSharedPref.getInstance(context, SETTING_FILE).getStringValue(
             APPLICATION_LANGUAGE,
-            getDisplayCurrentLanguage()
+            getDisplayCurrentLanguage(),
         )
     }
 

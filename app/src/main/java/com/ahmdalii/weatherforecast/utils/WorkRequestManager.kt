@@ -16,11 +16,13 @@ import java.util.concurrent.TimeUnit
 
 object WorkRequestManager {
 
-    fun createWorkRequest(alert: MyAlert,
-                          description: String,
-                          icon: String,
-                          context: Context,
-                          fromTimeInMillis: Long) {
+    fun createWorkRequest(
+        alert: MyAlert,
+        description: String,
+        icon: String,
+        context: Context,
+        fromTimeInMillis: Long,
+    ) {
         val data = Data.Builder()
             .putString(MY_ALERT, convertMyAlertToString(alert))
             .putString(DESCRIPTION, description)

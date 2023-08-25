@@ -4,7 +4,7 @@ import android.app.Application
 import com.ahmdalii.weatherforecast.utils.AppConstants.BASE_URL
 import com.ahmdalii.weatherforecast.utils.AppConstants.WEATHER_APP_ID
 
-class BaseApplication: Application() {
+class BaseApplication : Application() {
 
     companion object {
         // Used to load the 'weatherforecast' library on application startup.

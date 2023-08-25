@@ -12,7 +12,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 object BaseRetrofitHelper {
 
     fun getInstance(): Retrofit {
-
         val requestInterceptor = Interceptor { chain ->
             val url = chain.request()
                 .url

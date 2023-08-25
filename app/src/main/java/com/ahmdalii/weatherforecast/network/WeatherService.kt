@@ -12,6 +12,6 @@ interface WeatherService {
         @Query("lat") latitude: Float,
         @Query("lon") longitude: Float,
         @Query("lang") language: String,
-        @Query("units") measurementUnit: String
+        @Query("units") measurementUnit: String,
     ): Response<WeatherModel>
 }

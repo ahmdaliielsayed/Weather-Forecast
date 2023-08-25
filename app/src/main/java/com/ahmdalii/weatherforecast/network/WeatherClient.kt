@@ -3,9 +3,9 @@ package com.ahmdalii.weatherforecast.network
 import com.ahmdalii.weatherforecast.model.WeatherModel
 import retrofit2.Response
 
-class WeatherClient private constructor(): RemoteSource {
+class WeatherClient private constructor() : RemoteSource {
 
-    companion object{
+    companion object {
         private var instance: WeatherClient? = null
         fun getInstance(): WeatherClient {
             return instance ?: WeatherClient()

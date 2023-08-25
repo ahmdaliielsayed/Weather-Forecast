@@ -14,23 +14,25 @@ import com.ahmdalii.weatherforecast.ui.notification.repo.NotificationRepoInterfa
 import com.ahmdalii.weatherforecast.ui.notification.view.DialogActivity
 import com.ahmdalii.weatherforecast.utils.AppConstants.ALARM_CHECKED
 import com.ahmdalii.weatherforecast.utils.AppConstants.DESCRIPTION
+import com.ahmdalii.weatherforecast.utils.AppConstants.EMPTY
 import com.ahmdalii.weatherforecast.utils.AppConstants.FROM_TIME_IN_MILLIS
 import com.ahmdalii.weatherforecast.utils.AppConstants.ICON
 import com.ahmdalii.weatherforecast.utils.AppConstants.MY_ALERT
 import com.ahmdalii.weatherforecast.utils.AppConstants.NOTIFICATION_CHECKED
+import com.ahmdalii.weatherforecast.utils.AppConstants.ZERO
 import com.ahmdalii.weatherforecast.utils.AppConstants.convertToMyAlert
 import com.ahmdalii.weatherforecast.utils.AppConstants.openNotification
 import com.ahmdalii.weatherforecast.utils.WorkRequestManager.removeWork
 import kotlinx.coroutines.*
 import java.util.*
 
-class MyCoroutineWorker(private val context: Context, parameters: WorkerParameters): CoroutineWorker(context, parameters) {
+class MyCoroutineWorker(private val context: Context, parameters: WorkerParameters) : CoroutineWorker(context, parameters) {
 
     private lateinit var notificationRepository: NotificationRepoInterface
 
     override suspend fun doWork(): Result {
         CoroutineScope(Dispatchers.IO).launch {
-            val myAlert = convertToMyAlert(inputData.getString(MY_ALERT)!!)
+            val myAlert = convertToMyAlert(inputData.getString(MY_ALERT) ?: EMPTY)
             val description = inputData.getString(DESCRIPTION)
             val icon = inputData.getString(ICON)
             val fromTimeInMillis = inputData.getLong(FROM_TIME_IN_MILLIS, 0L)
@@ -39,8 +41,8 @@ class MyCoroutineWorker(private val context: Context, parameters: WorkerParamete
                 NotificationRepo.getInstance(ConcreteLocalSourceNotification(applicationContext), ConcreteLocalSource(applicationContext))
 
             if (checkTime(myAlert)) {
-                if (notificationRepository.getNotificationChecked(context) || myAlert.alarm_or_notification == NOTIFICATION_CHECKED){
-                    openNotification(context, myAlert, description!!, icon!!, context.getString(R.string.app_name))
+                if (notificationRepository.getNotificationChecked(context) || myAlert.alarm_or_notification == NOTIFICATION_CHECKED) {
+                    openNotification(context, myAlert, description ?: EMPTY, icon ?: EMPTY, context.getString(R.string.app_name))
                 }
 
                 if (myAlert.alarm_or_notification == ALARM_CHECKED) {
@@ -60,10 +62,10 @@ class MyCoroutineWorker(private val context: Context, parameters: WorkerParamete
                     description.toString(),
                     icon.toString(),
                     context,
-                    (fromTimeInMillis + 86400000)
+                    (fromTimeInMillis + 86400000),
                 )
             } else {
-                notificationRepository.deleteAlert(myAlert.id!!)
+                notificationRepository.deleteAlert(myAlert.id ?: ZERO)
                 removeWork("${myAlert.id}", context)
             }
         }

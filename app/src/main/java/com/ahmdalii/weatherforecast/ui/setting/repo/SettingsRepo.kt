@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.os.Build
 import android.os.Looper
 import androidx.core.app.ActivityCompat
 import com.ahmdalii.weatherforecast.R
@@ -29,9 +30,9 @@ import com.ahmdalii.weatherforecast.utils.AppSharedPref
 import com.google.android.gms.location.*
 import java.io.IOException
 
-class SettingsRepo private constructor(): SettingsRepoInterface {
+class SettingsRepo private constructor() : SettingsRepoInterface {
 
-    companion object{
+    companion object {
         private var instance: SettingsRepoInterface? = null
         fun getInstance(): SettingsRepoInterface {
             return instance ?: SettingsRepo()
@@ -106,10 +107,10 @@ class SettingsRepo private constructor(): SettingsRepoInterface {
     private fun saveUpdateLocation(context: Context) {
         if (ActivityCompat.checkSelfPermission(
                 context,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION,
             ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                 context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
+                Manifest.permission.ACCESS_COARSE_LOCATION,
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             setupLocation(context)
@@ -117,7 +118,7 @@ class SettingsRepo private constructor(): SettingsRepoInterface {
             fusedLocationProviderClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
-                Looper.getMainLooper()
+                Looper.getMainLooper(),
             )
         }
     }
@@ -159,9 +160,13 @@ class SettingsRepo private constructor(): SettingsRepoInterface {
 
     private fun getPlaceName(context: Context, latitude: Double, longitude: Double) {
         val gcd: Geocoder = getGeocoder(context)
-        val addresses: List<Address>
+        var addresses: List<Address> = emptyList()
         try {
-            addresses = gcd.getFromLocation(latitude, longitude, 1)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                gcd.getFromLocation(latitude, longitude, 1) { addressList -> addresses = addressList }
+            } else {
+                addresses = gcd.getFromLocation(latitude, longitude, 1) ?: emptyList()
+            }
 
 //            if (addresses.isNotEmpty())
 //                Log.d("lastLocation:", addresses[0].locality)
@@ -181,7 +186,7 @@ class SettingsRepo private constructor(): SettingsRepoInterface {
 
     private fun saveCurrentPlaceName(context: Context, addresses: List<Address>) {
         AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_ADMIN_AREA, addresses[0].adminArea ?: context.getString(R.string.unknown_adminArea))
-        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_LOCALITY, addresses[0].locality  ?: context.getString(R.string.unknown_locality))
+        AppSharedPref.getInstance(context, SETTING_FILE).setValue(LOCATION_LOCALITY, addresses[0].locality ?: context.getString(R.string.unknown_locality))
     }
 
     private fun stopLocationUpdates() {

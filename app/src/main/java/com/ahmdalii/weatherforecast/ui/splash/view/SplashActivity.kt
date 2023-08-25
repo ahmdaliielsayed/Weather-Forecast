@@ -40,7 +40,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun gettingViewModelReady() {
         splashViewModelFactory = SplashViewModelFactory(
-            SplashRepo.getInstance()
+            SplashRepo.getInstance(),
         )
         viewModel = ViewModelProvider(this, splashViewModelFactory)[SplashViewModel::class.java]
         viewModel.getLanguage(this)

@@ -30,7 +30,7 @@ class FavoriteViewModel(private val _repo: FavoriteRepoInterface) : ViewModel() 
     private var _errorMsgResponse = MutableLiveData<String>()
     val errorMsgResponse: LiveData<String> = _errorMsgResponse
 
-    private val coroutineExceptionHandler = CoroutineExceptionHandler{ _, t ->
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, t ->
         run {
             t.printStackTrace()
             _errorMsgResponse.postValue(t.message)
@@ -59,12 +59,12 @@ class FavoriteViewModel(private val _repo: FavoriteRepoInterface) : ViewModel() 
             val currentWeatherResponse = _repo.getCurrentWeatherOverNetwork(context, favoritePlace)
             if (currentWeatherResponse.isSuccessful) {
                 val hourlyList = mutableListOf<Hourly>()
-                for (item in currentWeatherResponse.body()?.hourly!!) {
+                for (item in currentWeatherResponse.body()?.hourly ?: emptyList()) {
                     if (hourlyList.size != 24) {
                         hourlyList.add(item)
                     }
                 }
-                currentWeatherResponse.body()!!.hourly = hourlyList
+                currentWeatherResponse.body()?.hourly = hourlyList
                 _weatherModelResponse.postValue(currentWeatherResponse.body())
             } else {
                 _errorMsgResponse.postValue(currentWeatherResponse.message())

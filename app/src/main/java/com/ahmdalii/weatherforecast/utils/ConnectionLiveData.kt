@@ -12,13 +12,14 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.LiveData
 
 class ConnectionLiveData(private val context: Context) : LiveData<Boolean>() {
-    private val connectivityManager: ConnectivityManager = context.getSystemService()!!
+    private val connectivityManager: ConnectivityManager? = context.getSystemService()
     private lateinit var networkReceiver: BroadcastReceiver
     private lateinit var connectivityManagerCallback: NetworkCallback
 
     override fun setValue(value: Boolean?) {
-        if (getValue() == value)
+        if (getValue() == value) {
             return
+        }
         super.setValue(value)
     }
 
@@ -28,13 +29,18 @@ class ConnectionLiveData(private val context: Context) : LiveData<Boolean>() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             connectivityManagerCallback = object : NetworkCallback() {
                 @WorkerThread
-                override fun onCapabilitiesChanged(network: Network,
-                                                   networkCapabilities: NetworkCapabilities) {
+                override fun onCapabilitiesChanged(
+                    network: Network,
+                    networkCapabilities: NetworkCapabilities,
+                ) {
                     super.onCapabilitiesChanged(network, networkCapabilities)
                     if (networkCapabilities.hasCapability(
-                            NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                        && networkCapabilities.hasCapability(
-                            NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
+                            NetworkCapabilities.NET_CAPABILITY_INTERNET,
+                        ) &&
+                        networkCapabilities.hasCapability(
+                            NetworkCapabilities.NET_CAPABILITY_VALIDATED,
+                        )
+                    ) {
                         postValue(true)
                     }
                 }
@@ -45,13 +51,15 @@ class ConnectionLiveData(private val context: Context) : LiveData<Boolean>() {
                 }
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                connectivityManager.registerDefaultNetworkCallback(connectivityManagerCallback)
+                connectivityManager?.registerDefaultNetworkCallback(connectivityManagerCallback)
             } else {
                 val networkRequest = NetworkRequest.Builder()
                     .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
                     .addTransportType(NetworkCapabilities.TRANSPORT_WIFI).build()
-                connectivityManager.registerNetworkCallback(networkRequest,
-                    connectivityManagerCallback)
+                connectivityManager?.registerNetworkCallback(
+                    networkRequest,
+                    connectivityManagerCallback,
+                )
             }
         } else {
             networkReceiver = object : BroadcastReceiver() {
@@ -60,23 +68,25 @@ class ConnectionLiveData(private val context: Context) : LiveData<Boolean>() {
                 }
             }
             @Suppress("DEPRECATION")
-            context.registerReceiver(networkReceiver,
-                IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+            context.registerReceiver(
+                networkReceiver,
+                IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION),
             )
         }
     }
 
     override fun onInactive() {
         super.onInactive()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-            connectivityManager.unregisterNetworkCallback(connectivityManagerCallback)
-        else
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            connectivityManager?.unregisterNetworkCallback(connectivityManagerCallback)
+        } else {
             context.unregisterReceiver(networkReceiver)
+        }
     }
 
     @Suppress("DEPRECATION")
     private fun updateConnection() {
-        val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+        val activeNetwork: NetworkInfo? = connectivityManager?.activeNetworkInfo
         value = activeNetwork?.isConnected == true
     }
 }

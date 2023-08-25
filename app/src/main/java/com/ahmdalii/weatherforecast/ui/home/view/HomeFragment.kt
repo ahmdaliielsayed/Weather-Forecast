@@ -77,7 +77,7 @@ class HomeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
@@ -120,8 +120,9 @@ class HomeFragment : Fragment() {
     private fun gettingViewModelReady() {
         homeViewModelFactory = HomeViewModelFactory(
             HomeRepo.getInstance(
-                WeatherClient.getInstance(), ConcreteLocalSource(myView.context)
-            )
+                WeatherClient.getInstance(),
+                ConcreteLocalSource(myView.context),
+            ),
         )
         viewModel = ViewModelProvider(this, homeViewModelFactory)[HomeViewModel::class.java]
 
@@ -156,8 +157,8 @@ class HomeFragment : Fragment() {
         setCurrentWeatherDescription(it.current.weather)
         setCurrentWeatherIcon(it.current.weather[0].icon)
         binding.txtViewCurrentDateTime.text = getDateTime(it.current.dt, "EEE, MMM d, yyyy hh:mm a", viewModel.getLanguage(myView.context))
-        homeHourlyAdapter.setDataToAdapter(it.hourly!!)
-        homeDailyAdapter.setDataToAdapter(it.daily!!)
+        homeHourlyAdapter.setDataToAdapter(it.hourly ?: emptyList())
+        homeDailyAdapter.setDataToAdapter(it.daily ?: emptyList())
         binding.txtViewPressure.text = it.current.pressure.toString().plus(" hPa")
         binding.txtViewHumidity.text = it.current.humidity.toString().plus(" %")
         binding.txtViewWindSpeed.text = ((it.current.windSpeed * 100.0).roundToInt() / 100.0).toString().plus(" ")
@@ -176,40 +177,42 @@ class HomeFragment : Fragment() {
     private fun displayBackgroundImage(currentTimeMillis: Long, sunrise: Int, sunset: Int) {
         val simpleDateFormat = SimpleDateFormat(
             "EEE, MMM d, yyyy hh:mm a",
-            Locale(viewModel.getLanguage(myView.context))
+            Locale(viewModel.getLanguage(myView.context)),
         )
 
         val currentDate = simpleDateFormat.parse(
             getDateTime(
                 currentTimeMillis,
                 "EEE, MMM d, yyyy hh:mm a",
-                viewModel.getLanguage(myView.context)
-            )
+                viewModel.getLanguage(myView.context),
+            ),
         )
         val sunriseDate = simpleDateFormat.parse(
             getDateTime(
                 sunrise,
                 "EEE, MMM d, yyyy hh:mm a",
-                viewModel.getLanguage(myView.context)
-            )
+                viewModel.getLanguage(myView.context),
+            ),
         )
         val sunsetDate = simpleDateFormat.parse(
             getDateTime(
                 sunset,
                 "EEE, MMM d, yyyy hh:mm a",
-                viewModel.getLanguage(myView.context)
-            )
+                viewModel.getLanguage(myView.context),
+            ),
         )
 
-        if (currentDate!!.before(sunsetDate) && currentDate.after(sunriseDate)) {
-            // at day
-            drawerLayout.setBackgroundResource(R.drawable.background_image_day)
-            binding.parentView.setBackgroundResource(R.drawable.background_image_day)
-        } else {
-            // at night
-            atNight = true
-            drawerLayout.setBackgroundResource(R.drawable.background_image)
-            binding.parentView.setBackgroundResource(R.drawable.background_image)
+        if (currentDate != null) {
+            if (currentDate.before(sunsetDate) && currentDate.after(sunriseDate)) {
+                // at day
+                drawerLayout.setBackgroundResource(R.drawable.background_image_day)
+                binding.parentView.setBackgroundResource(R.drawable.background_image_day)
+            } else {
+                // at night
+                atNight = true
+                drawerLayout.setBackgroundResource(R.drawable.background_image)
+                binding.parentView.setBackgroundResource(R.drawable.background_image)
+            }
         }
     }
 
@@ -370,8 +373,8 @@ class HomeFragment : Fragment() {
         requestLocationPermissions.launch(
             arrayOf(
                 Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            ),
         )
     }
 
@@ -390,7 +393,7 @@ class HomeFragment : Fragment() {
                         myView.context,
                         R.string.warning,
                         "${it.key} ${getString(R.string.cancelled)} \n\n${getString(R.string.permission_required)}",
-                        R.drawable.ic_warning
+                        R.drawable.ic_warning,
                     )
                 }
             }

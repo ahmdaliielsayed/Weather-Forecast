@@ -18,7 +18,7 @@ class Notification(
     context: Context,
     var description: String,
     var icon: String,
-    var title: String
+    private var title: String,
 ) : ContextWrapper(context) {
 
     private val CHANNEL_ID = "Channel ID"
@@ -65,11 +65,11 @@ class Notification(
             this,
             uniqueInt,
             intent,
-            PendingIntent.FLAG_ONE_SHOT
+            PendingIntent.FLAG_ONE_SHOT,
         )
         return NotificationCompat.Builder(
             applicationContext,
-            CHANNEL_ID
+            CHANNEL_ID,
         )
             .setContentTitle(title)
             .setContentText(description) // getText(R.string.open_dialogue)

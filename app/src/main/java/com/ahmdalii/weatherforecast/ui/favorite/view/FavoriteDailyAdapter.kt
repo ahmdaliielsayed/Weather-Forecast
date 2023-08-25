@@ -23,10 +23,8 @@ class FavoriteDailyAdapter(
     var context: Context,
     private var dailyListWeather: List<Daily>,
     var viewModel: FavoriteViewModel,
-    private var viewLifecycleOwner: LifecycleOwner
+    private var viewLifecycleOwner: LifecycleOwner,
 ) : RecyclerView.Adapter<FavoriteDailyAdapter.ViewHolder>() {
-
-//    var lastRowPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -45,7 +43,7 @@ class FavoriteDailyAdapter(
                 .load(getIcon(dailyListWeather[position].weather[0].icon))
                 .into(it)
         }
-        holder.txtViewDailyWeatherDescription?.text =  dailyListWeather[position].weather[0].description
+        holder.txtViewDailyWeatherDescription?.text = dailyListWeather[position].weather[0].description
         viewModel.currentTempMeasurementUnit.observe(viewLifecycleOwner) {
             when {
                 it.isNullOrBlank() -> {
@@ -74,11 +72,6 @@ class FavoriteDailyAdapter(
             minMaxTemp.append(dailyListWeather[position].temp.min.toInt())
         }
         holder.txtViewDailyTempMinMax?.text = minMaxTemp
-        /*if (holder.adapterPosition > lastRowPosition) {
-
-
-            lastRowPosition = holder.adapterPosition
-        }*/
     }
 
     override fun getItemCount(): Int {

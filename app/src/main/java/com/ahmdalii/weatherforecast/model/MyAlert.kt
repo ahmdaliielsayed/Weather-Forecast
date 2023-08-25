@@ -9,5 +9,5 @@ data class MyAlert(
     val id: Long? = null,
     var startDate: Long,
     var endDate: Long,
-    var alarm_or_notification: String
+    var alarm_or_notification: String,
 )
