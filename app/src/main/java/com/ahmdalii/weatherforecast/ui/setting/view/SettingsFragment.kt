@@ -56,8 +56,9 @@ class SettingsFragment : Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
@@ -169,10 +170,10 @@ class SettingsFragment : Fragment() {
     private fun saveUpdateGPSLocation() {
         if (ActivityCompat.checkSelfPermission(
                 myView.context,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION,
             ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                 myView.context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
+                Manifest.permission.ACCESS_COARSE_LOCATION,
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             isAllPermissionsGranted = true
@@ -185,8 +186,8 @@ class SettingsFragment : Fragment() {
             requestLocationPermissions.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                ),
             )
         }
     }
@@ -206,7 +207,7 @@ class SettingsFragment : Fragment() {
                         myView.context,
                         R.string.warning,
                         "${it.key} ${getString(R.string.cancelled)} \n\n${getString(R.string.permission_required)}",
-                        R.drawable.ic_warning
+                        R.drawable.ic_warning,
                     )
                 }
 
@@ -218,7 +219,7 @@ class SettingsFragment : Fragment() {
 
     private fun gettingViewModelReady() {
         settingsViewModelFactory = SettingsViewModelFactory(
-            SettingsRepo.getInstance()
+            SettingsRepo.getInstance(),
         )
         viewModel = ViewModelProvider(this, settingsViewModelFactory)[SettingsViewModel::class.java]
         viewModel.observeOnSharedPref(myView.context)
@@ -285,7 +286,6 @@ class SettingsFragment : Fragment() {
     }
 
     private fun isServiceAvailable(): Boolean {
-
         var isAvailable = false
         val googleAPIInstance = GoogleApiAvailability.getInstance()
         val googlePlayServicesAvailable =

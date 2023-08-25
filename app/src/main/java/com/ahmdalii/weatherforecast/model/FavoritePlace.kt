@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.ahmdalii.weatherforecast.utils.AppConstants.EMPTY
 
 @Entity(tableName = "FavoritePlace")
 data class FavoritePlace(
@@ -11,14 +12,14 @@ data class FavoritePlace(
     val longitude: Double,
     var adminArea: String,
     @PrimaryKey
-    var locality: String
-): Parcelable {
+    var locality: String,
+) : Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readDouble(),
         parcel.readDouble(),
-        parcel.readString()!!,
-        parcel.readString()!!
+        parcel.readString() ?: EMPTY,
+        parcel.readString() ?: EMPTY,
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

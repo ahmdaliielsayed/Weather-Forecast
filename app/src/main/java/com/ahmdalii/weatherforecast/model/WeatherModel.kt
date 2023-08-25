@@ -37,5 +37,5 @@ data class WeatherModel(
 
     @Nullable
     @ColumnInfo(name = "minutely")
-    val minutely: List<Minutely>? = emptyList()
+    val minutely: List<Minutely>? = emptyList(),
 )

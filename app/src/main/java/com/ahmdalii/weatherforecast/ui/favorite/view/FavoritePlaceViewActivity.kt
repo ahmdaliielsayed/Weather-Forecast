@@ -65,7 +65,7 @@ class FavoritePlaceViewActivity : AppCompatActivity() {
                 Snackbar.make(
                     findViewById(android.R.id.content),
                     getString(R.string.connection_lost),
-                    Snackbar.LENGTH_LONG
+                    Snackbar.LENGTH_LONG,
                 )
                     .setAction("Action", null).show()
 //                Toast.makeText(this, getString(R.string.connection_lost), Toast.LENGTH_LONG).show()
@@ -75,7 +75,7 @@ class FavoritePlaceViewActivity : AppCompatActivity() {
 
     private fun gettingViewModelReady() {
         favoritePlacesViewModelFactory = FavoriteViewModelFactory(
-            FavoriteRepo.getInstance(WeatherClient.getInstance(), ConcreteLocalSourceFavorite(this))
+            FavoriteRepo.getInstance(WeatherClient.getInstance(), ConcreteLocalSourceFavorite(this)),
         )
         viewModel = ViewModelProvider(this, favoritePlacesViewModelFactory)[FavoriteViewModel::class.java]
         viewModel.getCurrentWeatherOverNetwork(this, favoritePlace)
@@ -127,8 +127,8 @@ class FavoritePlaceViewActivity : AppCompatActivity() {
         setCurrentWeatherIcon(it.current.weather[0].icon)
         binding.txtViewCurrentDateTime.text =
             AppConstants.getDateTime(it.current.dt, "EEE, MMM d, yyyy hh:mm a", viewModel.getLanguage(this))
-        favoriteHourlyAdapter.setDataToAdapter(it.hourly!!)
-        favoriteDailyAdapter.setDataToAdapter(it.daily!!)
+        favoriteHourlyAdapter.setDataToAdapter(it.hourly ?: emptyList())
+        favoriteDailyAdapter.setDataToAdapter(it.daily ?: emptyList())
         binding.txtViewPressure.text = it.current.pressure.toString().plus(" hPa")
         binding.txtViewHumidity.text = it.current.humidity.toString().plus(" %")
         binding.txtViewWindSpeed.text = ((it.current.windSpeed * 100.0).roundToInt() / 100.0).toString().plus(" ")

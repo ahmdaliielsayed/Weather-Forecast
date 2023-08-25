@@ -6,5 +6,5 @@ data class Temp(
     val max: Double,
     val min: Double,
     val morn: Double,
-    val night: Double
+    val night: Double,
 )

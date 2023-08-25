@@ -2,6 +2,7 @@ package com.ahmdalii.weatherforecast.db.favorite
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.ahmdalii.weatherforecast.db.AppDataBase
 import com.ahmdalii.weatherforecast.model.FavoritePlace
 
@@ -13,7 +14,7 @@ class ConcreteLocalSourceFavorite(context: Context) : LocalSourceFavorite {
     init {
         val db: AppDataBase = AppDataBase.getInstance(context)
         dao = db.favoriteDAO()
-        allFavoritePlacesList = dao?.favoritePlacesList!!
+        allFavoritePlacesList = dao?.favoritePlacesList ?: MutableLiveData<List<FavoritePlace>>().apply { value = emptyList() }
     }
 
     override fun deleteFavoritePlace(favoritePlace: FavoritePlace) {

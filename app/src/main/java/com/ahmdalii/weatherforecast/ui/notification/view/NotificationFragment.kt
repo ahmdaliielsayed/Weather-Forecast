@@ -81,7 +81,7 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
 
@@ -101,10 +101,9 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
 
     private fun gettingViewModelReady() {
         notificationViewModelFactory = NotificationViewModelFactory(
-            NotificationRepo.getInstance(ConcreteLocalSourceNotification(myView.context), ConcreteLocalSource(myView.context))
+            NotificationRepo.getInstance(ConcreteLocalSourceNotification(myView.context), ConcreteLocalSource(myView.context)),
         )
         viewModel = ViewModelProvider(this, notificationViewModelFactory)[NotificationViewModel::class.java]
-
 
         language = if (viewModel.getLanguage(myView.context) == APPLICATION_LANGUAGE_EN) {
             APPLICATION_LANGUAGE_EN
@@ -146,13 +145,13 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
                     alert,
 //                    getString(R.string.weather_description),
                     weatherModel.current.weather[0].description,
-                    weatherModel.current.weather[0].icon
+                    weatherModel.current.weather[0].icon,
                 )
             } else {
                 setOneTimeWorkRequest(
                     alert,
                     weatherModel.alerts!![0].tags[0],
-                    weatherModel.current.weather[0].icon
+                    weatherModel.current.weather[0].icon,
                 )
             }
         }
@@ -170,13 +169,13 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
 
     private fun handleUIEvents() {
         binding.fabAddAlert.setOnClickListener {
-            val pm = view!!.context.getSystemService(Context.POWER_SERVICE) as PowerManager
-            if (!Settings.canDrawOverlays(view!!.context)) {
+            val pm = view?.context?.getSystemService(Context.POWER_SERVICE) as PowerManager
+            if (!Settings.canDrawOverlays(view?.context)) {
                 askForDrawOverlaysPermission()
             } else if (!pm.isIgnoringBatteryOptimizations(myView.context.packageName)) {
                 val intent = Intent()
                 intent.action = ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-                intent.data = Uri.parse("package:" + view!!.context.packageName)
+                intent.data = Uri.parse("package:" + view?.context?.packageName)
                 startActivity(intent)
             } else {
                 showAddAlertDialog()
@@ -185,20 +184,20 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
     }
 
     private fun askForDrawOverlaysPermission() {
-        if (!Settings.canDrawOverlays(view!!.context)) {
+        if (!Settings.canDrawOverlays(view?.context)) {
             if ("xiaomi" == Build.MANUFACTURER.lowercase(Locale.ROOT)) {
                 val intent = Intent("miui.intent.action.APP_PERM_EDITOR")
                 intent.setClassName(
                     "com.miui.securitycenter",
-                    "com.miui.permcenter.permissions.PermissionsEditorActivity"
+                    "com.miui.permcenter.permissions.PermissionsEditorActivity",
                 )
-                intent.putExtra("extra_pkgname", view!!.context.packageName)
+                intent.putExtra("extra_pkgname", view?.context?.packageName)
                 AlertDialog.Builder(view!!.context)
                     .setTitle(R.string.draw_overlays)
                     .setMessage(R.string.draw_overlays_description)
                     .setPositiveButton(R.string.go_to_settings) { _, _ ->
                         startActivity(
-                            intent
+                            intent,
                         )
                     }
                     .setIcon(R.drawable.ic_warning)
@@ -210,7 +209,7 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
                     .setPositiveButton(R.string.ok) { _, _ ->
                         val permissionIntent = Intent(
                             Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            Uri.parse("package:" + view!!.context.packageName)
+                            Uri.parse("package:" + view?.context?.packageName),
                         )
                         runtimePermissionResultLauncher.launch(permissionIntent)
                     }
@@ -273,11 +272,14 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
 
     private lateinit var date: Calendar
     private fun showDateTimePicker(isFrom: Boolean) {
-        Locale.setDefault(Locale(
-            AppSharedPref.getInstance(myView.context, AppConstants.SETTING_FILE).getStringValue(
-                AppConstants.APPLICATION_LANGUAGE,
-                AppConstants.getDisplayCurrentLanguage()
-            )))
+        Locale.setDefault(
+            Locale(
+                AppSharedPref.getInstance(myView.context, AppConstants.SETTING_FILE).getStringValue(
+                    AppConstants.APPLICATION_LANGUAGE,
+                    AppConstants.getDisplayCurrentLanguage(),
+                ),
+            ),
+        )
         val currentDate = Calendar.getInstance()
         date = Calendar.getInstance()
         val datePickerDialog = DatePickerDialog(
@@ -301,9 +303,15 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
                             toDate.text = toDateString
                             toTimeInMillis = date.timeInMillis
                         }
-                    }, currentDate[Calendar.HOUR_OF_DAY], currentDate[Calendar.MINUTE], false
+                    },
+                    currentDate[Calendar.HOUR_OF_DAY],
+                    currentDate[Calendar.MINUTE],
+                    false,
                 ).show()
-            }, currentDate[Calendar.YEAR], currentDate[Calendar.MONTH], currentDate[Calendar.DATE]
+            },
+            currentDate[Calendar.YEAR],
+            currentDate[Calendar.MONTH],
+            currentDate[Calendar.DATE],
         )
         datePickerDialog.datePicker.minDate = currentDate.timeInMillis
         datePickerDialog.show()
@@ -322,12 +330,11 @@ class NotificationFragment : Fragment(), OnAlertClickListener {
                 viewModel.deleteAlert(myAlert)
                 removeWork(myAlert.id.toString(), myView.context)
             }
-            .setNegativeButton(R.string.cancel) {_, _ -> }
+            .setNegativeButton(R.string.cancel) { _, _ -> }
             .setIcon(R.drawable.ic_warning)
             .show()
     }
 
     override fun onAlertClick(myAlert: MyAlert) {
-
     }
 }

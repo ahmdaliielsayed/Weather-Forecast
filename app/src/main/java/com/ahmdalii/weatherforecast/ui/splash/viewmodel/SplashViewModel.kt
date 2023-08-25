@@ -18,7 +18,7 @@ class SplashViewModel(private val _repo: SplashRepoInterface) : ViewModel() {
     private var _errorMsgResponse = MutableLiveData<String>()
     val errorMsgResponse: LiveData<String> = _errorMsgResponse
 
-    private val coroutineExceptionHandler = CoroutineExceptionHandler{ _, t ->
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, t ->
         run {
             t.printStackTrace()
             _errorMsgResponse.postValue(t.message)

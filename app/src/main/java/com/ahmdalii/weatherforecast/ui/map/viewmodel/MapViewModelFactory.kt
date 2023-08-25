@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ahmdalii.weatherforecast.ui.map.repo.MapRepoInterface
 
-class MapViewModelFactory (private val _repo: MapRepoInterface): ViewModelProvider.Factory {
+class MapViewModelFactory(private val _repo: MapRepoInterface) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(MapViewModel::class.java)) {

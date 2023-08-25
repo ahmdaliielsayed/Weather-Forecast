@@ -23,10 +23,8 @@ class FavoriteHourlyAdapter(
     var context: Context,
     private var hourlyListWeather: List<Hourly>,
     var viewModel: FavoriteViewModel,
-    private var viewLifecycleOwner: LifecycleOwner
+    private var viewLifecycleOwner: LifecycleOwner,
 ) : RecyclerView.Adapter<FavoriteHourlyAdapter.ViewHolder>() {
-
-//    var lastRowPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -66,11 +64,6 @@ class FavoriteHourlyAdapter(
         } else {
             holder.txtViewHourlyTemp?.text = "${hourlyListWeather[position].temp.toInt()}"
         }
-        /*if (holder.adapterPosition > lastRowPosition) {
-
-
-            lastRowPosition = holder.adapterPosition
-        }*/
     }
 
     override fun getItemCount(): Int {

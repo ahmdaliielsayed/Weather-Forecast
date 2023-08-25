@@ -21,5 +21,5 @@ data class Hourly(
     @SerializedName("wind_gust")
     val windGust: Double,
     @SerializedName("wind_speed")
-    val windSpeed: Double
+    val windSpeed: Double,
 )

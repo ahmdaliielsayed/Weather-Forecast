@@ -9,7 +9,7 @@ class AppSharedPref private constructor(context: Context, fileName: String) {
         context.getSharedPreferences(fileName, Context.MODE_PRIVATE)
     private var editor: SharedPreferences.Editor = sharedPreferences.edit()
 
-    companion object{
+    companion object {
         private var appSharedPref: AppSharedPref? = null
 
         fun getInstance(context: Context, fileName: String): AppSharedPref {

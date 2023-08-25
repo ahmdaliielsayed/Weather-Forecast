@@ -1,9 +1,12 @@
 package com.ahmdalii.weatherforecast.db.notification
 
 import android.content.Context
+import android.content.res.Resources.NotFoundException
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.ahmdalii.weatherforecast.db.AppDataBase
 import com.ahmdalii.weatherforecast.model.MyAlert
+import com.ahmdalii.weatherforecast.utils.AppConstants.ZERO
 
 class ConcreteLocalSourceNotification(context: Context) : LocalSourceNotification {
 
@@ -13,11 +16,11 @@ class ConcreteLocalSourceNotification(context: Context) : LocalSourceNotificatio
     init {
         val db: AppDataBase = AppDataBase.getInstance(context)
         dao = db.notificationDAO()
-        alertList = dao?.alertList!!
+        alertList = dao?.alertList ?: MutableLiveData<List<MyAlert>>().apply { value = emptyList() }
     }
 
     override fun insertAlert(alert: MyAlert): Long {
-        return dao?.insertAlert(alert)!!
+        return dao?.insertAlert(alert) ?: ZERO
     }
 
     override fun deleteAlert(alert: MyAlert) {
@@ -29,6 +32,6 @@ class ConcreteLocalSourceNotification(context: Context) : LocalSourceNotificatio
     }
 
     override fun getAlert(id: Long): MyAlert {
-        return dao?.getAlert(id)!!
+        return dao?.getAlert(id) ?: throw NotFoundException("Alert not found for id: $id")
     }
 }

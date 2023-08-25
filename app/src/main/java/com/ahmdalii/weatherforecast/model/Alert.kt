@@ -21,5 +21,5 @@ data class Alert(
     val description: String,
 
     @ColumnInfo(name = "tags")
-    val tags: List<String> = emptyList()
+    val tags: List<String> = emptyList(),
 )

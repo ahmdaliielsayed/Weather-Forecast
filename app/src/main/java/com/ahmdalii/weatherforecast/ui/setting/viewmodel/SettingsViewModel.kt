@@ -43,7 +43,7 @@ class SettingsViewModel(private val _repo: SettingsRepoInterface) : ViewModel() 
     private var _changedSuccessfully = MutableLiveData<String>()
     val changedSuccessfully: LiveData<String> = _changedSuccessfully
 
-    private val coroutineExceptionHandler = CoroutineExceptionHandler{ _, t ->
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, t ->
         run {
             t.printStackTrace()
             _errorMsgResponse.postValue(t.message)
@@ -131,7 +131,7 @@ class SettingsViewModel(private val _repo: SettingsRepoInterface) : ViewModel() 
         preferences.registerOnSharedPreferenceChangeListener(listener)
     }
 
-    fun unRegisterOnSharedPreferenceChangeListener(){
+    fun unRegisterOnSharedPreferenceChangeListener() {
         preferences.unregisterOnSharedPreferenceChangeListener(listener)
     }
 }

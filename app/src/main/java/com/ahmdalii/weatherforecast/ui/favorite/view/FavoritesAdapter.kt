@@ -16,7 +16,7 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.playAnimation
 class FavoritesAdapter(
     var context: Context,
     private var places: List<FavoritePlace>,
-    private var onFavoriteClickListener: OnFavoriteClickListener
+    private var onFavoriteClickListener: OnFavoriteClickListener,
 ) : RecyclerView.Adapter<FavoritesAdapter.ViewHolder>() {
 
     private var lastRowPosition = -1

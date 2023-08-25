@@ -6,9 +6,9 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.SETTING_FILE
 import com.ahmdalii.weatherforecast.utils.AppConstants.getDisplayCurrentLanguage
 import com.ahmdalii.weatherforecast.utils.AppSharedPref
 
-class SplashRepo private constructor(): SplashRepoInterface {
+class SplashRepo private constructor() : SplashRepoInterface {
 
-    companion object{
+    companion object {
         private var instance: SplashRepoInterface? = null
         fun getInstance(): SplashRepoInterface {
             return instance ?: SplashRepo()

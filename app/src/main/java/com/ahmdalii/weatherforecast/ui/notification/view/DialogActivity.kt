@@ -16,7 +16,7 @@ import com.ahmdalii.weatherforecast.utils.AppConstants.DESCRIPTION
 import com.ahmdalii.weatherforecast.utils.AppConstants.ICON
 import com.ahmdalii.weatherforecast.utils.AppConstants.getIcon
 
-class DialogActivity: AppCompatActivity() {
+class DialogActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDialogBinding
 
@@ -47,7 +47,7 @@ class DialogActivity: AppCompatActivity() {
 
     private fun gettingViewModelReady() {
         notificationViewModelFactory = NotificationViewModelFactory(
-            NotificationRepo.getInstance(ConcreteLocalSourceNotification(this), ConcreteLocalSource(this))
+            NotificationRepo.getInstance(ConcreteLocalSourceNotification(this), ConcreteLocalSource(this)),
         )
         viewModel = ViewModelProvider(this, notificationViewModelFactory)[NotificationViewModel::class.java]
     }
@@ -56,12 +56,12 @@ class DialogActivity: AppCompatActivity() {
         binding.imageIcon.setImageResource(getIcon(icon))
         binding.textDescription.text = description
         binding.btnDismiss.setOnClickListener {
-            mediaPlayerSong!!.stop()
+            mediaPlayerSong?.stop()
             finish()
         }
 
         mediaPlayerSong = MediaPlayer.create(this, R.raw.thunder)
-        mediaPlayerSong!!.isLooping = true
-        mediaPlayerSong!!.start()
+        mediaPlayerSong?.isLooping = true
+        mediaPlayerSong?.start()
     }
 }

@@ -9,6 +9,7 @@ import android.location.Geocoder
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.Build
 import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AlertDialog
@@ -31,9 +32,12 @@ import java.util.*
 
 object AppConstants {
 
+    const val ZERO: Long = 0
+    private const val ZERO_D: Double = 0.0
     const val SPLASH_TIME_OUT: Long = 5000
     private const val WIND_SPEED_FACTOR = 2.23693629
 
+    const val EMPTY = ""
     const val SETTING_FILE: String = "setting file"
     const val LOCATION_LONGITUDE: String = "location longitude"
     const val LOCATION_LATITUDE: String = "location latitude"
@@ -46,6 +50,7 @@ object AppConstants {
     const val APPLICATION_LANGUAGE_AR: String = "ar"
     const val APPLICATION_LANGUAGE_EN: String = "en"
     const val MEASUREMENT_UNIT: String = "measurement unit"
+
     /*
     * default: kelvin ==> metre/sec
     * metric: Celsius ==> metre/sec
@@ -78,6 +83,7 @@ object AppConstants {
     const val FROM_TIME_IN_MILLIS: String = "fromTimeInMillis"
 
     lateinit var BASE_URL: String
+
 //    const val IMG_URL: String = BuildConfig.IMG_URL
     lateinit var WEATHER_APP_ID: String
 
@@ -135,10 +141,10 @@ object AppConstants {
     fun checkLocationPermissions(context: Context): Boolean {
         return ActivityCompat.checkSelfPermission(
             context,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION,
         ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
             context,
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.ACCESS_COARSE_LOCATION,
         ) == PackageManager.PERMISSION_GRANTED
     }
 
@@ -167,11 +173,15 @@ object AppConstants {
 
     fun getPlaceName(context: Context, latitude: Double, longitude: Double): Address {
         val gcd: Geocoder = getGeocoder(context)
-        val addresses: List<Address>
+        var addresses: List<Address> = emptyList()
         var address = Address(Locale(getDisplayCurrentLanguage()))
 
         try {
-            addresses = gcd.getFromLocation(latitude, longitude, 1)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                gcd.getFromLocation(latitude, longitude, 1) { addressList -> addresses = addressList }
+            } else {
+                addresses = gcd.getFromLocation(latitude, longitude, 1) ?: emptyList()
+            }
 
             if (addresses.isNotEmpty()) {
                 address = addresses[0]
@@ -198,12 +208,12 @@ object AppConstants {
         view.startAnimation(AnimationUtils.loadAnimation(context, animation))
     }
 
-    fun convertWindSpeedToMPH(windSpeed: Double): Double {
-        return windSpeed * WIND_SPEED_FACTOR
+    fun convertWindSpeedToMPH(windSpeed: Double?): Double {
+        return (windSpeed ?: ZERO_D).times(WIND_SPEED_FACTOR)
     }
 
-    fun convertWindSpeedToMPS(windSpeed: Double): Double {
-        return windSpeed.div(WIND_SPEED_FACTOR)
+    fun convertWindSpeedToMPS(windSpeed: Double?): Double {
+        return (windSpeed ?: ZERO_D).div(WIND_SPEED_FACTOR)
     }
 
     fun setAppLocale(context: Context, language: String) {
@@ -244,7 +254,7 @@ object AppConstants {
     fun openNotification(context: Context, myAlert: MyAlert, description: String, icon: String, title: String) {
         val notificationHelper = Notification(context, description, icon, title)
         val nb = notificationHelper.getChannelNotification()
-        notificationHelper.getManager()!!.notify(myAlert.id.hashCode(), nb.build())
+        notificationHelper.getManager()?.notify(myAlert.id.hashCode(), nb.build())
     }
 
     @TypeConverter
@@ -252,6 +262,7 @@ object AppConstants {
         val type: Type = object : TypeToken<MyAlert>() {}.type
         return Gson().fromJson(value, type)
     }
+
     @TypeConverter
     fun convertMyAlertToString(myAlert: MyAlert): String = Gson().toJson(myAlert)
 
@@ -259,7 +270,7 @@ object AppConstants {
         val adRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
 
-        adView.adListener = object: AdListener() {
+        adView.adListener = object : AdListener() {
             override fun onAdClicked() {
                 // Code to be executed when the user clicks on an ad.
             }
@@ -269,7 +280,7 @@ object AppConstants {
                 // to the app after tapping on an ad.
             }
 
-            override fun onAdFailedToLoad(adError : LoadAdError) {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
                 // Code to be executed when an ad request fails.
             }
 

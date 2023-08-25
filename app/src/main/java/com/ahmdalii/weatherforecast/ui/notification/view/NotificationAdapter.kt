@@ -17,7 +17,7 @@ class NotificationAdapter(
     var context: Context,
     private var alerts: List<MyAlert>,
     var language: String,
-    private var onAlertClickListener: OnAlertClickListener
+    private var onAlertClickListener: OnAlertClickListener,
 ) : RecyclerView.Adapter<NotificationAdapter.ViewHolder>() {
 
     private var lastRowPosition = -1

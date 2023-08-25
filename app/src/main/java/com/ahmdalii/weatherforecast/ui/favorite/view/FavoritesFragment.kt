@@ -47,7 +47,7 @@ class FavoritesFragment : Fragment(), OnFavoriteClickListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentFavoriteBinding.inflate(inflater, container, false)
 
@@ -67,7 +67,7 @@ class FavoritesFragment : Fragment(), OnFavoriteClickListener {
 
     private fun gettingViewModelReady() {
         favoritePlacesViewModelFactory = FavoriteViewModelFactory(
-            FavoriteRepo.getInstance(WeatherClient.getInstance(), ConcreteLocalSourceFavorite(myView.context))
+            FavoriteRepo.getInstance(WeatherClient.getInstance(), ConcreteLocalSourceFavorite(myView.context)),
         )
         viewModel = ViewModelProvider(this, favoritePlacesViewModelFactory)[FavoriteViewModel::class.java]
     }
@@ -130,7 +130,7 @@ class FavoritesFragment : Fragment(), OnFavoriteClickListener {
             .setPositiveButton(R.string.ok) { _, _ ->
                 viewModel.deleteFavoritePlace(favoritePlace)
             }
-            .setNegativeButton(R.string.cancel) {_, _ -> }
+            .setNegativeButton(R.string.cancel) { _, _ -> }
             .setIcon(R.drawable.ic_warning)
             .show()
     }
